@@ -34,15 +34,15 @@ DATA_FILE = Path(__file__).resolve().parent / "data_store.json"
 
 def build_default_companies() -> Dict[str, Dict[str, Any]]:
     return {
-        "1": {"name": "Oke Odo - 12th Akiling Regional Coy", "anchor": [], "junior": [], "intermediate": [], "senior": [], "officer": [], "active": [], "inactive": [], "officers": [], "members": [], "totalMembers": 0, "totalNcos": 0, "totalOfficers": 0},
-        "2": {"name": "Ikorodu - 15th Akiling Regional Coy", "anchor": [], "junior": [], "intermediate": [], "senior": [], "officer": [], "active": [], "inactive": [], "officers": [], "members": [], "totalMembers": 0, "totalNcos": 0, "totalOfficers": 0},
-        "3": {"name": "Iyesi - 17th Akiling Regional Coy", "anchor": [], "junior": [], "intermediate": [], "senior": [], "officer": [], "active": [], "inactive": [], "officers": [], "members": [], "totalMembers": 0, "totalNcos": 0, "totalOfficers": 0},
-        "4": {"name": "Sango - 28th Akiling Regional Coy", "anchor": [], "junior": [], "intermediate": [], "senior": [], "officer": [], "active": [], "inactive": [], "officers": [], "members": [], "totalMembers": 0, "totalNcos": 0, "totalOfficers": 0},
-        "5": {"name": "Command - 31st Akiling Regional Coy", "anchor": [], "junior": [], "intermediate": [], "senior": [], "officer": [], "active": [], "inactive": [], "officers": [], "members": [], "totalMembers": 0, "totalNcos": 0, "totalOfficers": 0},
-        "6": {"name": "Ipaja - 38th Akiling Regional Coy", "anchor": [], "junior": [], "intermediate": [], "senior": [], "officer": [], "active": [], "inactive": [], "officers": [], "members": [], "totalMembers": 0, "totalNcos": 0, "totalOfficers": 0},
-        "7": {"name": "Ijaba - 44th Akiling Regional Coy", "anchor": [], "junior": [], "intermediate": [], "senior": [], "officer": [], "active": [], "inactive": [], "officers": [], "members": [], "totalMembers": 0, "totalNcos": 0, "totalOfficers": 0},
-        "8": {"name": "Ijoko - 48th Akiling Regional Coy", "anchor": [], "junior": [], "intermediate": [], "senior": [], "officer": [], "active": [], "inactive": [], "officers": [], "members": [], "totalMembers": 0, "totalNcos": 0, "totalOfficers": 0},
-        "9": {"name": "Ikeja - 49th Akiling Regional Coy", "anchor": [], "junior": [], "intermediate": [], "senior": [], "officer": [], "active": [], "inactive": [], "officers": [], "members": [], "totalMembers": 0, "totalNcos": 0, "totalOfficers": 0},
+        "1": {"name": "Oke Odo - 12th Akiling Regional Coy", "anchor": [], "junior": [], "intermediate": [], "senior": [], "officer": [], "active": [], "inactive": [], "officers": [], "members": [[...]
+        "2": {"name": "Ikorodu - 15th Akiling Regional Coy", "anchor": [], "junior": [], "intermediate": [], "senior": [], "officer": [], "active": [], "inactive": [], "officers": [], "members": [[...]
+        "3": {"name": "Iyesi - 17th Akiling Regional Coy", "anchor": [], "junior": [], "intermediate": [], "senior": [], "officer": [], "active": [], "inactive": [], "officers": [], "members": [],[...]
+        "4": {"name": "Sango - 28th Akiling Regional Coy", "anchor": [], "junior": [], "intermediate": [], "senior": [], "officer": [], "active": [], "inactive": [], "officers": [], "members": [],[...]
+        "5": {"name": "Command - 31st Akiling Regional Coy", "anchor": [], "junior": [], "intermediate": [], "senior": [], "officer": [], "active": [], "inactive": [], "officers": [], "members": [[...]
+        "6": {"name": "Ipaja - 38th Akiling Regional Coy", "anchor": [], "junior": [], "intermediate": [], "senior": [], "officer": [], "active": [], "inactive": [], "officers": [], "members": [],[...]
+        "7": {"name": "Ijaba - 44th Akiling Regional Coy", "anchor": [], "junior": [], "intermediate": [], "senior": [], "officer": [], "active": [], "inactive": [], "officers": [], "members": [],[...]
+        "8": {"name": "Ijoko - 48th Akiling Regional Coy", "anchor": [], "junior": [], "intermediate": [], "senior": [], "officer": [], "active": [], "inactive": [], "officers": [], "members": [],[...]
+        "9": {"name": "Ikeja - 49th Akiling Regional Coy", "anchor": [], "junior": [], "intermediate": [], "senior": [], "officer": [], "active": [], "inactive": [], "officers": [], "members": [],[...]
     }
 
 
@@ -134,8 +134,15 @@ def get_state():
 
 @app.post("/state")
 def save_full_state(payload: Dict[str, Any]):
+    # Merge the incoming payload with the default state so we don't lose keys
+    # when the client sends a partial state (e.g., only companies).
+    state = build_default_state()
+    state.update(payload)
+    # Ensure companies retains default structure if omitted
+    state["companies"] = payload.get("companies") or build_default_companies()
+
     store.clear()
-    store.update(payload)
+    store.update(state)
     save_state()
     return store
 
