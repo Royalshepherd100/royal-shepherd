@@ -33,16 +33,116 @@ DATA_FILE = Path(__file__).resolve().parent / "data_store.json"
 
 
 def build_default_companies() -> Dict[str, Dict[str, Any]]:
+    # Return a mapping of default company IDs to their empty/default structures.
     return {
-        "1": {"name": "Oke Odo - 12th Akiling Regional Coy", "anchor": [], "junior": [], "intermediate": [], "senior": [], "officer": [], "active": [], "inactive": [], "officers": [], "members": [[...]
-        "2": {"name": "Ikorodu - 15th Akiling Regional Coy", "anchor": [], "junior": [], "intermediate": [], "senior": [], "officer": [], "active": [], "inactive": [], "officers": [], "members": [[...]
-        "3": {"name": "Iyesi - 17th Akiling Regional Coy", "anchor": [], "junior": [], "intermediate": [], "senior": [], "officer": [], "active": [], "inactive": [], "officers": [], "members": [],[...]
-        "4": {"name": "Sango - 28th Akiling Regional Coy", "anchor": [], "junior": [], "intermediate": [], "senior": [], "officer": [], "active": [], "inactive": [], "officers": [], "members": [],[...]
-        "5": {"name": "Command - 31st Akiling Regional Coy", "anchor": [], "junior": [], "intermediate": [], "senior": [], "officer": [], "active": [], "inactive": [], "officers": [], "members": [[...]
-        "6": {"name": "Ipaja - 38th Akiling Regional Coy", "anchor": [], "junior": [], "intermediate": [], "senior": [], "officer": [], "active": [], "inactive": [], "officers": [], "members": [],[...]
-        "7": {"name": "Ijaba - 44th Akiling Regional Coy", "anchor": [], "junior": [], "intermediate": [], "senior": [], "officer": [], "active": [], "inactive": [], "officers": [], "members": [],[...]
-        "8": {"name": "Ijoko - 48th Akiling Regional Coy", "anchor": [], "junior": [], "intermediate": [], "senior": [], "officer": [], "active": [], "inactive": [], "officers": [], "members": [],[...]
-        "9": {"name": "Ikeja - 49th Akiling Regional Coy", "anchor": [], "junior": [], "intermediate": [], "senior": [], "officer": [], "active": [], "inactive": [], "officers": [], "members": [],[...]
+        "1": {
+            "name": "Oke Odo - 12th Akiling Regional Coy",
+            "anchor": [],
+            "junior": [],
+            "intermediate": [],
+            "senior": [],
+            "officer": [],
+            "active": [],
+            "inactive": [],
+            "officers": [],
+            "members": [],
+        },
+        "2": {
+            "name": "Ikorodu - 15th Akiling Regional Coy",
+            "anchor": [],
+            "junior": [],
+            "intermediate": [],
+            "senior": [],
+            "officer": [],
+            "active": [],
+            "inactive": [],
+            "officers": [],
+            "members": [],
+        },
+        "3": {
+            "name": "Iyesi - 17th Akiling Regional Coy",
+            "anchor": [],
+            "junior": [],
+            "intermediate": [],
+            "senior": [],
+            "officer": [],
+            "active": [],
+            "inactive": [],
+            "officers": [],
+            "members": [],
+        },
+        "4": {
+            "name": "Sango - 28th Akiling Regional Coy",
+            "anchor": [],
+            "junior": [],
+            "intermediate": [],
+            "senior": [],
+            "officer": [],
+            "active": [],
+            "inactive": [],
+            "officers": [],
+            "members": [],
+        },
+        "5": {
+            "name": "Command - 31st Akiling Regional Coy",
+            "anchor": [],
+            "junior": [],
+            "intermediate": [],
+            "senior": [],
+            "officer": [],
+            "active": [],
+            "inactive": [],
+            "officers": [],
+            "members": [],
+        },
+        "6": {
+            "name": "Ipaja - 38th Akiling Regional Coy",
+            "anchor": [],
+            "junior": [],
+            "intermediate": [],
+            "senior": [],
+            "officer": [],
+            "active": [],
+            "inactive": [],
+            "officers": [],
+            "members": [],
+        },
+        "7": {
+            "name": "Ijaba - 44th Akiling Regional Coy",
+            "anchor": [],
+            "junior": [],
+            "intermediate": [],
+            "senior": [],
+            "officer": [],
+            "active": [],
+            "inactive": [],
+            "officers": [],
+            "members": [],
+        },
+        "8": {
+            "name": "Ijoko - 48th Akiling Regional Coy",
+            "anchor": [],
+            "junior": [],
+            "intermediate": [],
+            "senior": [],
+            "officer": [],
+            "active": [],
+            "inactive": [],
+            "officers": [],
+            "members": [],
+        },
+        "9": {
+            "name": "Ikeja - 49th Akiling Regional Coy",
+            "anchor": [],
+            "junior": [],
+            "intermediate": [],
+            "senior": [],
+            "officer": [],
+            "active": [],
+            "inactive": [],
+            "officers": [],
+            "members": [],
+        },
     }
 
 
