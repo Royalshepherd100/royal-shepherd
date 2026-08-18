@@ -596,7 +596,12 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
   }
 
   async function requestJson(path, options = {}) {
-    const baseUrl = getBackendBaseUrl();
+    let baseUrl = getBackendBaseUrl();
+    if (!baseUrl) {
+      // Try probing known backend candidates if no base URL is configured.
+      await probeBackends();
+      baseUrl = getBackendBaseUrl();
+    }
     if (!baseUrl) {
       console.warn(`No backend URL configured. Skipping request to ${path}.`);
       return null;
@@ -615,6 +620,36 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
       return null;
     }
     return response.json();
+  }
+
+  // Probe a list of candidate backend hosts and set window.RS_BACKEND_URL to the first healthy one.
+  async function probeBackends() {
+    if (window.__rsProbeDone) return;
+    const candidates = [
+      'https://royal-shepherd-backend.onrender.com',
+      'https://royal-shepherd-bacl.onrender.com',
+      'https://royal-shepherd-bac1.onrender.com',
+      'https://royal-shepherd.onrender.com'
+    ];
+    const timeoutMs = 4000;
+    for (const host of candidates) {
+      try {
+        const controller = new AbortController();
+        const id = setTimeout(() => controller.abort(), timeoutMs);
+        const resp = await fetch(host + '/api/health', { signal: controller.signal });
+        clearTimeout(id);
+        if (resp.ok) {
+          window.RS_BACKEND_URL = host;
+          window.__rsProbeDone = true;
+          console.info('[RS-FRONTEND] probeBackends: selected', host);
+          return host;
+        }
+      } catch (err) {
+        // ignore and continue
+      }
+    }
+    window.__rsProbeDone = true;
+    return null;
   }
 
   async function loadSharedStateFromBackend() {

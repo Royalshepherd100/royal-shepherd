@@ -580,16 +580,15 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     try {
       // Allow explicit global override (set in index.html) or meta tag to control backend URL.
       if (window && window.RS_BACKEND_URL) {
-        const val = String(window.RS_BACKEND_URL).trim();
-        if (val) return val.replace(/\/$/, '');
+        let val = String(window.RS_BACKEND_URL).trim();
+        if (val) {
+          // Auto-correct common hostname typos (e.g. "-bacl", "-bac1") to "-backend"
+          val = val.replace(/-bacl(?=\.|$)/gi, '-backend').replace(/-bac1(?=\.|$)/gi, '-backend');
+          return val.replace(/\/$/, '');
+        }
       }
       const meta = document.querySelector('meta[name="rs-backend-url"]')?.content?.trim();
-          let val = String(window.RS_BACKEND_URL).trim();
-          if (val) {
-            // Auto-correct common hostname typos (e.g. "-bacl", "-bac1") to "-backend"
-            val = val.replace(/-bacl(?=\.|$)/gi, '-backend').replace(/-bac1(?=\.|$)/gi, '-backend');
-            return val.replace(/\/$/, '');
-          }
+      if (meta) return meta.replace(/\/$/, '');
       if (window.location && window.location.protocol === 'file:') return null;
       // Default to same origin so local deployments can talk to a colocated backend.
       return window.location.origin;
@@ -599,7 +598,12 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
   }
 
   async function requestJson(path, options = {}) {
-    const baseUrl = getBackendBaseUrl();
+    let baseUrl = getBackendBaseUrl();
+    if (!baseUrl) {
+      // Probe candidates to find a working backend if not configured.
+      await probeBackends();
+      baseUrl = getBackendBaseUrl();
+    }
     if (!baseUrl) {
       console.warn(`No backend URL configured. Skipping request to ${path}.`);
       return null;
@@ -618,6 +622,35 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
       return null;
     }
     return response.json();
+  }
+
+  async function probeBackends() {
+    if (window.__rsProbeDone) return;
+    const candidates = [
+      'https://royal-shepherd-backend.onrender.com',
+      'https://royal-shepherd-bacl.onrender.com',
+      'https://royal-shepherd-bac1.onrender.com',
+      'https://royal-shepherd.onrender.com'
+    ];
+    const timeoutMs = 4000;
+    for (const host of candidates) {
+      try {
+        const controller = new AbortController();
+        const id = setTimeout(() => controller.abort(), timeoutMs);
+        const resp = await fetch(host + '/api/health', { signal: controller.signal });
+        clearTimeout(id);
+        if (resp.ok) {
+          window.RS_BACKEND_URL = host;
+          window.__rsProbeDone = true;
+          console.info('[RS-FRONTEND] probeBackends: selected', host);
+          return host;
+        }
+      } catch (err) {
+        // ignore
+      }
+    }
+    window.__rsProbeDone = true;
+    return null;
   }
 
   async function loadSharedStateFromBackend() {
