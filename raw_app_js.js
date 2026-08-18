@@ -1,8 +1,9 @@
 (() => {
   console.log('app.js starting');
-  // Force the canonical Render backend for all deployed pages.
-  // This overrides any stale fallback embedded in cached HTML or scripts.
-  window.RS_BACKEND_URL = 'https://royal-shepherd-bac1.onrender.com';
+  // Set default backend URL only if not already provided by the hosting environment.
+  if (!window.RS_BACKEND_URL) {
+    window.RS_BACKEND_URL = 'https://royal-shepherd-bacl.onrender.com';
+  }
   window.__rsAppJsLoaded = true;
   const header = document.querySelector('.site-header');
   const menuToggle = document.getElementById('menuToggle');
@@ -344,11 +345,11 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
   }
 
   async function apiGetState() {
-    return requestJson('/state', { method: 'GET' });
+    return requestJson('/api/state', { method: 'GET' });
   }
 
   async function apiSaveState(payload) {
-    return requestJson('/state', { method: 'POST', body: JSON.stringify(payload) });
+    return requestJson('/api/state', { method: 'POST', body: JSON.stringify(payload) });
   }
 
   async function apiApproveApplication(applicationId) {
@@ -371,7 +372,7 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     try {
       const payload = await rsBackend.getState();
       if (payload) {
-        console.log('[RS-FRONTEND] Response from GET /state', payload);
+        console.log('[RS-FRONTEND] Response from GET /api/state', payload);
         __rsBackendCache = payload;
         __rsBackendAvailable = true;
         __rsLoadedFromLocalStorage = false;
@@ -576,8 +577,22 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
   const ACTIVE_COMMANDER_KEY = 'royalShepherdActiveCommander';
 
   function getBackendBaseUrl() {
-    // Always return the canonical Render backend host (no local fallbacks).
-    return 'https://royal-shepherd-bac1.onrender.com';
+    try {
+      if (window && window.RS_BACKEND_URL) {
+        let val = String(window.RS_BACKEND_URL).trim();
+        if (val) {
+          // Auto-correct common hostname typos (e.g. "-bacl", "-bac1") to "-backend"
+          val = val.replace(/-bacl(?=\.|$)/gi, '-backend').replace(/-bac1(?=\.|$)/gi, '-backend');
+          return val.replace(/\/$/, '');
+        }
+      }
+      const meta = document.querySelector('meta[name="rs-backend-url"]')?.content?.trim();
+      if (meta) return meta.replace(/\/$/, '');
+      if (window.location && window.location.protocol === 'file:') return null;
+      return window.location.origin || `${window.location.protocol}//${window.location.host}`;
+    } catch (err) {
+      return null;
+    }
   }
 
   async function requestJson(path, options = {}) {

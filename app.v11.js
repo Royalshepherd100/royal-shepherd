@@ -1,8 +1,9 @@
 (() => {
   console.log('app.js starting');
-  // Force the canonical Render backend for all deployed pages.
-  // This overrides any stale fallback embedded in cached HTML or scripts.
-  window.RS_BACKEND_URL = 'https://royal-shepherd-bacl.onrender.com';
+  // Set default backend URL only if not already provided by the hosting environment.
+  if (!window.RS_BACKEND_URL) {
+    window.RS_BACKEND_URL = 'https://royal-shepherd-bacl.onrender.com';
+  }
   window.__rsAppJsLoaded = true;
   const header = document.querySelector('.site-header');
   const menuToggle = document.getElementById('menuToggle');
@@ -344,11 +345,11 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
   }
 
   async function apiGetState() {
-    return requestJson('/state', { method: 'GET' });
+    return requestJson('/api/state', { method: 'GET' });
   }
 
   async function apiSaveState(payload) {
-    return requestJson('/state', { method: 'POST', body: JSON.stringify(payload) });
+    return requestJson('/api/state', { method: 'POST', body: JSON.stringify(payload) });
   }
 
   async function apiApproveApplication(applicationId) {
@@ -371,7 +372,7 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     try {
       const payload = await rsBackend.getState();
       if (payload) {
-        console.log('[RS-FRONTEND] Response from GET /state', payload);
+        console.log('[RS-FRONTEND] Response from GET /api/state', payload);
         __rsBackendCache = payload;
         __rsBackendAvailable = true;
         __rsLoadedFromLocalStorage = false;
@@ -576,8 +577,25 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
   const ACTIVE_COMMANDER_KEY = 'royalShepherdActiveCommander';
 
   function getBackendBaseUrl() {
-    // Always return the canonical Render backend host (no local fallbacks).
-    return 'https://royal-shepherd-bacl.onrender.com';
+    try {
+      // Allow explicit global override (set in index.html) or meta tag to control backend URL.
+      if (window && window.RS_BACKEND_URL) {
+        const val = String(window.RS_BACKEND_URL).trim();
+        if (val) return val.replace(/\/$/, '');
+      }
+      const meta = document.querySelector('meta[name="rs-backend-url"]')?.content?.trim();
+          let val = String(window.RS_BACKEND_URL).trim();
+          if (val) {
+            // Auto-correct common hostname typos (e.g. "-bacl", "-bac1") to "-backend"
+            val = val.replace(/-bacl(?=\.|$)/gi, '-backend').replace(/-bac1(?=\.|$)/gi, '-backend');
+            return val.replace(/\/$/, '');
+          }
+      if (window.location && window.location.protocol === 'file:') return null;
+      // Default to same origin so local deployments can talk to a colocated backend.
+      return window.location.origin;
+    } catch (err) {
+      return null;
+    }
   }
 
   async function requestJson(path, options = {}) {
@@ -1757,7 +1775,7 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
 
     founderCard.innerHTML = `
       <div class="founder-portrait">
-        <img src="image/pa sk abiara.jpeg?v=3" alt="Prophet Samuel Kayode Abiara" />
+        <img src="image/pa%20sk%20abiara.jpeg?v=3" alt="Prophet Samuel Kayode Abiara" />
       </div>
       <div class="founder-copy">
         ${paragraphs.map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`).join('')}
