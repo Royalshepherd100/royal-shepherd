@@ -16,4 +16,5 @@ services:
     root: backend
     buildCommand: pip install -r requirements/requirements.txt
     startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
-    healthCheckPath: /state
+    # Use the API health endpoint so Render's health check hits the FastAPI route.
+    healthCheckPath: /api/health
