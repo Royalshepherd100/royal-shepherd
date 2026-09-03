@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Royal Shepherd Local Test</title>
+    <meta name="description" content="Local test page pointing to local backend" />
+    <meta name="rs-backend-url" content="http://127.0.0.1:8000" />
+    <script>
+      // Local test: point frontend to local backend
+      if (!window.RS_BACKEND_URL) {
+        window.RS_BACKEND_URL = 'http://127.0.0.1:8000';
+      }
+    </script>
+    <link rel="stylesheet" href="/static/index.css?v=7" />
+  </head>
+  <body>
+    <h1>Royal Shepherd Local Frontend Test</h1>
+    <p>This page loads the production frontend script and points it to the local backend at <strong>http://127.0.0.1:8000</strong>.</p>
+    <script defer src="/static/gallery-data.js?v=6"></script>
+    <script defer src="/static/app.v11.js"></script>
+  </body>
+</html>

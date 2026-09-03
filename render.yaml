@@ -9,7 +9,7 @@ services:
     buildCommand: echo "No build required"
 
   - type: web_service
-    name: "royal-shepherd bacl"
+    name: "royal-shepherd-bacl"
     env: python
     branch: main
     plan: starter
