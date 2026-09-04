@@ -14,6 +14,7 @@ This project is configured for deployment on Render using `render.yaml`.
 - Python root: `backend`
 - Install command: `pip install -r requirements/requirements.txt`
 - Start command: `uvicorn main:app --host 0.0.0.0 --port $PORT`
+- Render health check endpoint: `/api/health`
 
 ## How to deploy on Render
 1. Sign in to Render at https://render.com.
