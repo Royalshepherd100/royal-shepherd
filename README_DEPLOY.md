@@ -14,7 +14,7 @@ This project is configured for deployment on Render using `render.yaml`.
 - Python root: `backend`
 - Install command: `pip install -r requirements/requirements.txt`
 - Start command: `uvicorn main:app --host 0.0.0.0 --port $PORT`
-- Render health check endpoint: `/api/health`
+- Render health check endpoint: `/` (the API health endpoint is `/api/health` in the current backend source)
 
 ## How to deploy on Render
 1. Sign in to Render at https://render.com.
@@ -27,5 +27,5 @@ This project is configured for deployment on Render using `render.yaml`.
 - The frontend and backend are deployed from the same repository using `render.yaml`.
 - `render.yaml` is configured to deploy both services from the `main` branch.
 - The backend is available as a separate HTTP service.
-- If `https://royal-shepherd-bacl.onrender.com/api/health` returns 404, Render is using the wrong repository, branch, root directory, or service instance. Verify the backend service settings and deploy the latest `main` commit.
+- If `https://royal-shepherd-bacl.onrender.com/` does not return HTTP 200, Render is using the wrong repository, branch, root directory, or service instance. Verify the backend service settings and deploy the latest `main` commit.
 - If you change `render.yaml`, push the update to GitHub and re-deploy on Render.
