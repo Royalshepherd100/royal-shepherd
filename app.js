@@ -160,15 +160,20 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     'prophet-dr-s-k-abiara': 'pa sk abiara.jpeg',
     'pastor-s-o-oladele': 'pastor s.o oladele cac president.jpeg',
     'pastor-e-olusoko': 'Pastor S.O. Olukoso.jpeg',
-    'bishop-kehinde-abiara': '',
-    'rs-major-general-e-b-adegbite': 'RS Major General E. B. Adegbite.jpeg',
+    'bishop-kehinde-abiara': 'bishop isaac.jpeg',
+    'rs-major-general-e-b-adegbite': 'nos adegnite.jpeg',
     'rs-brigadier-general-s-oludahunsi': '',
-    'rs-major-general-j-p-akinyemi': '',
+    'rs-major-general-j-p-akinyemi': 'akiling regional commander  akinyemi.jpeg',
     'rs-colonel-o-olowe': 'RS Colonel O. Olowe.jpeg',
-    'rs-lt-colonel-o-olasupo': '',
+    'rs-lt-colonel-o-olasupo': 'major olasupo.jpeg',
     'rs-captain-s-a-ilori': '',
-    'national-organizing-secretary': '',
-    'assistant-national-organizing-secretary': 'RS Major General E. B. Adegbite.jpeg'
+    'national-organizing-secretary': 'nos adegnite.jpeg',
+    'assistant-national-organizing-secretary': 'nos adegnite.jpeg',
+    'general-secretary': 'gen sec rs lieutenant olamilekan.o.jpeg',
+    'divisional-secretary': '',
+    'financial-secretary-provost-anjola-olayiwola': 'fin sec anjola jesu.jpeg',
+    'akiling-region-commander': 'akiling regional commander  akinyemi.jpeg',
+    'akiling-region-organizing-secretary': 'major olasupo.jpeg'
   };
 
   const featuredLeadershipGroups = [
