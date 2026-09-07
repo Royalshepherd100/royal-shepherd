@@ -170,3 +170,46 @@ def test_post_state_preserves_existing_members_when_partial_company_payload_arri
     assert company["anchor"] == ["Ada"]
     assert company["active"] == ["Ada"]
     assert company["members"][0]["name"] == "Ada"
+
+
+def test_post_state_preserves_gallery_items_across_partial_updates():
+    client = new_client()
+
+    first_response = client.post(
+        "/state",
+        json={
+            "galleryItems": [
+                {"src": "uploaded-image.png", "title": "Uploaded", "description": "Shared gallery image", "category": "parades"}
+            ]
+        },
+    )
+    assert first_response.status_code == 200
+
+    second_response = client.post(
+        "/state",
+        json={
+            "companies": {
+                "1": {
+                    "name": "Company 1",
+                    "anchor": [],
+                    "junior": [],
+                    "intermediate": [],
+                    "senior": [],
+                    "officer": [],
+                    "active": [],
+                    "inactive": [],
+                    "officers": [],
+                    "members": [],
+                    "totalMembers": 0,
+                    "totalNcos": 0,
+                    "totalOfficers": 0,
+                }
+            }
+        },
+    )
+    assert second_response.status_code == 200
+
+    state = client.get("/state").json()
+    assert state["galleryItems"] == [
+        {"src": "uploaded-image.png", "title": "Uploaded", "description": "Shared gallery image", "category": "parades"}
+    ]

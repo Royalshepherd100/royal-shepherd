@@ -208,6 +208,6 @@
   { src: 'WhatsApp Image 2026-07-12 at 7.58.21 AM.jpeg', category: 'parades', title: '2026-07-12 at 7.58.21 AM', description: 'Moments from 2026-07-12 at 7.58.21 AM' },
   { src: 'RS Colonel O. Olowe.jpeg', category: 'officers', title: 'RS Colonel O. Olowe', description: 'Leadership spotlight post for Colonel O. Olowe — a distinguished Royal Shepherd officer in focus.' },
   { src: 'RS Major General E. B. Adegbite.jpeg', category: 'officers', title: 'RS Major General E. B. Adegbite', description: 'Leadership spotlight post for Major General E. B. Adegbite — a proud Royal Shepherd figure and officer.' },
-  { src: 'new%20division%20image.jpeg', category: 'parades', title: 'New Division Image', description: 'New division moment for the Royal Shepherd gallery post.' }
+  { src: 'new division image.jpeg', category: 'parades', title: 'New Division Image', description: 'New division moment for the Royal Shepherd gallery post.' }
 ];
 
