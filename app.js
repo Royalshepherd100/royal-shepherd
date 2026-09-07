@@ -1029,43 +1029,8 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
   }
 
   function showBackendStatus(message, type = 'warning') {
-    let banner = document.getElementById('rs-backend-status-banner');
-    if (!banner) {
-      banner = document.createElement('div');
-      banner.id = 'rs-backend-status-banner';
-      banner.style.position = 'fixed';
-      banner.style.top = '0';
-      banner.style.left = '0';
-      banner.style.right = '0';
-      banner.style.zIndex = '99998';
-      banner.style.padding = '12px 16px';
-      banner.style.textAlign = 'center';
-      banner.style.fontSize = '0.95rem';
-      banner.style.fontFamily = 'sans-serif';
-      banner.style.transition = 'transform 200ms ease, opacity 200ms ease';
-      banner.style.transform = 'translateY(-100%)';
-      banner.style.opacity = '0';
-      banner.style.pointerEvents = 'none';
-      document.body.appendChild(banner);
-      requestAnimationFrame(() => {
-        banner.style.transform = 'translateY(0)';
-        banner.style.opacity = '1';
-      });
-    }
-
-    banner.textContent = message;
-    if (type === 'error') {
-      banner.style.background = 'rgba(220, 50, 50, 0.96)';
-      banner.style.color = '#fff';
-    } else if (type === 'success') {
-      banner.style.background = 'rgba(24, 130, 75, 0.96)';
-      banner.style.color = '#fff';
-    } else {
-      banner.style.background = 'rgba(255, 165, 0, 0.96)';
-      banner.style.color = '#111';
-    }
-    banner.style.transform = 'translateY(0)';
-    banner.style.opacity = '1';
+    // Intentionally hidden from the public UI while backend checks continue internally.
+    return null;
   }
 
   function saveExamScores() {
