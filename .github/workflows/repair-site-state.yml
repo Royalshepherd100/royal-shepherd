@@ -3,26 +3,31 @@ name: Repair site state rendering
 on:
   push:
     branches: [main]
+  workflow_dispatch:
 
 permissions:
   contents: write
 
 jobs:
   repair:
-    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Patch state fallback safely
+
+      - name: Patch applySharedState safely
         run: |
           python - <<'PY'
           from pathlib import Path
-          import re
           p = Path('app.js')
           s = p.read_text(encoding='utf-8-sig')
-          pattern = r"  function applySharedState\(payload\) \{.*?\n  \}\n\n  function"
+          start = s.find('  function applySharedState(payload) {')
+          if start < 0:
+              raise SystemExit('Could not locate applySharedState; refusing to modify app.js')
+          end = s.find('\n  function ', start + 10)
+          if end < 0:
+              raise SystemExit('Could not locate end of applySharedState; refusing to modify app.js')
           replacement = '''  function applySharedState(payload) {
     if (!payload || typeof payload !== 'object') return;
 
@@ -50,17 +55,24 @@ jobs:
     if (payload.activeCaptainCompany) state.activeCaptainCompany = payload.activeCaptainCompany;
     state.activeCommanderEmail = getActiveCommanderEmail();
   }
-
-  function'''
-          updated, count = re.subn(pattern, replacement, s, count=1, flags=re.S)
-          if count != 1:
-              raise SystemExit('Could not locate applySharedState safely; refusing to modify app.js')
-          p.write_text(updated, encoding='utf-8')
+'''
+          p.write_text(s[:start] + replacement + s[end:], encoding='utf-8')
           PY
+
+      - name: Validate JavaScript
+        run: node --check app.js
+
+      - name: Verify repair was applied
+        run: |
+          grep -q "const companiesPayload = payload.companies || payload.companyData;" app.js
+          grep -q "if (Array.isArray(payload.newsItems) && payload.newsItems.length)" app.js
+          grep -q "if (Array.isArray(payload.galleryItems) && payload.galleryItems.length)" app.js
+
       - name: Commit repair
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add app.js
-          git commit -m 'Fix public news and Our Wings state fallback' || exit 0
+          git diff --cached --quiet && echo 'No changes needed' && exit 0
+          git commit -m 'Fix public state fallback rendering'
           git push
