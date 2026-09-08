@@ -723,9 +723,20 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
       date: '2026-09-08',
       description: 'Read the Royal Shepherd RE Handbook.',
       image: '',
-      link: 'RS New Constitution Book.pdf'
+      link: 'RS New Constitution Book.pdf',
+      downloadName: 'RE-Handbook.pdf'
+    },
+    {
+      id: 'rs-constitution',
+      title: 'RS New Constitution',
+      date: '2026-09-08',
+      description: 'Read the Royal Shepherd New Constitution.',
+      image: '',
+      link: 'RS New Constitution Book.pdf',
+      downloadName: 'RS-New-Constitution.pdf'
     }
   ];
+  let pendingGalleryFiles = [];
 
   populateCaptainCompanySelect();
   populateEnlistmentCompanySelect();
@@ -1314,7 +1325,7 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
           <p class="news-date">${escapeHtml(item.date || '')}</p>
           <h3>${escapeHtml(item.title)}</h3>
           <p>${escapeHtml(item.description)}</p>
-          ${item.link ? `<a class="btn btn-outline" href="${resolvePublicAssetPath(item.link)}" target="_blank" rel="noopener">Read RE Handbook</a>` : ''}
+          ${item.link ? `<div class="news-actions"><a class="btn btn-outline" href="${resolvePublicAssetPath(item.link)}" target="_blank" rel="noopener">${item.id === 'rs-constitution' ? 'Read Constitution' : 'Read Handbook'}</a><a class="btn btn-secondary" href="${resolvePublicAssetPath(item.link)}" download="${escapeHtml(item.downloadName || 'Royal-Shepherd-document.pdf')}">Download PDF</a></div>` : ''}
         </div>
       </article>
     `).join('') : '<p class="news-empty">No latest updates have been posted yet.</p>';
@@ -1960,6 +1971,24 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
       </div>
     `).join('') : '<p>No news updates posted yet.</p>';
 
+    const galleryManagementCard = document.createElement('div');
+    galleryManagementCard.className = 'dashboard-card gallery-management-card';
+    galleryManagementCard.innerHTML = `
+      <h4>Gallery Management</h4>
+      <p class="dashboard-intro">Upload one or more public gallery pictures, choose a category, preview them, and publish them to every visitor.</p>
+      <label><span>Pictures</span><input type="file" class="gallery-upload-input" accept="image/png,image/jpeg,image/jpg,image/webp" multiple /></label>
+      <label><span>Category for selected pictures</span><select class="gallery-upload-category"><option value="parades">PARADES PICS</option><option value="band">BAND PICS</option><option value="rehearsals">REHEARSAL PICS</option><option value="moments-enjoyment">MOMENTS OF ENJOYMENT</option></select></label>
+      <div class="gallery-upload-preview"></div>
+      <div class="dashboard-actions"><button type="button" class="btn btn-gold" data-gallery-action="publish">Publish Pictures</button></div>
+      <div class="gallery-admin-list"></div>
+    `;
+    commanderDashboardGrid.appendChild(galleryManagementCard);
+    const galleryAdminList = galleryManagementCard.querySelector('.gallery-admin-list');
+    const managedItems = (state.galleryItems || []).filter((item) => item && item.src);
+    galleryAdminList.innerHTML = managedItems.length ? managedItems.map((item) => `
+      <div class="gallery-admin-item"><span>${escapeHtml(item.title || item.src)}</span><button type="button" class="btn btn-secondary" data-gallery-action="delete" data-gallery-id="${escapeHtml(item.id || item.src)}">Delete</button></div>
+    `).join('') : '<p>No admin-uploaded pictures yet. Repository gallery pictures remain available to visitors.</p>';
+
     const requestCard = document.createElement('div');
     requestCard.className = 'dashboard-card';
     requestCard.innerHTML = `
@@ -2603,6 +2632,71 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
       }
       if (action === 'cancel') {
         buildCommanderDashboard();
+      }
+    });
+
+    commanderDashboardGrid?.addEventListener('change', (event) => {
+      const input = event.target.closest('.gallery-upload-input');
+      if (!input) return;
+      const defaultCategory = input.closest('.gallery-management-card')?.querySelector('.gallery-upload-category')?.value || 'parades';
+      pendingGalleryFiles = Array.from(input.files || [])
+        .filter((file) => /^image\/(jpeg|jpg|png|webp)$/i.test(file.type))
+        .map((file) => ({ file, category: defaultCategory }));
+      const preview = input.closest('.gallery-management-card')?.querySelector('.gallery-upload-preview');
+      if (preview) {
+        preview.innerHTML = pendingGalleryFiles.map((entry, index) => `<div class="gallery-upload-preview-item"><img src="${URL.createObjectURL(entry.file)}" alt="${escapeHtml(entry.file.name)}" /><span>${escapeHtml(entry.file.name)}</span><select class="gallery-upload-item-category" data-gallery-index="${index}"><option value="parades" ${entry.category === 'parades' ? 'selected' : ''}>Parades Pics</option><option value="band" ${entry.category === 'band' ? 'selected' : ''}>Band Pics</option><option value="rehearsals" ${entry.category === 'rehearsals' ? 'selected' : ''}>Rehearsal Pics</option><option value="moments-enjoyment" ${entry.category === 'moments-enjoyment' ? 'selected' : ''}>Moments of Enjoyment</option></select></div>`).join('');
+      }
+    });
+
+    commanderDashboardGrid?.addEventListener('change', (event) => {
+      const categorySelect = event.target.closest('.gallery-upload-item-category');
+      if (!categorySelect) return;
+      const entry = pendingGalleryFiles[Number(categorySelect.dataset.galleryIndex)];
+      if (entry) entry.category = categorySelect.value;
+    });
+
+    commanderDashboardGrid?.addEventListener('click', async (event) => {
+      const actionButton = event.target.closest('[data-gallery-action]');
+      if (!actionButton) return;
+      const action = actionButton.dataset.galleryAction;
+      if (action === 'delete') {
+        const galleryId = actionButton.dataset.galleryId;
+        state.galleryItems = (state.galleryItems || []).filter((item) => (item.id || item.src) !== galleryId);
+        const saved = await saveAppState(true);
+        if (saved) {
+          renderGallery();
+          buildCommanderDashboard();
+          showToast('Gallery picture deleted');
+        }
+        return;
+      }
+      if (action === 'publish') {
+        const card = actionButton.closest('.gallery-management-card');
+        if (!pendingGalleryFiles.length) {
+          showToast('Choose at least one picture first');
+          return;
+        }
+        const uploadedItems = await Promise.all(pendingGalleryFiles.map((entry) => new Promise((resolve, reject) => {
+          const file = entry.file;
+          const reader = new FileReader();
+          reader.onload = () => resolve({
+            id: `gallery-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+            src: reader.result,
+            category: entry.category,
+            title: file.name,
+            description: `Royal Shepherd ${category.replace('-', ' ')} moment`
+          });
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        })));
+        state.galleryItems = [...(state.galleryItems || []), ...uploadedItems];
+        const saved = await saveAppState(true);
+        if (saved) {
+          pendingGalleryFiles = [];
+          renderGallery();
+          buildCommanderDashboard();
+          showToast(`${uploadedItems.length} gallery picture(s) published`);
+        }
       }
     });
 

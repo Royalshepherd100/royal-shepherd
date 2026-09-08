@@ -111,6 +111,13 @@ h4 {
   padding: 1.25rem;
 }
 
+.news-actions {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  margin-top: 0.5rem;
+}
+
 .news-date,
 .news-admin-item small {
   color: var(--gold-400);
@@ -862,6 +869,45 @@ h4 {
 .news-admin-item > div:first-child {
   display: grid;
   gap: 0.2rem;
+}
+
+.gallery-upload-preview {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: 0.65rem;
+  margin-top: 0.8rem;
+}
+
+.gallery-upload-preview-item {
+  display: grid;
+  gap: 0.3rem;
+  min-width: 0;
+  color: var(--silver-200);
+  font-size: 0.75rem;
+}
+
+.gallery-upload-preview-item img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 0.65rem;
+}
+
+.gallery-admin-list {
+  display: grid;
+  gap: 0.6rem;
+  margin-top: 1rem;
+}
+
+.gallery-admin-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.65rem;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 0.7rem;
+  color: var(--silver-200);
 }
 
 .print-report {
