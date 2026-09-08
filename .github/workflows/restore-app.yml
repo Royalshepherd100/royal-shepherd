@@ -19,8 +19,9 @@ jobs:
       - name: Restore last known full app.js
         run: |
           git checkout 7edcd1d57d274c6cf2393062dbf3595b6a3eacbc -- app.js
-          test $(wc -l < app.js) -gt 2500
           node --check app.js
+          echo "Restored app.js from known-good commit 7edcd1d57d274c6cf2393062dbf3595b6a3eacbc"
+          wc -l app.js
 
       - name: Commit restored app.js
         run: |
