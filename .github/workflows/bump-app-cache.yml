@@ -16,72 +16,21 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Repair public state fallback and refresh cache
+      - name: Refresh frontend cache version
         run: |
-          python - <<'PY'
-          from pathlib import Path
-          p = Path('app.js')
-          s = p.read_text(encoding='utf-8-sig')
-          start = s.find('  function applySharedState(payload) {')
-          if start < 0:
-              raise SystemExit('Could not locate applySharedState; refusing to modify app.js')
-          end = s.find('\n  function ', start + 10)
-          if end < 0:
-              raise SystemExit('Could not locate end of applySharedState; refusing to modify app.js')
-          replacement = '''  function applySharedState(payload) {
-    if (!payload || typeof payload !== 'object') return;
-
-    const companiesPayload = payload.companies || payload.companyData;
-    if (companiesPayload && typeof companiesPayload === 'object' && Object.keys(companiesPayload).length) {
-      state.companyData = { ...JSON.parse(JSON.stringify(defaultCompanyData)), ...normalizeCompanyData(companiesPayload) };
-    } else if (!state.companyData || !Object.keys(state.companyData).length) {
-      state.companyData = JSON.parse(JSON.stringify(defaultCompanyData));
-    }
-
-    if (payload.captainAccounts || payload.captains) state.captainAccounts = normalizeAccountMap(payload.captainAccounts || payload.captains);
-    if (payload.commanderAccounts || payload.commanders) state.commanderAccounts = normalizeAccountMap(payload.commanderAccounts || payload.commanders);
-    if (payload.commanderVerificationCodes) state.commanderVerificationCodes = payload.commanderVerificationCodes;
-    if (payload.captainRequests) state.captainRequests = payload.captainRequests;
-    if (payload.enlistmentApplications) state.enlistmentApplications = payload.enlistmentApplications;
-    if (payload.commanderSettings) state.commanderSettings = payload.commanderSettings;
-    if (payload.excoProfiles) state.excoProfiles = { ...defaultExcoProfiles, ...payload.excoProfiles };
-    if (payload.divisionMembers) state.divisionMembers = payload.divisionMembers;
-    if (payload.commandStructure) state.commandStructure = normalizeCommandStructure(payload.commandStructure);
-    if (payload.founderStory) state.founderStory = payload.founderStory;
-    if (Array.isArray(payload.newsItems) && payload.newsItems.length) state.newsItems = payload.newsItems;
-    if (payload.examScores) state.examScores = payload.examScores;
-    if (payload.activeExamYear) state.activeExamYear = payload.activeExamYear;
-    if (Array.isArray(payload.galleryItems) && payload.galleryItems.length) state.galleryItems = payload.galleryItems;
-    if (payload.activeCaptainCompany) state.activeCaptainCompany = payload.activeCaptainCompany;
-    state.activeCommanderEmail = getActiveCommanderEmail();
-  }
-'''
-          p.write_text(s[:start] + replacement + s[end:], encoding='utf-8')
-
-          idx = Path('index.html')
-          html = idx.read_text(encoding='utf-8-sig')
-          import re
-          html2 = re.sub(r'app\.js\?v=\d+', 'app.js?v=17', html, count=1)
-          if html2 == html:
-              raise SystemExit('Could not find app.js cache reference in index.html')
-          idx.write_text(html2, encoding='utf-8')
-          PY
+          python -c "from pathlib import Path; p=Path('index.html'); s=p.read_text(encoding='utf-8-sig'); old=s; s=s.replace('app.js?v=16','app.js?v=17',1); assert s!=old, 'app.js cache reference not found'; p.write_text(s,encoding='utf-8')"
 
       - name: Validate JavaScript
         run: node --check app.js
 
-      - name: Verify repair
-        run: |
-          grep -q "const companiesPayload = payload.companies || payload.companyData;" app.js
-          grep -q "if (Array.isArray(payload.newsItems) && payload.newsItems.length)" app.js
-          grep -q "if (Array.isArray(payload.galleryItems) && payload.galleryItems.length)" app.js
-          grep -q 'app.js?v=17' index.html
+      - name: Verify cache refresh
+        run: grep -q 'app.js?v=17' index.html
 
-      - name: Commit repair
+      - name: Commit cache refresh
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add app.js index.html
+          git add index.html
           git diff --cached --quiet && echo 'No changes needed' && exit 0
-          git commit -m 'Fix public state rendering and refresh app cache'
+          git commit -m 'Refresh frontend app cache'
           git push
