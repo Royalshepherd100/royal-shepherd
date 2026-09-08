@@ -73,8 +73,6 @@
     { key: 'pastor-s-o-oladele', label: 'CAC President W/W' },
     { key: 'pastor-e-olusoko', label: 'Akiling Region Superintendent' },
     { key: 'bishop-kehinde-abiara', label: 'Agbala-Itura DCC Superintendent Lagos' },
-    { key: 'rs-major-general-e-b-adegbite', label: 'National Organizing Secretary' },
-    { key: 'rs-brigadier-general-s-oludahunsi', label: 'Assistant National Organizing Secretary' },
     { key: 'rs-major-general-j-p-akinyemi', label: 'Akiling Region Commander' },
     { key: 'rs-colonel-o-olowe', label: 'Akiling Region Deputy Commander' },
     { key: 'rs-lt-colonel-o-olasupo', label: 'Akiling Region Organizing Secretary' },
@@ -161,13 +159,13 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     'pastor-s-o-oladele': 'pastor s.o oladele cac president.jpeg',
     'pastor-e-olusoko': 'Pastor S.O. Olukoso.jpeg',
     'bishop-kehinde-abiara': 'bishop isaac.jpeg',
-    'rs-major-general-e-b-adegbite': 'RS Major General E. B. Adegbite.jpeg',
+    'rs-major-general-e-b-adegbite': 'nos adegnite.jpeg',
     'rs-brigadier-general-s-oludahunsi': 'pastor s.o oladahusi.jpeg',
     'rs-major-general-j-p-akinyemi': 'akiling regional commander  akinyemi.jpeg',
     'rs-colonel-o-olowe': 'RS Colonel O. Olowe.jpeg',
     'rs-lt-colonel-o-olasupo': 'major olasupo .jpeg',
     'rs-captain-s-a-ilori': 'captain samuel.A.ilori divisional commander and also region training officer 1.jpeg',
-    'national-organizing-secretary': 'RS Major General E. B. Adegbite.jpeg',
+    'national-organizing-secretary': 'nos adegnite.jpeg',
     'assistant-national-organizing-secretary': 'pastor s.o oladahusi.jpeg',
     'general-secretary': 'rs lieu.olamilekan o. aina.jpeg',
     'divisional-secretary': '',
@@ -451,6 +449,7 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
       renderDivisionSummary();
       renderOfficerLeadership();
       renderFounderStory();
+      renderGallery();
       if (window.location.pathname.includes('commander-dashboard.html')) {
         if (renderCommanderWorkspaceAccess()) {
           buildCommanderDashboard();
@@ -1221,11 +1220,21 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     return pathWithoutQuery.split('/').map((segment, index) => index === 0 ? segment : encodeURIComponent(segment)).join('/') + suffix;
   }
 
+  function getGalleryItems() {
+    const mergedItems = new Map();
+    [...galleryData, ...(Array.isArray(state.galleryItems) ? state.galleryItems : [])].forEach((item) => {
+      if (!item?.src) return;
+      const key = String(item.src).trim();
+      mergedItems.set(key, { ...mergedItems.get(key), ...item, src: key });
+    });
+    return Array.from(mergedItems.values());
+  }
+
   function renderGallery() {
     if (!galleryGrid) return;
     galleryGrid.innerHTML = '';
 
-    const itemsToRender = (state.galleryItems && state.galleryItems.length ? state.galleryItems : galleryData);
+    const itemsToRender = getGalleryItems();
     itemsToRender.forEach((item, index) => {
       const article = document.createElement('article');
       article.className = 'gallery-item glass-card';
@@ -1239,11 +1248,11 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
             <p>${item.description}</p>
           </div>
         </button>
+        <a class="gallery-download btn btn-outline" href="${resolveImagePath(item.src)}" download aria-label="Download ${item.title}">Download</a>
       `;
       galleryGrid.appendChild(article);
     });
 
-    state.galleryItems = itemsToRender;
     applyGalleryFilter('all');
   }
 
@@ -1291,7 +1300,7 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
       if (!card) return;
       const index = Number(card.dataset.index);
       if (!Number.isNaN(index)) {
-        const sourceItems = (state.galleryItems && state.galleryItems.length ? state.galleryItems : galleryData);
+        const sourceItems = getGalleryItems();
         const item = sourceItems[index];
         if (item) {
           openGalleryPreview(item);
@@ -1308,7 +1317,7 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
       if (!card) return;
       const index = Number(card.dataset.index);
       if (!Number.isNaN(index)) {
-        const sourceItems = (state.galleryItems && state.galleryItems.length ? state.galleryItems : galleryData);
+        const sourceItems = getGalleryItems();
         const item = sourceItems[index];
         if (item) {
           openGalleryPreview(item);
