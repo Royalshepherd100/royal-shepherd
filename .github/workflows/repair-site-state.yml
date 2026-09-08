@@ -16,7 +16,26 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Patch applySharedState safely
+      - name: Fix startup initialization order
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('app.js')
+          s = p.read_text(encoding='utf-8-sig')
+          old = "\n  populateCaptainCompanySelect();\n  populateEnlistmentCompanySelect();\n\n  function ensureDefaultCommanderAccount()"
+          if old in s:
+              s = s.replace(old, "\n  function ensureDefaultCommanderAccount()", 1)
+          marker = "\n  const galleryData = window.galleryData || [];"
+          state_end = "\n  };\n\n  const galleryData = window.galleryData || [];"
+          if state_end not in s:
+              raise SystemExit('Could not locate state declaration')
+          replacement = "\n  };\n\n  populateCaptainCompanySelect();\n  populateEnlistmentCompanySelect();\n\n  const galleryData = window.galleryData || [];"
+          if "  populateCaptainCompanySelect();\n  populateEnlistmentCompanySelect();" not in s[s.find('const state ='):]:
+              s = s.replace(state_end, replacement, 1)
+          p.write_text(s, encoding='utf-8')
+          PY
+
+      - name: Fix public state fallback
         run: |
           python - <<'PY'
           from pathlib import Path
@@ -24,10 +43,10 @@ jobs:
           s = p.read_text(encoding='utf-8-sig')
           start = s.find('  function applySharedState(payload) {')
           if start < 0:
-              raise SystemExit('Could not locate applySharedState; refusing to modify app.js')
+              raise SystemExit('Could not locate applySharedState')
           end = s.find('\n  function ', start + 10)
           if end < 0:
-              raise SystemExit('Could not locate end of applySharedState; refusing to modify app.js')
+              raise SystemExit('Could not locate end of applySharedState')
           replacement = '''  function applySharedState(payload) {
     if (!payload || typeof payload !== 'object') return;
 
@@ -62,11 +81,20 @@ jobs:
       - name: Validate JavaScript
         run: node --check app.js
 
-      - name: Verify repair was applied
+      - name: Verify critical startup fix
         run: |
-          grep -q "const companiesPayload = payload.companies || payload.companyData;" app.js
-          grep -q "if (Array.isArray(payload.newsItems) && payload.newsItems.length)" app.js
-          grep -q "if (Array.isArray(payload.galleryItems) && payload.galleryItems.length)" app.js
+          python - <<'PY'
+          from pathlib import Path
+          s = Path('app.js').read_text(encoding='utf-8-sig')
+          state_pos = s.find('  const state = {')
+          calls = '  populateCaptainCompanySelect();\n  populateEnlistmentCompanySelect();'
+          call_pos = s.find(calls)
+          if state_pos < 0 or call_pos < state_pos:
+              raise SystemExit('Startup order is still broken')
+          if 'const companiesPayload = payload.companies || payload.companyData;' not in s:
+              raise SystemExit('State fallback repair missing')
+          print('Startup order and state fallback verified')
+          PY
 
       - name: Commit repair
         run: |
@@ -74,5 +102,5 @@ jobs:
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add app.js
           git diff --cached --quiet && echo 'No changes needed' && exit 0
-          git commit -m 'Fix public state fallback rendering'
+          git commit -m 'Fix live site JavaScript startup'
           git push
