@@ -213,3 +213,19 @@ def test_post_state_preserves_gallery_items_across_partial_updates():
     assert state["galleryItems"] == [
         {"src": "uploaded-image.png", "title": "Uploaded", "description": "Shared gallery image", "category": "parades"}
     ]
+
+
+def test_post_state_preserves_news_items_across_partial_updates():
+    client = new_client()
+    news_item = {
+        "id": "news-1",
+        "title": "Shared update",
+        "date": "2026-09-08",
+        "description": "Visible to every visitor",
+        "image": "image/parade.png",
+    }
+
+    assert client.post("/state", json={"newsItems": [news_item]}).status_code == 200
+    assert client.get("/state").json()["newsItems"] == [news_item]
+    assert client.post("/state", json={"founderStory": "Updated"}).status_code == 200
+    assert client.get("/state").json()["newsItems"] == [news_item]

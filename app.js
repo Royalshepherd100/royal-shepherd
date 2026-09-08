@@ -264,6 +264,7 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
       commandStructure: state.commandStructure,
       founderStory: state.founderStory,
       excoProfiles: state.excoProfiles,
+      newsItems: state.newsItems || [],
       examScores: state.examScores,
       activeExamYear: state.activeExamYear,
       galleryItems: state.galleryItems || [],
@@ -349,6 +350,7 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
       'royalShepherdDivisionMembers': 'divisionMembers',
       'royalShepherdCommandStructure': 'commandStructure',
       'royalShepherdFounderStory': 'founderStory',
+      'royalShepherdNewsItems': 'newsItems',
       'royalShepherdExamScores': 'examScores',
       'royalShepherdActiveExamYear': 'activeExamYear',
       'royalShepherdEnlistmentApplications': 'enlistmentApplications',
@@ -450,6 +452,7 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
       renderOfficerLeadership();
       renderFounderStory();
       renderGallery();
+      renderNews();
       if (window.location.pathname.includes('commander-dashboard.html')) {
         if (renderCommanderWorkspaceAccess()) {
           buildCommanderDashboard();
@@ -551,6 +554,7 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     state.divisionMembers = payload.divisionMembers || { active: [] };
     state.commandStructure = normalizeCommandStructure(payload.commandStructure || {});
     state.founderStory = payload.founderStory || defaultFounderStory;
+    state.newsItems = Array.isArray(payload.newsItems) ? payload.newsItems : [];
     state.examScores = payload.examScores || {};
     state.activeExamYear = payload.activeExamYear || String(new Date().getFullYear());
     state.galleryItems = Array.isArray(payload.galleryItems) ? payload.galleryItems : [];
@@ -684,6 +688,7 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     divisionMembers: { active: [] },
     commandStructure: normalizeCommandStructure({}),
     founderStory: defaultFounderStory,
+    newsItems: [],
     examScores: {},
     activeExamYear: String(new Date().getFullYear()),
     activeCaptainCompany: '',
@@ -692,6 +697,7 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
   };
 
   const galleryData = window.galleryData || [];
+  const newsGrid = document.getElementById('newsGrid');
 
   populateCaptainCompanySelect();
   populateEnlistmentCompanySelect();
@@ -816,6 +822,7 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     state.divisionMembers = { active: [] };
     state.commandStructure = normalizeCommandStructure({});
     state.founderStory = defaultFounderStory;
+    state.newsItems = [];
     state.examScores = {};
     state.activeExamYear = String(new Date().getFullYear());
     state.galleryItems = [];
@@ -1254,6 +1261,23 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     });
 
     applyGalleryFilter('all');
+  }
+
+  function renderNews() {
+    if (!newsGrid) return;
+    const items = (Array.isArray(state.newsItems) ? state.newsItems : [])
+      .filter((item) => item && item.title && item.description)
+      .sort((first, second) => new Date(second.date || 0) - new Date(first.date || 0));
+    newsGrid.innerHTML = items.length ? items.map((item) => `
+      <article class="news-card glass-card">
+        ${item.image ? `<img class="news-image" src="${resolveImagePath(item.image)}" alt="${escapeHtml(item.title)}" />` : ''}
+        <div class="news-card-copy">
+          <p class="news-date">${escapeHtml(item.date || '')}</p>
+          <h3>${escapeHtml(item.title)}</h3>
+          <p>${escapeHtml(item.description)}</p>
+        </div>
+      </article>
+    `).join('') : '<p class="news-empty">No latest updates have been posted yet.</p>';
   }
 
   function openGalleryPreview(item) {
@@ -1873,6 +1897,29 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     `;
     commanderDashboardGrid.appendChild(founderStoryCard);
 
+    const newsCard = document.createElement('div');
+    newsCard.className = 'dashboard-card news-admin-card';
+    newsCard.innerHTML = `
+      <h4>Latest News &amp; Updates</h4>
+      <p class="dashboard-intro">Add, edit, or delete public news, announcements, events, and important updates.</p>
+      <input type="hidden" name="news-edit-id" value="" />
+      <label><span>Title</span><input type="text" name="news-title" /></label>
+      <label><span>Date</span><input type="date" name="news-date" value="${new Date().toISOString().slice(0, 10)}" /></label>
+      <label><span>Description</span><textarea name="news-description" rows="4"></textarea></label>
+      <label><span>Optional Image Path or URL</span><input type="text" name="news-image" placeholder="image/example.jpeg or https://..." /></label>
+      <div class="dashboard-actions"><button type="button" class="btn btn-gold" data-news-action="save">Publish Update</button><button type="button" class="btn btn-secondary" data-news-action="cancel" hidden>Cancel Edit</button></div>
+      <div class="news-admin-list"></div>
+    `;
+    commanderDashboardGrid.appendChild(newsCard);
+    const newsAdminList = newsCard.querySelector('.news-admin-list');
+    const newsItems = [...(state.newsItems || [])].sort((first, second) => new Date(second.date || 0) - new Date(first.date || 0));
+    newsAdminList.innerHTML = newsItems.length ? newsItems.map((item) => `
+      <div class="news-admin-item">
+        <div><strong>${escapeHtml(item.title)}</strong><small>${escapeHtml(item.date || '')}</small></div>
+        <div class="request-actions"><button type="button" class="btn btn-outline" data-news-action="edit" data-news-id="${escapeHtml(item.id)}">Edit</button><button type="button" class="btn btn-secondary" data-news-action="delete" data-news-id="${escapeHtml(item.id)}">Delete</button></div>
+      </div>
+    `).join('') : '<p>No news updates posted yet.</p>';
+
     const requestCard = document.createElement('div');
     requestCard.className = 'dashboard-card';
     requestCard.innerHTML = `
@@ -2363,6 +2410,20 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
 
       const formData = new FormData(commanderDashboardForm);
 
+      const previousNewsItems = JSON.stringify(state.newsItems || []);
+      const newsTitle = (formData.get('news-title') || '').toString().trim();
+      const newsDate = (formData.get('news-date') || '').toString().trim();
+      const newsDescription = (formData.get('news-description') || '').toString().trim();
+      const newsImage = (formData.get('news-image') || '').toString().trim();
+      const newsEditId = (formData.get('news-edit-id') || '').toString().trim();
+      if (newsTitle && newsDate && newsDescription) {
+        const newsItem = { id: newsEditId || `news-${Date.now()}`, title: newsTitle, date: newsDate, description: newsDescription, image: newsImage };
+        const existingIndex = state.newsItems.findIndex((item) => item.id === newsItem.id);
+        if (existingIndex >= 0) state.newsItems[existingIndex] = newsItem;
+        else state.newsItems.push(newsItem);
+        renderNews();
+      }
+
       const divisionMembers = parseTextareaLines(formData.get('division-active-members'));
       const officerEntries = defaultOfficerRanks.map((rank) => ({
         rank,
@@ -2406,6 +2467,7 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
         officerEntriesEqual(officerEntries, state.commandStructure?.officers || []) &&
         founderStory === state.founderStory &&
         examYear === state.activeExamYear &&
+        JSON.stringify(state.newsItems || []) === previousNewsItems &&
         Object.keys(state.companyData).every((companyId) => {
           const expected = state.companyData[companyId] || defaultCompanyData[companyId];
           const current = companyDataValues[companyId];
@@ -2462,11 +2524,46 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
 
       saveCompanies();
       saveExamScores();
+      saveAppState(true).catch(() => {});
       renderCompanyLists();
       populateCaptainCompanySelect();
       populateEnlistmentCompanySelect();
       closeModal('commanderDashboardModal');
       showToast('Commander dashboard saved', 3000);
+    });
+
+    commanderDashboardGrid?.addEventListener('click', (event) => {
+      const actionButton = event.target.closest('[data-news-action]');
+      if (!actionButton) return;
+      const action = actionButton.dataset.newsAction;
+      const newsCard = actionButton.closest('.news-admin-card');
+      if (!newsCard) return;
+      const newsId = actionButton.dataset.newsId;
+      if (action === 'save') {
+        commanderDashboardForm?.requestSubmit();
+        return;
+      }
+      if (action === 'delete') {
+        state.newsItems = state.newsItems.filter((item) => item.id !== newsId);
+        saveAppState(true).catch(() => {});
+        renderNews();
+        buildCommanderDashboard();
+        return;
+      }
+      if (action === 'edit') {
+        const item = state.newsItems.find((entry) => entry.id === newsId);
+        if (!item) return;
+        newsCard.querySelector('[name="news-edit-id"]').value = item.id;
+        newsCard.querySelector('[name="news-title"]').value = item.title || '';
+        newsCard.querySelector('[name="news-date"]').value = item.date || '';
+        newsCard.querySelector('[name="news-description"]').value = item.description || '';
+        newsCard.querySelector('[name="news-image"]').value = item.image || '';
+        newsCard.querySelector('[data-news-action="save"]').textContent = 'Save Update';
+        newsCard.querySelector('[data-news-action="cancel"]').hidden = false;
+      }
+      if (action === 'cancel') {
+        buildCommanderDashboard();
+      }
     });
 
     excoDashboardForm?.addEventListener('submit', async (event) => {
@@ -2858,6 +2955,7 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     renderFounderStory();
     renderOfficerLeadership();
     renderGallery();
+    renderNews();
   }
 
   if (document.readyState === 'loading') {

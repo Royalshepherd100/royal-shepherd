@@ -136,6 +136,7 @@ def build_default_state() -> Dict[str, Any]:
         "commandStructure": {"officers": []},
         "founderStory": "",
         "excoProfiles": {},
+        "newsItems": [],
         "examScores": {},
         "activeExamYear": str(datetime.utcnow().year),
         "galleryItems": [],
