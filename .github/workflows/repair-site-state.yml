@@ -19,13 +19,43 @@ jobs:
         run: |
           python - <<'PY'
           from pathlib import Path
+          import re
           p = Path('app.js')
           s = p.read_text(encoding='utf-8-sig')
-          old = '''  function applySharedState(payload) {\n    if (!payload || typeof payload !== 'object') return;\n    const companies = payload.companies || payload.companyData || {};\n    state.companyData = normalizeCompanyData(companies);\n    state.captainAccounts = normalizeAccountMap(payload.captainAccounts || payload.captains || {});\n    state.commanderAccounts = normalizeAccountMap(payload.commanderAccounts || payload.commanders || {});\n    state.commanderVerificationCodes = payload.commanderVerificationCodes || {};\n    state.captainRequests = payload.captainRequests || {};\n    state.enlistmentApplications = payload.enlistmentApplications || {};\n    state.commanderSettings = payload.commanderSettings || {};\n    state.excoProfiles = { ...defaultExcoProfiles, ...(payload.excoProfiles || {}) };\n    state.divisionMembers = payload.divisionMembers || { active: [] };\n    state.commandStructure = normalizeCommandStructure(payload.commandStructure || {});\n    state.founderStory = payload.founderStory || defaultFounderStory;\n    state.newsItems = Array.isArray(payload.newsItems) ? payload.newsItems : [];\n    state.examScores = payload.examScores || {};\n    state.activeExamYear = payload.activeExamYear || String(new Date().getFullYear());\n    state.galleryItems = Array.isArray(payload.galleryItems) ? payload.galleryItems : [];\n    state.activeCaptainCompany = payload.activeCaptainCompany || '';\n    state.activeCommanderEmail = getActiveCommanderEmail();\n  }'''
-          new = '''  function applySharedState(payload) {\n    if (!payload || typeof payload !== 'object') return;\n\n    // Never let an incomplete/empty backend response erase the public website defaults.\n    const companiesPayload = payload.companies || payload.companyData;\n    if (companiesPayload && typeof companiesPayload === 'object' && Object.keys(companiesPayload).length) {\n      state.companyData = { ...JSON.parse(JSON.stringify(defaultCompanyData)), ...normalizeCompanyData(companiesPayload) };\n    } else if (!state.companyData || !Object.keys(state.companyData).length) {\n      state.companyData = JSON.parse(JSON.stringify(defaultCompanyData));\n    }\n\n    if (payload.captainAccounts || payload.captains) state.captainAccounts = normalizeAccountMap(payload.captainAccounts || payload.captains);\n    if (payload.commanderAccounts || payload.commanders) state.commanderAccounts = normalizeAccountMap(payload.commanderAccounts || payload.commanders);\n    if (payload.commanderVerificationCodes) state.commanderVerificationCodes = payload.commanderVerificationCodes;\n    if (payload.captainRequests) state.captainRequests = payload.captainRequests;\n    if (payload.enlistmentApplications) state.enlistmentApplications = payload.enlistmentApplications;\n    if (payload.commanderSettings) state.commanderSettings = payload.commanderSettings;\n    if (payload.excoProfiles) state.excoProfiles = { ...defaultExcoProfiles, ...payload.excoProfiles };\n    if (payload.divisionMembers) state.divisionMembers = payload.divisionMembers;\n    if (payload.commandStructure) state.commandStructure = normalizeCommandStructure(payload.commandStructure);\n    if (payload.founderStory) state.founderStory = payload.founderStory;\n    if (Array.isArray(payload.newsItems) && payload.newsItems.length) state.newsItems = payload.newsItems;\n    if (payload.examScores) state.examScores = payload.examScores;\n    if (payload.activeExamYear) state.activeExamYear = payload.activeExamYear;\n    if (Array.isArray(payload.galleryItems) && payload.galleryItems.length) state.galleryItems = payload.galleryItems;\n    if (payload.activeCaptainCompany) state.activeCaptainCompany = payload.activeCaptainCompany;\n    state.activeCommanderEmail = getActiveCommanderEmail();\n  }'''
-          if old not in s:
-              raise SystemExit('Expected applySharedState block not found; refusing to change app.js')
-          p.write_text(s.replace(old, new, 1), encoding='utf-8')
+          pattern = r"  function applySharedState\(payload\) \{.*?\n  \}\n\n  function"
+          replacement = '''  function applySharedState(payload) {
+    if (!payload || typeof payload !== 'object') return;
+
+    const companiesPayload = payload.companies || payload.companyData;
+    if (companiesPayload && typeof companiesPayload === 'object' && Object.keys(companiesPayload).length) {
+      state.companyData = { ...JSON.parse(JSON.stringify(defaultCompanyData)), ...normalizeCompanyData(companiesPayload) };
+    } else if (!state.companyData || !Object.keys(state.companyData).length) {
+      state.companyData = JSON.parse(JSON.stringify(defaultCompanyData));
+    }
+
+    if (payload.captainAccounts || payload.captains) state.captainAccounts = normalizeAccountMap(payload.captainAccounts || payload.captains);
+    if (payload.commanderAccounts || payload.commanders) state.commanderAccounts = normalizeAccountMap(payload.commanderAccounts || payload.commanders);
+    if (payload.commanderVerificationCodes) state.commanderVerificationCodes = payload.commanderVerificationCodes;
+    if (payload.captainRequests) state.captainRequests = payload.captainRequests;
+    if (payload.enlistmentApplications) state.enlistmentApplications = payload.enlistmentApplications;
+    if (payload.commanderSettings) state.commanderSettings = payload.commanderSettings;
+    if (payload.excoProfiles) state.excoProfiles = { ...defaultExcoProfiles, ...payload.excoProfiles };
+    if (payload.divisionMembers) state.divisionMembers = payload.divisionMembers;
+    if (payload.commandStructure) state.commandStructure = normalizeCommandStructure(payload.commandStructure);
+    if (payload.founderStory) state.founderStory = payload.founderStory;
+    if (Array.isArray(payload.newsItems) && payload.newsItems.length) state.newsItems = payload.newsItems;
+    if (payload.examScores) state.examScores = payload.examScores;
+    if (payload.activeExamYear) state.activeExamYear = payload.activeExamYear;
+    if (Array.isArray(payload.galleryItems) && payload.galleryItems.length) state.galleryItems = payload.galleryItems;
+    if (payload.activeCaptainCompany) state.activeCaptainCompany = payload.activeCaptainCompany;
+    state.activeCommanderEmail = getActiveCommanderEmail();
+  }
+
+  function'''
+          updated, count = re.subn(pattern, replacement, s, count=1, flags=re.S)
+          if count != 1:
+              raise SystemExit('Could not locate applySharedState safely; refusing to modify app.js')
+          p.write_text(updated, encoding='utf-8')
           PY
       - name: Commit repair
         run: |
