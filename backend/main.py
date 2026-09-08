@@ -1,6 +1,8 @@
 from datetime import datetime
 import json
 import os
+from copy import deepcopy
+from threading import RLock
 from pathlib import Path
 from typing import Any, Dict, List
 
@@ -95,10 +97,13 @@ def normalize_state_payload(payload: Dict[str, Any] | None, existing_state: Dict
     if not isinstance(payload, dict):
         return merged_state
 
+    full_state = payload.get("_fullState") is True
     for key, value in payload.items():
+        if key == "_fullState":
+            continue
         if key in REQUEST_COLLECTION_KEYS:
             continue
-        merged_state[key] = merge_state_value(merged_state.get(key), value)
+        merged_state[key] = deepcopy(value) if full_state else merge_state_value(merged_state.get(key), value)
 
     request_payload: Dict[str, Any] = {}
     for key in REQUEST_COLLECTION_KEYS:
@@ -184,6 +189,7 @@ def get_section_and_rank(dob_value: str) -> Dict[str, str]:
 
 
 store = load_state()
+store_lock = RLock()
 
 app = FastAPI(title="Royal Shepherd Backend", version="1.0.0")
 
@@ -211,19 +217,21 @@ def health_check():
 
 @app.get("/state")
 def get_state():
-    return store
+    with store_lock:
+        return deepcopy(store)
 
 
 @app.post("/state")
 def save_full_state(payload: Dict[str, Any]):
-    merged_state = normalize_state_payload(payload, store)
-    store.clear()
-    store.update(merged_state)
-    save_state()
-    print("[RS-BACKEND] Members before save", store.get("companies", {}))
-    print("[RS-BACKEND] Payload sent to backend", payload)
-    print("[RS-BACKEND] Backend state after save", store.get("companies", {}))
-    return store
+    with store_lock:
+        merged_state = normalize_state_payload(payload, store)
+        store.clear()
+        store.update(merged_state)
+        save_state()
+        print("[RS-BACKEND] Members before save", store.get("companies", {}))
+        print("[RS-BACKEND] Payload sent to backend", payload)
+        print("[RS-BACKEND] Backend state after save", store.get("companies", {}))
+        return deepcopy(store)
 
 
 # Provide API-prefixed aliases so frontend code can use /api/state without
