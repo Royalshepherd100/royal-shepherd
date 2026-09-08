@@ -1,0 +1,35 @@
+name: Restore working app.js
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  restore:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Restore last known full app.js
+        run: |
+          git checkout 7edcd1d57d274c6cf2393062dbf3595b6a3eacbc -- app.js
+          test $(wc -l < app.js) -gt 2500
+          node --check app.js
+
+      - name: Commit restored app.js
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git diff --quiet -- app.js; then
+            echo "app.js is already restored"
+          else
+            git add app.js
+            git commit -m "Restore full working app.js"
+            git push
+          fi
