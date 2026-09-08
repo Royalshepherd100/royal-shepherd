@@ -16,85 +16,14 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Fix startup initialization order
-        run: |
-          python - <<'PY'
-          from pathlib import Path
-          p = Path('app.js')
-          s = p.read_text(encoding='utf-8-sig')
-          old = "\n  populateCaptainCompanySelect();\n  populateEnlistmentCompanySelect();\n\n  function ensureDefaultCommanderAccount()"
-          if old in s:
-              s = s.replace(old, "\n  function ensureDefaultCommanderAccount()", 1)
-          marker = "\n  const galleryData = window.galleryData || [];"
-          state_end = "\n  };\n\n  const galleryData = window.galleryData || [];"
-          if state_end not in s:
-              raise SystemExit('Could not locate state declaration')
-          replacement = "\n  };\n\n  populateCaptainCompanySelect();\n  populateEnlistmentCompanySelect();\n\n  const galleryData = window.galleryData || [];"
-          if "  populateCaptainCompanySelect();\n  populateEnlistmentCompanySelect();" not in s[s.find('const state ='):]:
-              s = s.replace(state_end, replacement, 1)
-          p.write_text(s, encoding='utf-8')
-          PY
-
-      - name: Fix public state fallback
-        run: |
-          python - <<'PY'
-          from pathlib import Path
-          p = Path('app.js')
-          s = p.read_text(encoding='utf-8-sig')
-          start = s.find('  function applySharedState(payload) {')
-          if start < 0:
-              raise SystemExit('Could not locate applySharedState')
-          end = s.find('\n  function ', start + 10)
-          if end < 0:
-              raise SystemExit('Could not locate end of applySharedState')
-          replacement = '''  function applySharedState(payload) {
-    if (!payload || typeof payload !== 'object') return;
-
-    const companiesPayload = payload.companies || payload.companyData;
-    if (companiesPayload && typeof companiesPayload === 'object' && Object.keys(companiesPayload).length) {
-      state.companyData = { ...JSON.parse(JSON.stringify(defaultCompanyData)), ...normalizeCompanyData(companiesPayload) };
-    } else if (!state.companyData || !Object.keys(state.companyData).length) {
-      state.companyData = JSON.parse(JSON.stringify(defaultCompanyData));
-    }
-
-    if (payload.captainAccounts || payload.captains) state.captainAccounts = normalizeAccountMap(payload.captainAccounts || payload.captains);
-    if (payload.commanderAccounts || payload.commanders) state.commanderAccounts = normalizeAccountMap(payload.commanderAccounts || payload.commanders);
-    if (payload.commanderVerificationCodes) state.commanderVerificationCodes = payload.commanderVerificationCodes;
-    if (payload.captainRequests) state.captainRequests = payload.captainRequests;
-    if (payload.enlistmentApplications) state.enlistmentApplications = payload.enlistmentApplications;
-    if (payload.commanderSettings) state.commanderSettings = payload.commanderSettings;
-    if (payload.excoProfiles) state.excoProfiles = { ...defaultExcoProfiles, ...payload.excoProfiles };
-    if (payload.divisionMembers) state.divisionMembers = payload.divisionMembers;
-    if (payload.commandStructure) state.commandStructure = normalizeCommandStructure(payload.commandStructure);
-    if (payload.founderStory) state.founderStory = payload.founderStory;
-    if (Array.isArray(payload.newsItems) && payload.newsItems.length) state.newsItems = payload.newsItems;
-    if (payload.examScores) state.examScores = payload.examScores;
-    if (payload.activeExamYear) state.activeExamYear = payload.activeExamYear;
-    if (Array.isArray(payload.galleryItems) && payload.galleryItems.length) state.galleryItems = payload.galleryItems;
-    if (payload.activeCaptainCompany) state.activeCaptainCompany = payload.activeCaptainCompany;
-    state.activeCommanderEmail = getActiveCommanderEmail();
-  }
-'''
-          p.write_text(s[:start] + replacement + s[end:], encoding='utf-8')
-          PY
+      - name: Fix JavaScript startup order
+        run: python -c "from pathlib import Path; p=Path('app.js'); s=p.read_text(encoding='utf-8-sig'); old='\\n  populateCaptainCompanySelect();\\n  populateEnlistmentCompanySelect();\\n\\n  function ensureDefaultCommanderAccount()'; s=s.replace(old,'\\n  function ensureDefaultCommanderAccount()',1); marker='\\n  };\\n\\n  const galleryData = window.galleryData || [];'; replacement='\\n  };\\n\\n  populateCaptainCompanySelect();\\n  populateEnlistmentCompanySelect();\\n\\n  const galleryData = window.galleryData || [];'; state_pos=s.find('  const state = {'); call_pos=s.find('  populateCaptainCompanySelect();\\n  populateEnlistmentCompanySelect();',state_pos); s=s.replace(marker,replacement,1) if call_pos < 0 else s; p.write_text(s,encoding='utf-8')"
 
       - name: Validate JavaScript
         run: node --check app.js
 
-      - name: Verify critical startup fix
-        run: |
-          python - <<'PY'
-          from pathlib import Path
-          s = Path('app.js').read_text(encoding='utf-8-sig')
-          state_pos = s.find('  const state = {')
-          calls = '  populateCaptainCompanySelect();\n  populateEnlistmentCompanySelect();'
-          call_pos = s.find(calls)
-          if state_pos < 0 or call_pos < state_pos:
-              raise SystemExit('Startup order is still broken')
-          if 'const companiesPayload = payload.companies || payload.companyData;' not in s:
-              raise SystemExit('State fallback repair missing')
-          print('Startup order and state fallback verified')
-          PY
+      - name: Verify startup order
+        run: python -c "from pathlib import Path; s=Path('app.js').read_text(encoding='utf-8-sig'); a=s.find('  const state = {'); b=s.find('  populateCaptainCompanySelect();\\n  populateEnlistmentCompanySelect();'); assert a>=0 and b>a, 'Startup order still broken'; print('Startup order OK')"
 
       - name: Commit repair
         run: |
