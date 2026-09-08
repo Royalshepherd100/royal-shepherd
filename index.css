@@ -1022,6 +1022,12 @@ h4 {
   border-radius: 999px;
 }
 
+.gallery-grid:empty::before {
+  content: 'Gallery pictures are loading...';
+  color: var(--silver-200);
+  padding: 1rem 0;
+}
+
 .gallery-panel-header {
   display: flex;
   justify-content: space-between;
@@ -1042,6 +1048,10 @@ h4 {
 }
 
 .gallery-panel.is-collapsed .gallery-panel-inner {
+  display: block;
+}
+
+.gallery-panel.is-collapsed .gallery-grid {
   display: none;
 }
 
@@ -1091,7 +1101,8 @@ h4 {
 
 .gallery-item .gallery-thumb img {
   width: 100%;
-  height: 100%;
+  aspect-ratio: 4 / 3;
+  height: auto;
   object-fit: cover;
   display: block;
 }
