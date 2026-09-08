@@ -560,23 +560,30 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
 
   function applySharedState(payload) {
     if (!payload || typeof payload !== 'object') return;
-    const companies = payload.companies || payload.companyData || {};
-    state.companyData = normalizeCompanyData(companies);
-    state.captainAccounts = normalizeAccountMap(payload.captainAccounts || payload.captains || {});
-    state.commanderAccounts = normalizeAccountMap(payload.commanderAccounts || payload.commanders || {});
-    state.commanderVerificationCodes = payload.commanderVerificationCodes || {};
-    state.captainRequests = payload.captainRequests || {};
-    state.enlistmentApplications = payload.enlistmentApplications || {};
-    state.commanderSettings = payload.commanderSettings || {};
-    state.excoProfiles = { ...defaultExcoProfiles, ...(payload.excoProfiles || {}) };
-    state.divisionMembers = payload.divisionMembers || { active: [] };
-    state.commandStructure = normalizeCommandStructure(payload.commandStructure || {});
-    state.founderStory = payload.founderStory || defaultFounderStory;
-    state.newsItems = Array.isArray(payload.newsItems) ? payload.newsItems : [];
-    state.examScores = payload.examScores || {};
-    state.activeExamYear = payload.activeExamYear || String(new Date().getFullYear());
-    state.galleryItems = Array.isArray(payload.galleryItems) ? payload.galleryItems : [];
-    state.activeCaptainCompany = payload.activeCaptainCompany || '';
+
+    // Never let an incomplete/empty backend response erase the public website defaults.
+    const companiesPayload = payload.companies || payload.companyData;
+    if (companiesPayload && typeof companiesPayload === 'object' && Object.keys(companiesPayload).length) {
+      state.companyData = { ...JSON.parse(JSON.stringify(defaultCompanyData)), ...normalizeCompanyData(companiesPayload) };
+    } else if (!state.companyData || !Object.keys(state.companyData).length) {
+      state.companyData = JSON.parse(JSON.stringify(defaultCompanyData));
+    }
+
+    if (payload.captainAccounts || payload.captains) state.captainAccounts = normalizeAccountMap(payload.captainAccounts || payload.captains);
+    if (payload.commanderAccounts || payload.commanders) state.commanderAccounts = normalizeAccountMap(payload.commanderAccounts || payload.commanders);
+    if (payload.commanderVerificationCodes) state.commanderVerificationCodes = payload.commanderVerificationCodes;
+    if (payload.captainRequests) state.captainRequests = payload.captainRequests;
+    if (payload.enlistmentApplications) state.enlistmentApplications = payload.enlistmentApplications;
+    if (payload.commanderSettings) state.commanderSettings = payload.commanderSettings;
+    if (payload.excoProfiles) state.excoProfiles = { ...defaultExcoProfiles, ...payload.excoProfiles };
+    if (payload.divisionMembers) state.divisionMembers = payload.divisionMembers;
+    if (payload.commandStructure) state.commandStructure = normalizeCommandStructure(payload.commandStructure);
+    if (payload.founderStory) state.founderStory = payload.founderStory;
+    if (Array.isArray(payload.newsItems) && payload.newsItems.length) state.newsItems = payload.newsItems;
+    if (payload.examScores) state.examScores = payload.examScores;
+    if (payload.activeExamYear) state.activeExamYear = payload.activeExamYear;
+    if (Array.isArray(payload.galleryItems) && payload.galleryItems.length) state.galleryItems = payload.galleryItems;
+    if (payload.activeCaptainCompany) state.activeCaptainCompany = payload.activeCaptainCompany;
     state.activeCommanderEmail = getActiveCommanderEmail();
   }
 
