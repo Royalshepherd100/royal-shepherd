@@ -1,3 +1,1 @@
-Royal Shepherd GitHub Pages deployment refresh trigger.
-Gallery live-site deployment refresh: 2026-09-08.
-No application files or existing site data were changed by this trigger.
+Public state repair trigger — 2026-09-08 16:34
