@@ -1,0 +1,34 @@
+name: Refresh frontend asset cache
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Bump app.js cache version only
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8-sig')
+          old = '<script defer src="app.js?v=15"></script>'
+          new = '<script defer src="app.js?v=16"></script>'
+          if old not in s:
+              raise SystemExit('Expected app.js v15 reference not found; refusing to change index.html')
+          p.write_text(s.replace(old, new, 1), encoding='utf-8')
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          git commit -m 'Refresh live app.js asset cache' || exit 0
+          git push
