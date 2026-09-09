@@ -499,11 +499,18 @@
               <div class="gallery-panel-header">
                 <div class="gallery-filters" role="toolbar" aria-label="Gallery filters">
                   <button class="filter-btn active" data-filter="all">All</button>
-                  <button class="filter-btn" data-filter="parades">Parades</button>
-                  <button class="filter-btn" data-filter="band">Band Corps</button>
-                  <button class="filter-btn" data-filter="rehearsals">Rehearsals</button>
+                  <button class="filter-btn" data-filter="parades">PARADES PICS</button>
+                  <button class="filter-btn" data-filter="band">BAND PICS</button>
+                  <button class="filter-btn" data-filter="rehearsals">REHEARSAL PICS</button>
                   <button class="filter-btn" data-filter="moments-enjoyment">Moments of Enjoyment</button>
+                  <button class="filter-btn" data-filter="exams">EXAMS PICS</button>
+                  <button class="filter-btn" data-filter="trophies">TROPHIES CABINET</button>
+                  <button class="filter-btn" data-filter="member-catalogue">MEMBER CATALOGUE</button>
                 </div>
+                <label class="gallery-search">
+                  <span class="sr-only">Find a gallery picture</span>
+                  <input type="search" id="gallerySearch" placeholder="Find a picture or member" autocomplete="off" />
+                </label>
                 <button type="button" class="gallery-toggle btn btn-outline" aria-expanded="false">Open Gallery</button>
               </div>
 
@@ -728,17 +735,18 @@
       <div class="modal-backdrop" data-close="true"></div>
       <div class="modal-content glass-card gallery-preview-modal" role="dialog" aria-modal="true" aria-labelledby="galleryPreviewTitle">
         <button class="modal-close" id="galleryClose" aria-label="Close gallery preview">&times;</button>
-        <img id="galleryPreviewImage" class="gallery-preview-image" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" alt="Gallery preview" />
+        <img id="galleryPreviewImage" class="gallery-preview-image" alt="Gallery preview" hidden />
         <div class="gallery-preview-copy">
           <span class="gallery-preview-category" id="galleryPreviewCategory"></span>
           <h3 id="galleryPreviewTitle">Gallery Preview</h3>
           <p id="galleryPreviewDescription">Select a photo from the gallery to view it larger here.</p>
+          <a id="galleryPreviewDownload" class="btn btn-gold" href="#" download>Download Picture</a>
         </div>
       </div>
     </div>
 
-    <script defer src="gallery-data.js?v=8"></script>
-    <script defer src="app.js?v=14"></script>
+    <script defer src="gallery-data.js?v=9"></script>
+    <script defer src="app.js?v=15"></script>
     <script type="application/ld+json">
       
       {
