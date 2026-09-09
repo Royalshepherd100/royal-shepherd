@@ -97,27 +97,41 @@
     { key: 'training-officer-capt-segun', label: 'Training Officer' }
   ];
 
-  const defaultOfficerRanks = [
-    'Divisional Commander',
-    'Company Captain',
-    'Organising Secretary',
-    'Assistant Organising Secretary',
-    'PRO'
-  ];
+// Cache DOM elements
+const captainModal = document.getElementById('captainModal');
+const captainForm = document.getElementById('captainForm');
+const captainEmail = document.getElementById('captainEmail');
+const captainPassword = document.getElementById('captainPassword');
+const captainCompany = document.getElementById('captainCompany');
+const captainNotice = document.getElementById('captainNotice');
+const captainAuthTabs = document.querySelectorAll('.captain-auth-tab');
+const captainTriggers = document.querySelectorAll('.captain-trigger');
+const captainClose = document.getElementById('captainClose');
 
-  const companySectionDefinitions = [
-    { key: 'anchor', label: 'Anchor Section' },
-    { key: 'junior', label: 'Junior Section' },
-    { key: 'intermediate', label: 'Intermediate Section' },
-    { key: 'senior', label: 'Senior Section' },
-    { key: 'officer', label: 'Officer Section' }
-  ];
+const commanderModal = document.getElementById('commanderModal');
+const commanderForm = document.getElementById('commanderForm');
+const commanderEmail = document.getElementById('commanderEmail');
+const commanderPassword = document.getElementById('commanderPassword');
+const commanderNotice = document.getElementById('commanderNotice');
+const commanderAuthTabs = document.querySelectorAll('.commander-auth-tab');
+const commanderTriggers = document.querySelectorAll('.commander-trigger');
+const commanderClose = document.getElementById('commanderClose');
 
-  const defaultFounderStory = `Prophet Samuel Kayode Abiara, fondly called Pa SK Abiara, is the revered founder of CAC Agbala Itura Worldwide and the former General Evangelist of CAC Worldwide. He is one of the spiritual pillars of Royal Shepherd and a great servant of God whose ministry has touched many lives through evangelism, discipline, and unwavering faith.
+const dashboardModal = document.getElementById('dashboardModal');
+const dashboardForm = document.getElementById('dashboardForm');
+const dashboardGrid = document.querySelector('.dashboard-grid');
+const dashboardClose = document.getElementById('dashboardClose');
 
-CAC Agbala Itura stands as a spiritual home of comfort, holiness, and divine instruction, and it remains a landmark place of worship and impact in the life of the church and the nation.
+const commanderDashboardModal = document.getElementById('commanderDashboardModal');
+const commanderDashboardForm = document.getElementById('commanderDashboardForm');
+const commanderDashboardGrid = document.querySelector('.commander-dashboard-grid');
+const commanderDashboardClose = document.getElementById('commanderDashboardClose');
+const openExcoDashboardBtn = document.getElementById('openExcoDashboardBtn');
 
-Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Obokun Local Government Area, Osun State. He was raised with humility and diligence, and his journey into ministry began through divine calling and faithful service. His life continues to inspire Royal Shepherd members to live in holiness, obedience, and service to God and humanity.`;
+const excoDashboardModal = document.getElementById('excoDashboardModal');
+const excoDashboardForm = document.getElementById('excoDashboardForm');
+const excoDashboardGrid = document.querySelector('.exco-dashboard-grid');
+const excoDashboardClose = document.getElementById('excoDashboardClose');
 
   const defaultExcoProfiles = {
     'founder-cac-agbala-itura-worldwide': { name: 'Prophet (Dr) Samuel Kayode Abiara', email: '', phone: '', bio: 'Founder CAC Agbala-Itura W/W.' },
@@ -207,30 +221,15 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     }
   ];
 
-  const leadershipTitleOverrides = {
-    'founder-cac-agbala-itura-worldwide': 'Founder CAC Agbala-Itura W/W',
-    'pastor-s-o-oladele': 'CAC President W/W',
-    'pastor-e-olusoko': 'Akiling Region Superintendent',
-    'bishop-kehinde-abiara': 'Agbala-Itura DCC Superintendent Lagos',
-    'rs-major-general-e-b-adegbite': 'National Organizing Secretary',
-    'rs-brigadier-general-s-oludahunsi': 'Assistant National Organizing Secretary',
-    'rs-major-general-j-p-akinyemi': 'Akiling Region Commander',
-    'rs-colonel-o-olowe': 'Akiling Region Deputy Commander',
-    'rs-lt-colonel-o-olasupo': 'Akiling Region Organizing Secretary',
-    'rs-captain-s-a-ilori': 'Akiling Region Training Officer 1 / Acting Divisional Commander'
-  };
+const symbolCards = document.querySelectorAll('.symbol-card');
+const enlistmentForm = document.getElementById('enlistmentForm');
+const formSuccess = document.getElementById('formSuccess');
+const fillAnotherBtn = document.getElementById('fillAnother');
+const enlistmentCompanySelect = document.getElementById('enlistmentCompany');
 
-  const defaultCompanyData = {
-    1: { name: 'Oke Odo - 12th Akiling Regional Coy', anchor: [], junior: [], intermediate: [], senior: [], officer: [], active: [], inactive: [], officers: [] },
-    2: { name: 'Ikorodu - 15th Akiling Regional Coy', anchor: [], junior: [], intermediate: [], senior: [], officer: [], active: [], inactive: [], officers: [] },
-    3: { name: 'Iyesi - 17th Akiling Regional Coy', anchor: [], junior: [], intermediate: [], senior: [], officer: [], active: [], inactive: [], officers: [] },
-    4: { name: 'Sango - 28th Akiling Regional Coy', anchor: [], junior: [], intermediate: [], senior: [], officer: [], active: [], inactive: [], officers: [] },
-    5: { name: 'Command - 31st Akiling Regional Coy', anchor: [], junior: [], intermediate: [], senior: [], officer: [], active: [], inactive: [], officers: [] },
-    6: { name: 'Ipaja - 38th Akiling Regional Coy', anchor: [], junior: [], intermediate: [], senior: [], officer: [], active: [], inactive: [], officers: [] },
-    7: { name: 'Ijaba - 44th Akiling Regional Coy', anchor: [], junior: [], intermediate: [], senior: [], officer: [], active: [], inactive: [], officers: [] },
-    8: { name: 'Ijoko - 48th Akiling Regional Coy', anchor: [], junior: [], intermediate: [], senior: [], officer: [], active: [], inactive: [], officers: [] },
-    9: { name: 'Ikeja - 49th Akiling Regional Coy', anchor: [], junior: [], intermediate: [], senior: [], officer: [], active: [], inactive: [], officers: [] }
-  };
+const newsGrid = document.getElementById('newsGrid');
+const menuToggle = document.getElementById('menuToggle');
+const navMenu = document.getElementById('navMenu');
 
   // Backend-backed storage helpers
   let __rsBackendCache = null;
@@ -239,89 +238,120 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
   let __rsPendingSaveCount = 0;
   let __rsLocalRevision = 0;
 
-  function isBackendAvailableSync() {
-    try {
-      return Boolean(getBackendBaseUrl());
-    } catch {
-      return false;
-    }
-  }
+// ============================================================================
+// UTILITY FUNCTIONS
+// ============================================================================
 
-  function getAppStatePayload() {
-    return {
-      companies: state.companyData,
-      captainAccounts: state.captainAccounts,
-      commanderAccounts: state.commanderAccounts,
-      commanderVerificationCodes: state.commanderVerificationCodes,
-      captainRequests: state.captainRequests,
-      enlistmentApplications: state.enlistmentApplications,
-      divisionMembers: state.divisionMembers,
-      commandStructure: state.commandStructure,
-      founderStory: state.founderStory,
-      excoProfiles: state.excoProfiles,
-      newsItems: state.newsItems || [],
-      examScores: state.examScores,
-      activeExamYear: state.activeExamYear,
-      galleryItems: state.galleryItems || [],
-      commanderSettings: state.commanderSettings,
-      activeCaptainCompany: state.activeCaptainCompany,
-      activeRole: getActiveRole(),
-      _fullState: true
+function resizeImageFileToDataUrl(file, outputSize = 512) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const image = new Image();
+      const canvas = document.createElement('canvas');
+      const context = canvas.getContext('2d');
+      image.onload = () => {
+        const maxSide = Math.max(image.width, image.height);
+        canvas.width = (image.width / maxSide) * outputSize;
+        canvas.height = (image.height / maxSide) * outputSize;
+        context.drawImage(image, 0, 0, canvas.width, canvas.height);
+        const mimeType = file.type === 'image/png' ? 'image/png' : 'image/jpeg';
+        const dataUrl = canvas.toDataURL(mimeType, 0.85);
+        resolve(dataUrl);
+      };
+      image.onerror = () => reject(new Error('Unable to load image'));
+      image.src = reader.result;
     };
-  }
+    reader.onerror = () => reject(new Error('Unable to read file'));
+    reader.readAsDataURL(file);
+  });
+}
 
-  async function apiGetState() {
-    return requestJson('/state', { method: 'GET' });
+function updateExcoProfilePreview(card, imageUrl) {
+  const preview = card.querySelector('.exco-photo-preview');
+  const deleteBtn = card.querySelector('.delete-exco-photo');
+  if (preview) {
+    preview.src = imageUrl;
+    preview.style.display = 'block';
   }
-
-  async function apiSaveState(payload) {
-    return requestJson('/state', { method: 'POST', body: JSON.stringify(payload) });
+  if (deleteBtn) {
+    deleteBtn.style.display = 'block';
+    card.dataset.photoRemovalPending = 'true';
   }
+}
 
-  async function apiApproveApplication(applicationId) {
-    return requestJson(`/applications/${applicationId}/approve`, { method: 'POST' });
-  }
+function resetExcoPhotoCard(card) {
+  const fileInput = card.querySelector('input[type="file"]');
+  const preview = card.querySelector('.exco-photo-preview');
+  const deleteBtn = card.querySelector('.delete-exco-photo');
+  if (fileInput) fileInput.value = '';
+  if (preview) preview.style.display = 'none';
+  if (deleteBtn) deleteBtn.style.display = 'none';
+}
 
-  async function apiDenyApplication(applicationId) {
-    return requestJson(`/applications/${applicationId}/deny`, { method: 'POST' });
-  }
+function clearPhotoRemovalFlag(card) {
+  delete card.dataset.photoRemovalPending;
+}
 
-  const rsBackend = {
-    getState: apiGetState,
-    saveState: apiSaveState,
-    approveApplication: apiApproveApplication,
-    denyApplication: apiDenyApplication
+function saveDivisionMembers() {
+  // Implementation for saving division members
+  // This would sync with your backend
+}
+
+function saveCommandStructure() {
+  // Implementation for saving command structure
+}
+
+function saveFounderStory() {
+  // Implementation for saving founder story
+}
+
+function escapeHtml(value) {
+  const map = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#039;',
   };
-  window.RoyalShepherdAPI = window.RoyalShepherdAPI || rsBackend;
+  return String(value).replace(/[&<>"']/g, (m) => map[m]);
+}
 
-  async function loadState() {
-    try {
-      const payload = await rsBackend.getState();
-      if (payload) {
-        __rsBackendCache = payload;
-        return payload;
-      }
-    } catch (err) {
-      console.warn('loadState failed', err);
-    }
-    return null;
-  }
+function showToast(message) {
+  // Simple toast notification (implement as needed)
+  console.log('Toast:', message);
+}
 
-  async function loadStateWithRetry(attempts = 3, delayMs = 500) {
-    let lastError = null;
-    for (let attempt = 1; attempt <= attempts; attempt += 1) {
-      const payload = await loadState();
-      if (payload) {
-        return payload;
-      }
-      lastError = `loadState attempt ${attempt} failed`;
-      if (attempt < attempts) {
-        await new Promise((resolve) => setTimeout(resolve, delayMs));
-      }
-    }
-    console.warn('loadStateWithRetry: backend state unavailable after retries', lastError);
-    return null;
+function showBackendStatus(message, type = 'warning') {
+  console.log(`Backend Status [${type}]:`, message);
+}
+
+function saveExamScores() {
+  // Implementation for saving exam scores
+}
+
+function saveEnlistmentApplications() {
+  // Implementation for saving enlistment applications
+}
+
+// ============================================================================
+// MODAL MANAGEMENT
+// ============================================================================
+
+function openModal(id) {
+  const modal = document.getElementById(id);
+  if (modal) {
+    modal.setAttribute('aria-hidden', 'false');
+    modal.style.display = 'flex';
   }
+}
+
+function closeModal(id) {
+  const modal = document.getElementById(id);
+  if (modal) {
+    modal.setAttribute('aria-hidden', 'true');
+    modal.style.display = 'none';
+  }
+}
 
   async function saveState(payload) {
     const body = JSON.parse(JSON.stringify(payload || getAppStatePayload()));
@@ -352,46 +382,14 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     return queuedSave;
   }
 
-  function mapStorageKeyToPayloadProp(key) {
-    const map = {
-      'royalShepherdCompanies': 'companies',
-      'royalShepherdCaptains': 'captainAccounts',
-      'royalShepherdCaptainRequests': 'captainRequests',
-      'royalShepherdCommanderAccounts': 'commanderAccounts',
-      'royalShepherdCommanderVerificationCodes': 'commanderVerificationCodes',
-      'royalShepherdExcoProfiles': 'excoProfiles',
-      'royalShepherdDivisionMembers': 'divisionMembers',
-      'royalShepherdCommandStructure': 'commandStructure',
-      'royalShepherdFounderStory': 'founderStory',
-      'royalShepherdNewsItems': 'newsItems',
-      'royalShepherdExamScores': 'examScores',
-      'royalShepherdActiveExamYear': 'activeExamYear',
-      'royalShepherdEnlistmentApplications': 'enlistmentApplications',
-      'royalShepherdGalleryItems': 'galleryItems',
-      'royalShepherdActiveRole': 'activeRole',
-      'royalShepherdActiveCaptainCompany': 'activeCaptainCompany'
-    };
-    return map[key] || null;
-  }
+// ============================================================================
+// NAVIGATION AND UI BINDINGS
+// ============================================================================
 
-  function getStoredItem(key) {
-    try {
-      if (__rsBackendCache && typeof __rsBackendCache === 'object') {
-        const prop = mapStorageKeyToPayloadProp(key);
-        if (prop && (__rsBackendCache[prop] !== undefined)) {
-          const val = __rsBackendCache[prop];
-          return (typeof val === 'string') ? String(val) : JSON.stringify(val);
-        }
-        if (__rsBackendCache[key] !== undefined) {
-          const v = __rsBackendCache[key];
-          return (typeof v === 'string') ? v : JSON.stringify(v);
-        }
-      }
-    } catch (e) {
-      console.warn('getStoredItem backend read failed', e);
-    }
-    return null;
-  }
+function bindMobileMenu() {
+  if (!menuToggle || !navMenu) return;
+  if (menuToggle.dataset.mobileMenuBound === 'true') return;
+  menuToggle.dataset.mobileMenuBound = 'true';
 
   function setStoredItem(key, value) {
     try {
@@ -711,446 +709,71 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     galleryItems: []
   };
 
-  const galleryData = window.galleryData || [];
-  const newsGrid = document.getElementById('newsGrid');
-  const defaultNewsItems = [
-    {
-      id: 're-handbook',
-      title: 'RE Handbook',
-      date: '2026-09-08',
-      description: 'Read the Royal Shepherd RE Handbook.',
-      image: '',
-      link: 'RS New Constitution Book.pdf',
-      downloadName: 'RE-Handbook.pdf'
-    },
-    {
-      id: 'rs-constitution',
-      title: 'RS New Constitution',
-      date: '2026-09-08',
-      description: 'Read the Royal Shepherd New Constitution.',
-      image: '',
-      link: 'RS New Constitution Book.pdf',
-      downloadName: 'RS-New-Constitution.pdf'
-    }
-  ];
-  let pendingGalleryFiles = [];
+  menuToggle.addEventListener('click', (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    const isOpen = menuToggle.getAttribute('aria-expanded') === 'true';
+    setOpen(!isOpen);
+  }, { passive: false });
 
-  populateCaptainCompanySelect();
-  populateEnlistmentCompanySelect();
+  navMenu.querySelectorAll('a').forEach((link) => {
+    link.addEventListener('click', () => setOpen(false));
+  });
 
-  function ensureDefaultCommanderAccount() {
-    const defaultEmail = 'commander@royalshepherd.com';
-    const defaultPassword = 'royalshepherd2026';
-
-    if (!state.commanderAccounts[defaultEmail]) {
-      state.commanderAccounts[defaultEmail] = { password: defaultPassword, verified: true, email: defaultEmail };
-      return true;
-    }
-    return false;
-  }
-
-  function ensureLegacyCaptainAccounts() {
-    const legacyEmails = ['captain@royalshepherd.com', 'admin@royalshepherd.com'];
-    let changed = false;
-    legacyEmails.forEach((email) => {
-      if (!state.captainAccounts[email]) {
-        state.captainAccounts[email] = { password: 'royalshepherd2026', companyId: '1', email, verified: true };
-        changed = true;
+  document.addEventListener('click', (event) => {
+    if (!navMenu.classList.contains('mobile-open')) return;
+    if (navMenu.contains(event.target) || menuToggle.contains(event.target)) return;
+    setOpen(false);
+  });
+}
+function bindSmoothScrolling() {
+  document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+    anchor.addEventListener('click', (e) => {
+      const href = anchor.getAttribute('href');
+      if (href === '#') return;
+      e.preventDefault();
+      const target = document.querySelector(href);
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth' });
       }
     });
-    return changed;
-  }
+  });
+}
 
-  function getCompanyDisplayName(companyId, company = {}) {
-    const name = String(company?.name || '').trim();
-    return name || defaultCompanyData[companyId]?.name || `Company ${companyId}`;
-  }
-
-  function populateCaptainCompanySelect() {
-    if (!captainCompany) return;
-
-    const currentValue = captainCompany.value || '';
-    const companyEntries = Object.entries(state.companyData || {}).sort(([a], [b]) => Number(a) - Number(b));
-
-    captainCompany.innerHTML = '<option value="">Select Company</option>' + companyEntries.map(([companyId, company]) => {
-      const label = getCompanyDisplayName(companyId, company);
-      return `<option value="${companyId}">${escapeHtml(label)}</option>`;
-    }).join('');
-
-    if (currentValue && state.companyData[currentValue]) {
-      captainCompany.value = String(currentValue);
-    }
-  }
-
-  function populateEnlistmentCompanySelect() {
-    const enlistmentCompanySelect = document.getElementById('enlistmentCompany');
-    if (!enlistmentCompanySelect) return;
-
-    const companyEntries = Object.entries(state.companyData || {}).sort(([a], [b]) => Number(a) - Number(b));
-    enlistmentCompanySelect.innerHTML = '<option value="">Select Company</option>' + companyEntries.map(([companyId, company]) => {
-      const label = getCompanyDisplayName(companyId, company);
-      return `<option value="${companyId}">${escapeHtml(label)}</option>`;
-    }).join('');
-  }
-
-  function updateCaptainCompanyMode(mode = 'login') {
-    if (!captainCompany) return;
-    const registerMode = mode === 'register';
-    captainCompany.required = registerMode;
-    if (!registerMode) {
-      captainCompany.value = '';
-    }
-  }
-
-  function normalizeCompanyData(rawData) {
-    const parsed = {};
-    Object.entries(rawData || {}).forEach(([companyId, company]) => {
-      if (company && typeof company === 'object') {
-        const sectionMap = companySectionDefinitions.reduce((accumulator, section) => {
-          accumulator[section.key] = Array.isArray(company[section.key]) ? company[section.key] : [];
-          return accumulator;
-        }, {});
-
-        const anchor = sectionMap.anchor.length ? sectionMap.anchor : (Array.isArray(company.active) ? company.active : []);
-        const junior = sectionMap.junior.length ? sectionMap.junior : (Array.isArray(company.inactive) ? company.inactive : []);
-        const officer = sectionMap.officer.length ? sectionMap.officer : (Array.isArray(company.officers) ? company.officers : []);
-
-        parsed[companyId] = {
-          name: getCompanyDisplayName(companyId, company),
-          anchor,
-          junior,
-          intermediate: sectionMap.intermediate,
-          senior: sectionMap.senior,
-          officer,
-          active: anchor,
-          inactive: junior,
-          officers: officer
-        };
-      }
+function bindOpeners() {
+  captainTriggers.forEach((trigger) => {
+    trigger.addEventListener('click', (e) => {
+      e.preventDefault();
+      openModal('captainModal');
     });
-    return parsed;
-  }
-
-  async function bootstrapCompanyData() {
-    let backendState = await loadStateWithRetry(3, 400);
-    if (backendState) {
-      __rsBackendCache = backendState;
-      applySharedState(backendState);
-      window.__royalShepherdState = state;
-      return;
-    }
-
-    const configuredUrl = getBackendBaseUrl();
-    if (!configuredUrl) {
-      showBackendStatus('Backend sync is disabled. Set window.RS_BACKEND_URL to your deployed backend URL.');
-    } else {
-      showBackendStatus(`Backend unavailable at ${configuredUrl}. Using default in-memory state.`, 'error');
-    }
-
-    state.companyData = JSON.parse(JSON.stringify(defaultCompanyData));
-    state.captainAccounts = {};
-    state.commanderAccounts = {};
-    state.commanderVerificationCodes = {};
-    state.captainRequests = {};
-    state.enlistmentApplications = {};
-    state.commanderSettings = {};
-    state.excoProfiles = { ...defaultExcoProfiles };
-    state.divisionMembers = { active: [] };
-    state.commandStructure = normalizeCommandStructure({});
-    state.founderStory = defaultFounderStory;
-    state.newsItems = [];
-    state.examScores = {};
-    state.activeExamYear = String(new Date().getFullYear());
-    state.galleryItems = [];
-
-    if (configuredUrl) {
-      setTimeout(() => {
-        refreshSharedState().catch(() => {});
-      }, 1000);
-    }
-  }
-
-  async function saveCompanies() {
-    await saveAppState(true);
-  }
-
-  function saveCaptains() {
-    saveAppState(true).catch(() => {});
-  }
-
-  function saveCaptainRequests() {
-    saveAppState(true).catch(() => {});
-  }
-
-  function saveCommanderAccounts() {
-    saveAppState(true).catch(() => {});
-  }
-
-  function saveCommanderVerificationCodes() {
-    saveAppState(true).catch(() => {});
-  }
-
-  let excoAutoSaveTimer = null;
-  const EXCO_AUTO_SAVE_DELAY_MS = 1200;
-
-  function saveExcoProfiles() {
-    saveAppState(true).catch(() => {});
-  }
-
-  function saveExcoFormChanges(showToastOnSave = false) {
-    if (!excoDashboardForm || !excoDashboardGrid) return;
-
-    const formData = new FormData(excoDashboardForm);
-    for (const role of excoRoleDefinitions) {
-      const card = excoDashboardGrid.querySelector(`.dashboard-card[data-role="${role.key}"]`);
-      if (!card) continue;
-
-      const name = (formData.get(`${role.key}-name`) || '').toString().trim();
-      const email = (formData.get(`${role.key}-email`) || '').toString().trim();
-      const phone = (formData.get(`${role.key}-phone`) || '').toString().trim();
-      const bio = (formData.get(`${role.key}-bio`) || '').toString().trim();
-      const tempPhoto = card.dataset.tempPhoto;
-      const photoRemoved = card.dataset.photoRemoved === 'true';
-
-      const profile = { role: role.label, name, email, phone, bio };
-
-      if (tempPhoto) {
-        profile.photo = tempPhoto;
-      } else if (!photoRemoved && state.excoProfiles[role.key]?.photo) {
-        profile.photo = state.excoProfiles[role.key].photo;
-      }
-
-      if (name || email || phone || bio || profile.photo) {
-        state.excoProfiles[role.key] = profile;
-      } else {
-        delete state.excoProfiles[role.key];
-      }
-    }
-
-    saveExcoProfiles();
-    renderOfficerLeadership();
-
-    if (showToastOnSave) {
-      showToast('EXCO profile updates saved');
-    }
-  }
-
-  function scheduleExcoAutoSave() {
-    if (excoAutoSaveTimer) {
-      window.clearTimeout(excoAutoSaveTimer);
-    }
-
-    excoAutoSaveTimer = window.setTimeout(() => {
-      excoAutoSaveTimer = null;
-      saveExcoFormChanges(true);
-    }, EXCO_AUTO_SAVE_DELAY_MS);
-  }
-
-  function resizeImageFileToDataUrl(file, outputSize = 512) {
-    return new Promise((resolve, reject) => {
-      if (!file || !file.type.startsWith('image/')) {
-        return reject(new Error('Invalid image file'));
-      }
-
-      const reader = new FileReader();
-      reader.onload = () => {
-        const image = new Image();
-        image.onload = () => {
-          const canvas = document.createElement('canvas');
-          canvas.width = outputSize;
-          canvas.height = outputSize;
-          const context = canvas.getContext('2d');
-          if (!context) {
-            return reject(new Error('Canvas context unavailable'));
-          }
-
-          const scale = Math.max(outputSize / image.width, outputSize / image.height);
-          const width = image.width * scale;
-          const height = image.height * scale;
-          const x = (outputSize - width) / 2;
-          const y = (outputSize - height) / 2;
-
-          context.clearRect(0, 0, outputSize, outputSize);
-          context.drawImage(image, x, y, width, height);
-          const mimeType = file.type === 'image/png' ? 'image/png' : 'image/jpeg';
-          const dataUrl = canvas.toDataURL(mimeType, 0.85);
-          resolve(dataUrl);
-        };
-        image.onerror = () => reject(new Error('Unable to load image'));
-        image.src = reader.result;
-      };
-      reader.onerror = () => reject(new Error('Unable to read file'));
-      reader.readAsDataURL(file);
+  });
+  commanderTriggers.forEach((trigger) => {
+    trigger.addEventListener('click', (e) => {
+      e.preventDefault();
+      openModal('commanderModal');
     });
-  }
+  });
+}
 
-  function updateExcoProfilePreview(card, imageUrl) {
-    const preview = card.querySelector('.profile-photo-preview');
-    if (!preview) return;
-
-    const img = preview.querySelector('img');
-    const placeholder = preview.querySelector('.profile-photo-placeholder');
-
-    if (imageUrl) {
-      if (img) {
-        img.src = imageUrl;
-      } else {
-        preview.innerHTML = `<img src="${escapeHtml(imageUrl)}" alt="Profile photo preview" />`;
-      }
-      if (placeholder) placeholder.style.display = 'none';
-    } else {
-      if (img) img.remove();
-      if (placeholder) placeholder.style.display = 'flex';
-      preview.innerHTML = preview.innerHTML || '<div class="profile-photo-placeholder"><span>Preview</span></div>';
-    }
-  }
-
-  function resetExcoPhotoCard(card) {
-    const removeButton = card.querySelector('.exco-remove-photo');
-    const fileInput = card.querySelector('.exco-photo-input');
-    if (fileInput) fileInput.value = '';
-    if (removeButton) removeButton.hidden = true;
-    card.dataset.tempPhoto = '';
-    card.dataset.photoRemoved = 'true';
-    updateExcoProfilePreview(card, '');
-  }
-
-  function clearPhotoRemovalFlag(card) {
-    if (!card) return;
-    card.dataset.photoRemoved = 'false';
-  }
-
-  function saveDivisionMembers() {
-    saveAppState(true).catch(() => {});
-  }
-
-  function saveCommandStructure() {
-    saveAppState(true).catch(() => {});
-  }
-
-  function saveFounderStory() {
-    saveAppState(true).catch(() => {});
-  }
-
-  function escapeHtml(value) {
-    return String(value || '')
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
-  }
-
-  function showToast(message) {
-    let container = document.getElementById('toastContainer');
-    if (!container) {
-      container = document.createElement('div');
-      container.id = 'toastContainer';
-      container.style.position = 'fixed';
-      container.style.bottom = '2rem';
-      container.style.right = '2rem';
-      container.style.zIndex = '99999';
-      container.style.display = 'flex';
-      container.style.flexDirection = 'column';
-      container.style.gap = '0.5rem';
-      document.body.appendChild(container);
-    }
-
-    const toast = document.createElement('div');
-    toast.className = 'toast-notification';
-    toast.innerHTML = `<i class="fa-solid fa-circle-check"></i> <span>${escapeHtml(message)}</span>`;
-    container.appendChild(toast);
-
-    // Trigger reflow
-    toast.offsetHeight;
-    toast.classList.add('show');
-
-    setTimeout(() => {
-      toast.classList.remove('show');
-      toast.classList.add('hide');
-      toast.addEventListener('transitionend', () => {
-        toast.remove();
-      }, { once: true });
-      // Fallback
-      setTimeout(() => {
-        toast.remove();
-      }, 500);
-    }, 3000);
-
-    return toast;
-  }
-
-  function showBackendStatus(message, type = 'warning') {
-    // Intentionally hidden from the public UI while backend checks continue internally.
-    return null;
-  }
-
-  function saveExamScores() {
-    saveAppState(true).catch(() => {});
-  }
-
-  function saveEnlistmentApplications() {
-    saveAppState(true).catch(() => {});
-  }
-
-  function openModal(id) {
-    const modalElement = document.getElementById(id);
-    if (!modalElement) return;
-    modalElement.classList.add('active');
-    modalElement.setAttribute('aria-hidden', 'false');
-  }
-
-  function closeModal(id) {
-    const modalElement = document.getElementById(id);
-    if (!modalElement) return;
-    modalElement.classList.remove('active');
-    modalElement.setAttribute('aria-hidden', 'true');
-  }
-
-  function closeAllModals() {
-    closeModal('symbolModal');
-    closeModal('captainModal');
-    closeModal('dashboardModal');
-    closeModal('commanderModal');
-    closeModal('commanderDashboardModal');
-    closeModal('excoDashboardModal');
-    closeModal('galleryModal');
-  }
-
-  function bindMobileMenu() {
-    if (!menuToggle || !navMenu) return;
-
-    menuToggle.addEventListener('click', (event) => {
-      event.preventDefault();
-      event.stopPropagation();
-      const isOpen = navMenu.classList.toggle('open');
-      menuToggle.classList.toggle('open', isOpen);
-      menuToggle.setAttribute('aria-expanded', String(isOpen));
+function bindAuthTabs() {
+  captainAuthTabs.forEach((tab) => {
+    tab.addEventListener('click', () => {
+      const mode = tab.dataset.mode;
+      captainAuthTabs.forEach((t) => t.classList.remove('active'));
+      tab.classList.add('active');
+      captainForm.dataset.mode = mode;
     });
-  }
+  });
 
-  function bindSmoothScrolling() {
-    navLinks.forEach((link) => {
-      link.addEventListener('click', (event) => {
-        const targetId = link.getAttribute('href');
-        if (!targetId || !targetId.startsWith('#')) return;
-
-        event.preventDefault();
-        const targetSection = document.querySelector(targetId);
-        if (targetSection) {
-          targetSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-
-        navLinks.forEach((item) => item.classList.remove('active'));
-        link.classList.add('active');
-
-        if (window.innerWidth <= 760) {
-          navMenu?.classList.remove('open');
-          menuToggle?.classList.remove('open');
-          menuToggle?.setAttribute('aria-expanded', 'false');
-        }
-      });
+  commanderAuthTabs.forEach((tab) => {
+    tab.addEventListener('click', () => {
+      const mode = tab.dataset.mode;
+      commanderAuthTabs.forEach((t) => t.classList.remove('active'));
+      tab.classList.add('active');
+      commanderForm.dataset.mode = mode;
     });
-  }
+  });
+}
 
   function bindOpeners() {
     document.querySelectorAll('[data-open-modal]').forEach((trigger) => {
@@ -1461,467 +1084,39 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     { key: 'advancedJunior', label: 'Advanced Junior' }
   ];
 
-  function parseScoreEntries(value) {
-    return parseTextareaLines(value).reduce((accumulator, line) => {
-      const separatorIndex = line.indexOf('|');
-      if (separatorIndex === -1) return accumulator;
+  closeButtons.forEach(({ btn, modal }) => {
+    btn?.addEventListener('click', () => closeModal(modal));
+  });
 
-      const name = line.slice(0, separatorIndex).trim();
-      const score = line.slice(separatorIndex + 1).trim();
-
-      if (name && score) {
-        accumulator.push({ name, score });
-      }
-
-      return accumulator;
-    }, []);
-  }
-
-  function formatScoreEntries(items) {
-    return (items || []).map((item) => `${item.name} | ${item.score}`);
-  }
-
-  function getExamYears() {
-    return Object.keys(state.examScores || {})
-      .filter((year) => /^\d+$/.test(year))
-      .sort((a, b) => Number(b) - Number(a));
-  }
-
-  function getLatestExamYear() {
-    return getExamYears()[0] || state.activeExamYear || String(new Date().getFullYear());
-  }
-
-  function getExamDataForCompany(companyId, year) {
-    const data = state.examScores?.[year || getLatestExamYear()] || {};
-    const companyData = data[String(companyId)] || {};
-    return examGradeSections.reduce((accumulator, section) => {
-      accumulator[section.key] = Array.isArray(companyData[section.key]) ? companyData[section.key] : [];
-      return accumulator;
-    }, {});
-  }
-
-  function getCompanyMemberCount(company) {
-    return Number(company?.totalMembers || 0) || (
-      (company?.anchor || []).filter(Boolean).length +
-      (company?.junior || []).filter(Boolean).length +
-      (company?.intermediate || []).filter(Boolean).length +
-      (company?.senior || []).filter(Boolean).length +
-      (company?.officer || []).filter(Boolean).length
-    );
-  }
-
-  function getCompanyNcoCount(company) {
-    return Number(company?.totalNcos || 0) || ((company?.anchor || []).length + (company?.junior || []).length + (company?.intermediate || []).length + (company?.senior || []).length);
-  }
-
-  function getCompanyOfficerCount(company) {
-    return Number(company?.totalOfficers || 0) || (company?.officer || []).filter(Boolean).length;
-  }
-
-  function renderDivisionSummary() {
-    let totalMembers = 0;
-    let totalOfficers = 0;
-    // Active members display should reflect the commissioned officers who have names
-    const allCommandOfficers = Array.isArray(state.commandStructure?.officers) ? state.commandStructure.officers : [];
-    const commissionedWithNames = allCommandOfficers.filter((o) => (o && String(o.name || '').trim()));
-    const divisionActiveMembers = Array.isArray(state.divisionMembers?.active) ? state.divisionMembers.active.filter(Boolean) : [];
-
-    Object.values(state.companyData).forEach((company) => {
-      totalMembers += getCompanyMemberCount(company);
-      totalOfficers += getCompanyOfficerCount(company);
+  document.querySelectorAll('.modal-backdrop[data-close="true"]').forEach((backdrop) => {
+    backdrop.addEventListener('click', () => {
+      closeAllModals();
     });
+  });
+}
 
-    totalMembers += commissionedWithNames.length;
-    totalMembers += divisionActiveMembers.length;
-    totalOfficers += commissionedWithNames.length;
-
-    if (divisionTotalMembers) {
-      divisionTotalMembers.textContent = totalMembers;
+function bindEscapeKey() {
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeAllModals();
     }
-    if (divisionTotalOfficers) {
-      divisionTotalOfficers.textContent = totalOfficers;
-    }
-    if (homeTotalMembers) {
-      homeTotalMembers.textContent = (typeof totalMembers === 'number') ? (totalMembers === 0 ? '0' : String(totalMembers)) : '150+';
-    }
-    if (homeTotalOfficers) {
-      homeTotalOfficers.textContent = (typeof totalOfficers === 'number') ? (totalOfficers === 0 ? '0' : String(totalOfficers)) : '15+';
-    }
-  }
+  });
+}
 
-  function exportExamResultsPdf(companyId, year) {
-    const company = state.companyData[companyId] || defaultCompanyData[companyId] || {};
-    const examData = getExamDataForCompany(companyId, year);
-    const examYear = year || getLatestExamYear();
-    const displayName = company.name || `Company ${companyId}`;
-    const safeFileName = `ESTC_Exam_Results_${displayName.replace(/[\\/:*?"<>|]+/g, '').replace(/\s+/g, '_')}_${examYear}.pdf`;
-    const PdfConstructor = window.jspdf?.jsPDF || window.jsPDF || window.jspdf?.default || window.jspdf;
-
-    if (typeof PdfConstructor === 'function') {
-      const doc = new PdfConstructor({ unit: 'pt', format: 'letter' });
-      const pageWidth = doc.internal.pageSize.getWidth();
-      const pageHeight = doc.internal.pageSize.getHeight();
-      const margin = 40;
-      const maxWidth = pageWidth - margin * 2;
-      let y = margin + 10;
-
-      // Helper: draw a simple vertical gradient by painting narrow rectangles
-      function drawVerticalGradient(x, y0, w, h, startRgb, endRgb, steps = 40) {
-        const [r1, g1, b1] = startRgb;
-        const [r2, g2, b2] = endRgb;
-        for (let i = 0; i < steps; i++) {
-          const t = i / Math.max(1, steps - 1);
-          const r = Math.round(r1 + (r2 - r1) * t);
-          const g = Math.round(g1 + (g2 - g1) * t);
-          const b = Math.round(b1 + (b2 - b1) * t);
-          doc.setFillColor(r, g, b);
-          const sliceH = h / steps;
-          doc.rect(x, y0 + i * sliceH, w, sliceH + 0.5, 'F');
-        }
-      }
-
-      // Page header with gradient background
-      const headerH = 72;
-      drawVerticalGradient(margin - 10, y - 6, pageWidth - margin * 2 + 20, headerH, [16, 81, 150], [106, 168, 255], 60);
-      doc.setTextColor(255, 255, 255);
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(20);
-      doc.text(displayName, margin + 8, y + 20);
-      doc.setFont('helvetica', 'normal');
-      doc.setFontSize(11);
-      doc.text(`ESTC Exam Results — ${examYear}`, margin + 8, y + 40);
-      doc.setTextColor(40, 40, 40);
-      y += headerH + 10;
-
-      const addPageIfNeeded = (lineHeight = 18) => {
-        if (y > pageHeight - margin) {
-          doc.addPage();
-          y = margin + 10;
-        }
-      };
-
-      examGradeSections.forEach((section, index) => {
-        addPageIfNeeded();
-
-        // Section header bar
-        const barH = 20;
-        const barX = margin;
-        const barW = pageWidth - margin * 2;
-        // use a gentle color strip for each section
-        const sectionColor = index % 2 === 0 ? [14, 120, 70] : [200, 90, 40];
-        doc.setFillColor(...sectionColor);
-        doc.roundedRect(barX, y, barW, barH, 4, 4, 'F');
-        doc.setTextColor(255, 255, 255);
-        doc.setFont('helvetica', 'bold');
-        doc.setFontSize(12);
-        doc.text(section.label, barX + 8, y + 14);
-        y += barH + 8;
-
-        doc.setFont('helvetica', 'normal');
-        doc.setFontSize(11);
-        doc.setTextColor(40, 40, 40);
-
-        const entries = examData[section.key] || [];
-        if (!entries.length) {
-          const lines = doc.splitTextToSize('No scores posted yet.', maxWidth);
-          lines.forEach((line) => {
-            addPageIfNeeded();
-            doc.text(line, margin, y);
-            y += 16;
-          });
-        } else {
-          entries.forEach((item) => {
-            addPageIfNeeded();
-            const text = `${item.name || 'Candidate'} — ${item.score || 'No score'}`;
-            const lines = doc.splitTextToSize(text, maxWidth);
-            lines.forEach((line) => {
-              doc.text(line, margin, y);
-              y += 16;
-            });
-            y += 4;
-          });
-        }
-
-        y += 6;
-      });
-
-      try {
-        doc.save(safeFileName);
-      } catch (error) {
-        console.warn('PDF download failed, trying Blob method:', error);
-        try {
-          const pdfBlob = doc.output('blob');
-          const link = document.createElement('a');
-          link.href = URL.createObjectURL(pdfBlob);
-          link.download = safeFileName;
-          document.body.appendChild(link);
-          link.click();
-          link.remove();
-          URL.revokeObjectURL(link.href);
-        } catch (innerError) {
-          console.error('All PDF download options failed:', innerError);
-          alert('Could not download PDF. Please try a different browser.');
-        }
-      }
-      return;
-    }
-
-    // Fallback: Download results as a clean text file if jsPDF is unavailable
-    try {
-      const textLines = [];
-      textLines.push(displayName.toUpperCase());
-      textLines.push('='.repeat(displayName.length));
-      textLines.push(`ESTC Exam Results - ${examYear}`);
-      textLines.push('Royal Shepherd Nigeria Agbala Itura Division, Lagos');
-      textLines.push('');
-
-      examGradeSections.forEach((section) => {
-        textLines.push(`[${section.label}]`);
-        const entries = examData[section.key] || [];
-        if (!entries.length) {
-          textLines.push('No scores posted yet.');
-        } else {
-          entries.forEach((item) => {
-            textLines.push(`  - ${item.name || 'Candidate'}: ${item.score || 'No score'}`);
-          });
-        }
-        textLines.push('');
-      });
-
-      const textBlob = new Blob([textLines.join('\n')], { type: 'text/plain;charset=utf-8' });
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(textBlob);
-      link.download = safeFileName.replace('.pdf', '.txt');
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      URL.revokeObjectURL(link.href);
-    } catch (fallbackError) {
-      console.error('Text fallback download failed:', fallbackError);
-      alert('Could not download exam results.');
-    }
-  }
-
-  function renderFounderStory() {
-    const founderCard = document.querySelector('#founders .founder-card');
-    if (!founderCard) return;
-
-    const paragraphs = (state.founderStory || defaultFounderStory)
-      .split(/\n\s*\n/)
-      .map((paragraph) => paragraph.trim())
-      .filter(Boolean);
-
-    founderCard.innerHTML = `
-      <div class="founder-portrait">
-        <img src="image/pa sk abiara.jpeg?v=3" alt="Prophet Samuel Kayode Abiara" />
-      </div>
-      <div class="founder-copy">
-        ${paragraphs.map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`).join('')}
-      </div>
-    `;
-  }
-
-  function renderOfficerLeadership() {
-    const officersList = document.querySelector('.officers-list');
-    if (officersList) {
-      officersList.innerHTML = '';
-      const authoritiesGroup = featuredLeadershipGroups.find((group) => group.title === 'CAC Authorities');
-      if (authoritiesGroup) {
-        renderLeadershipGroup(officersList, authoritiesGroup);
-      }
-    }
-
-    const excoList = document.querySelector('.exco-list');
-    if (excoList) {
-      excoList.innerHTML = '';
-      const excoGroups = featuredLeadershipGroups.filter((group) => group.title !== 'CAC Authorities');
-      excoGroups.forEach((group) => renderLeadershipGroup(excoList, group));
-    }
-  }
-
-  function renderLeadershipGroup(container, group) {
-    const visibleKeys = group.keys.filter((key) => {
-      const roleDefinition = excoRoleDefinitions.find((entry) => entry.key === key);
-      const profile = state.excoProfiles[key] || defaultExcoProfiles[key] || {};
-      const name = (profile.name || '').trim();
-      const role = (leadershipTitleOverrides[key] || profile.role || roleDefinition?.label || '').trim();
-      const photo = (profile.photo || leadershipPhotoMap[key] || '').trim();
-      return Boolean(name || photo);
-    });
-
-    if (!visibleKeys.length) return;
-
-    const groupWrapper = document.createElement('section');
-    groupWrapper.className = 'leadership-group';
-
-    const groupHeading = document.createElement('h3');
-    groupHeading.className = 'leadership-group-title';
-    groupHeading.textContent = group.title;
-    groupWrapper.appendChild(groupHeading);
-
-    const grid = document.createElement('div');
-    grid.className = 'leadership-grid';
-
-    visibleKeys.forEach((key) => {
-      const roleDefinition = excoRoleDefinitions.find((entry) => entry.key === key);
-      const profile = state.excoProfiles[key] || defaultExcoProfiles[key] || {};
-      const name = (profile.name || roleDefinition?.label || 'Enter name here').trim();
-      const role = leadershipTitleOverrides[key] || (profile.role || roleDefinition?.label || 'Leadership Post').trim();
-
-      const card = document.createElement('article');
-      card.className = 'leadership-card';
-
-      const photo = profile.photo || leadershipPhotoMap[key] || '';
-      const imageSrc = resolveImagePath(photo);
-      const initials = (name || role || 'RS')
-        .split(/\s+/)
-        .filter(Boolean)
-        .slice(0, 2)
-        .map((part) => part[0])
-        .join('')
-        .toUpperCase() || 'RS';
-
-      card.innerHTML = `
-        <div class="leadership-photo-wrap">
-          ${photo ? `<img class="leadership-photo" src="${imageSrc}" alt="${escapeHtml(name)}" />` : `<div class="leadership-photo avatar empty" aria-hidden="true">${escapeHtml(initials)}</div>`}
-        </div>
-        <div class="leadership-details">
-          <h4>${escapeHtml(role)}</h4>
-          <p class="leadership-role">${escapeHtml(name || 'Enter name here')}</p>
-        </div>
-      `;
-      grid.appendChild(card);
-    });
-
-    groupWrapper.appendChild(grid);
-    container.appendChild(groupWrapper);
-  }
-
-  function renderCompanyLists() {
-    companyCards.forEach((card) => {
-      const companyId = card.dataset.company;
-      const company = state.companyData[companyId] || defaultCompanyData[companyId];
-      const title = card.querySelector('h3');
-      const caption = card.querySelector('.company-caption');
-      const displayName = getCompanyDisplayName(companyId, company);
-      if (title) title.textContent = displayName;
-      if (caption) caption.textContent = `Company ${companyId}`;
-
-      let stats = card.querySelector('.company-stats');
-      if (!stats) {
-        stats = document.createElement('div');
-        stats.className = 'company-stats';
-        const details = card.querySelector('.company-details');
-        if (details) {
-          card.insertBefore(stats, details);
-        } else {
-          card.appendChild(stats);
-        }
-      }
-      stats.innerHTML = `<span>${getCompanyMemberCount(company)} members</span><span>${getCompanyNcoCount(company)} NCOs</span><span>${getCompanyOfficerCount(company)} officers</span>`;
-
-      const details = card.querySelector('.company-details');
-      if (details) {
-        details.hidden = true;
-        if (!card.querySelector('.company-toggle')) {
-          const toggle = document.createElement('button');
-          toggle.type = 'button';
-          toggle.className = 'company-toggle';
-          toggle.textContent = 'View Members';
-          card.insertBefore(toggle, details);
-        }
-      }
-
-      card.querySelectorAll('.company-list').forEach((list) => {
-        const type = list.dataset.list;
-        const items = company[type] || [];
-        list.innerHTML = '';
+function bindSymbolCards() {
+  symbolCards.forEach((card) => {
+    card.addEventListener('click', () => {
+      const title = card.dataset.title || 'Symbol Meaning';
+      const items = JSON.parse(card.dataset.items || '[]');
+      if (modalTitle && modalList) {
+        modalTitle.textContent = title;
+        modalList.innerHTML = '';
         items.forEach((item) => {
           const li = document.createElement('li');
           li.textContent = item;
-          list.appendChild(li);
+          modalList.appendChild(li);
         });
-      });
-    });
-
-    renderDivisionSummary();
-  }
-
-  function buildCaptainDashboard(companyId) {
-    if (!dashboardGrid) return;
-    const company = state.companyData[companyId] || defaultCompanyData[companyId];
-    const examYear = getLatestExamYear();
-    const examData = getExamDataForCompany(companyId, examYear);
-    dashboardGrid.innerHTML = '';
-
-    const companyCard = document.createElement('div');
-    companyCard.className = 'dashboard-card';
-    companyCard.innerHTML = `
-      <h4>${company.name}</h4>
-      <label>
-        <span>Company Name</span>
-        <input type="text" name="company-name-${companyId}" value="${(company.name || '').replace(/"/g, '&quot;')}" readonly />
-      </label>
-      ${companySectionDefinitions.map((section) => `
-        <label>
-          <span>${section.label}</span>
-          <textarea name="${section.key}-${companyId}" placeholder="Add names for ${section.label.toLowerCase()} one per line">${(company[section.key] || []).join('\n')}</textarea>
-        </label>
-      `).join('')}
-    `;
-    dashboardGrid.appendChild(companyCard);
-
-    const scoreCard = document.createElement('div');
-    scoreCard.className = 'dashboard-card';
-    scoreCard.innerHTML = `
-      <h4>ESTC Exam Results</h4>
-      <p class="dashboard-intro">Scores posted by the admin for ${examYear} for your company only.</p>
-      <div class="dashboard-actions">
-        <button type="button" class="btn btn-secondary" data-download-pdf="true" data-company-id="${companyId}" data-year="${examYear}">Download PDF</button>
-      </div>
-      <div class="score-columns">
-        ${examGradeSections.map((section) => `
-          <div class="score-panel">
-            <h5>${section.label}</h5>
-            <ul class="score-list">
-              ${(examData[section.key] || []).length ? (examData[section.key] || []).map((item) => `<li><strong>${(item.name || '').replace(/"/g, '&quot;')}</strong> — ${item.score}</li>`).join('') : '<li>No scores posted yet.</li>'}
-            </ul>
-          </div>
-        `).join('')}
-      </div>
-    `;
-    dashboardGrid.appendChild(scoreCard);
-  }
-
-  function openCaptainDashboard(companyId) {
-    state.activeCaptainCompany = companyId;
-    setActiveRole('captain', companyId);
-    buildCaptainDashboard(companyId);
-
-    if (window.location.pathname.includes('captain-dashboard.html')) {
-      renderCaptainWorkspaceAccess();
-      const url = new URL(window.location.href);
-      url.searchParams.set('company', companyId);
-      window.history.replaceState({}, '', url);
-      return;
-    }
-
-    const pageUrl = new URL('captain-dashboard.html', window.location.href);
-    pageUrl.searchParams.set('company', companyId);
-    window.open(pageUrl.toString(), '_blank', 'noopener,noreferrer');
-  }
-
-  function buildCommanderDashboard() {
-    window.__royalShepherdBuildCommanderDashboard = true;
-    if (!renderCommanderWorkspaceAccess()) return;
-    if (!commanderDashboardGrid) return;
-    commanderDashboardGrid.innerHTML = '';
-
-    // If the commander workspace is opened as its own page, open EXCO dashboard automatically once.
-    try {
-      if (window.location.pathname.includes('commander-dashboard.html') && isCommanderLoggedIn() && !window.__royalShepherdExcoOpened) {
-        window.__royalShepherdExcoOpened = true;
-        openExcoDashboard();
+        openModal('symbolModal');
       }
     } catch (err) {
       console.warn('Auto-open EXCO dashboard failed:', err);
@@ -2122,252 +1317,149 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
       `;
       commanderDashboardGrid.appendChild(card);
     });
-  }
+  });
+}
 
-  function openCommanderDashboard() {
-    buildCommanderDashboard();
+// ============================================================================
+// IMAGE PATH RESOLUTION
+// ============================================================================
 
-    if (window.location.pathname.includes('commander-dashboard.html')) {
-      return;
-    }
+function resolveImagePath(src) {
+  if (!src) return '';
+  const normalized = String(src).trim().replace(/\\/g, '/');
+  if (/^(https?:)?\/\//i.test(normalized) || normalized.startsWith('data:')) return normalized;
+  const path = normalized.startsWith('image/') ? normalized : `image/${normalized}`;
+  const [pathWithoutQuery, suffix = ''] = path.split(/([?#].*)/, 2);
+  return pathWithoutQuery.split('/').map((segment, index) => index === 0 ? segment : encodeURIComponent(segment)).join('/') + suffix;
+}
 
-    window.open('commander-dashboard.html', '_blank', 'noopener,noreferrer');
-  }
+function resolvePublicAssetPath(src) {
+  if (!src) return '';
+  const normalized = String(src).trim().replace(/\\/g, '/');
+  if (/^(https?:)?\/\//i.test(normalized) || normalized.startsWith('data:')) return normalized;
+  const [pathWithoutQuery, suffix = ''] = normalized.split(/([?#].*)/, 2);
+  return pathWithoutQuery.split('/').map((segment) => encodeURIComponent(segment)).join('/') + suffix;
+}
 
-  function renderExcoAccessDenied() {
-    const excoForm = document.getElementById('excoDashboardForm');
-    if (!excoForm) return;
-    excoForm.innerHTML = `
-      <div class="dashboard-card glass-card">
-        <h3>Access Restricted</h3>
-        <p>Only verified admin users may open the EXCO dashboard.</p>
-        <button type="button" class="btn btn-secondary" id="openCommanderDashboardForExco">Open Admin Login</button>
-      </div>
-    `;
-    const button = document.getElementById('openCommanderDashboardForExco');
-    button?.addEventListener('click', () => {
-      window.open('commander-dashboard.html', '_blank', 'noopener,noreferrer');
-    });
-  }
+// ============================================================================
+// GALLERY MANAGEMENT
+// ============================================================================
 
-  function renderCommanderWorkspaceAccess() {
-    const notice = document.getElementById('commanderDashboardNotice');
-    const isLoggedIn = isCommanderLoggedIn();
+function getGalleryItems() {
+  return state.galleryItems && state.galleryItems.length > 0 ? state.galleryItems : (window.galleryData || []);
+}
 
-    if (!commanderDashboardForm) return false;
+function renderGallery() {
+  if (!galleryGrid) return;
+  galleryGrid.innerHTML = '';
 
-    if (commanderForm) {
-      commanderForm.style.display = isLoggedIn ? 'none' : '';
-      commanderForm.hidden = isLoggedIn;
-    }
-
-    commanderDashboardForm.style.display = isLoggedIn ? '' : 'none';
-    commanderDashboardForm.hidden = !isLoggedIn;
-
-    if (openExcoDashboardFromAdminBtn) {
-      openExcoDashboardFromAdminBtn.classList.toggle('hidden', !isLoggedIn);
-    }
-    if (openExcoDashboardBtn) {
-      openExcoDashboardBtn.classList.toggle('hidden', !isLoggedIn);
-    }
-    const commanderLogoutBtn = document.getElementById('commanderLogoutBtn');
-    if (commanderLogoutBtn) {
-      commanderLogoutBtn.classList.toggle('hidden', !isLoggedIn);
-    }
-
-    if (!isLoggedIn) {
-      if (commanderDashboardGrid) commanderDashboardGrid.innerHTML = '';
-      if (notice) {
-        notice.textContent = 'Commander login required to view the admin workspace. Please login above.';
-      }
-      return false;
-    }
-
-    if (notice) notice.textContent = '';
-    return true;
-  }
-
-  function openAdminDashboardPage() {
-    const pageUrl = new URL('commander-dashboard.html', window.location.href);
-    pageUrl.searchParams.set('from', 'home');
-    window.open(pageUrl.toString(), '_blank', 'noopener,noreferrer');
-  }
-
-  function exportExcoProfilesToJson() {
-    const dataToExport = {
-      timestamp: new Date().toISOString(),
-      excoProfiles: state.excoProfiles,
-      leadershipPhotoMap: leadershipPhotoMap
-    };
+  const itemsToRender = getGalleryItems();
+  itemsToRender.forEach((item, index) => {
+    const article = document.createElement('article');
+    article.className = 'gallery-item glass-card';
+    article.dataset.category = item.category || 'parades';
+    article.dataset.index = index;
     
-    const jsonString = JSON.stringify(dataToExport, null, 2);
-    const blob = new Blob([jsonString], { type: 'application/json' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = `exco-profiles-${new Date().toISOString().split('T')[0]}.json`;
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    URL.revokeObjectURL(link.href);
+    // Resolve image path with proper URL encoding
+    const imagePath = resolveImagePath(item.src);
     
-    showToast('EXCO profiles exported to JSON file');
-  }
-
-  function buildExcoDashboard() {
-    if (!excoDashboardGrid) return;
-    excoDashboardGrid.innerHTML = '';
-
-    // Add header with export button
-    const headerDiv = document.createElement('div');
-    headerDiv.className = 'dashboard-card glass-card';
-    headerDiv.style.gridColumn = '1 / -1';
-    headerDiv.innerHTML = `
-      <div style="display: flex; justify-content: space-between; align-items: center;">
-        <div>
-          <h3>EXCO Leadership Profiles</h3>
-          <p>Edit names and upload photos. Changes save automatically. Export to backup or commit manually to GitHub.</p>
+    article.innerHTML = `
+      <button type="button" class="gallery-thumb" aria-label="${item.title}">
+        <img src="${imagePath}" alt="${item.title}" loading="lazy" />
+        <div class="gallery-overlay">
+          <h3>${item.title}</h3>
+          <p>${item.description}</p>
         </div>
-        <button type="button" class="btn btn-gold" id="exportExcoProfiles">📥 Export JSON</button>
-      </div>
+      </button>
+      <a class="gallery-download btn btn-outline" href="${imagePath}" download="${item.title}.jpg" aria-label="Download ${item.title}">Download</a>
     `;
-    excoDashboardGrid.appendChild(headerDiv);
+    galleryGrid.appendChild(article);
+  });
 
-    excoRoleDefinitions.forEach((role) => {
-      const profile = state.excoProfiles[role.key] || {};
-      const profilePhoto = profile.photo || '';
-      const card = document.createElement('div');
-      card.className = 'dashboard-card';
-      card.dataset.role = role.key;
-      card.dataset.photoRemoved = 'false';
-      card.innerHTML = `
-        <h4>${role.label}</h4>
-        <p class="dashboard-intro">Create or update the profile for ${role.label}.</p>
-        <div class="profile-photo-card">
-          <div class="profile-photo-circle">
-            <div class="profile-photo-preview">
-              ${profilePhoto ? `<img src="${escapeHtml(profilePhoto)}" alt="${escapeHtml(role.label)} photo" />` : '<div class="profile-photo-placeholder"><i class="fa-solid fa-user"></i></div>'}
-            </div>
-            <button type="button" class="profile-photo-circle-button exco-photo-button" data-role="${role.key}" aria-label="Upload profile photo">
-              <i class="fa-solid fa-camera"></i>
-            </button>
-          </div>
-          <p class="profile-photo-hint">Tap to choose from gallery</p>
-          <div class="profile-photo-actions">
-            <button type="button" class="btn btn-outline exco-photo-button" data-role="${role.key}">${profilePhoto ? 'Change Photo' : 'Add Photo'}</button>
-            <button type="button" class="btn btn-secondary exco-remove-photo" data-role="${role.key}" ${profilePhoto ? '' : 'hidden'}>Remove Picture</button>
-            <input type="file" name="${role.key}-photo" accept="image/png,image/jpeg,image/jpg,image/webp" class="exco-photo-input" data-role="${role.key}" hidden />
-          </div>
-        </div>
-        <label>
-          <span>Full Name</span>
-          <input type="text" name="${role.key}-name" value="${(profile.name || '').replace(/"/g, '&quot;')}" />
-        </label>
-        <label>
-          <span>Email Address</span>
-          <input type="email" name="${role.key}-email" value="${(profile.email || '').replace(/"/g, '&quot;')}" />
-        </label>
-        <label>
-          <span>Phone Number</span>
-          <input type="tel" name="${role.key}-phone" value="${(profile.phone || '').replace(/"/g, '&quot;')}" />
-        </label>
-        <label>
-          <span>Short Bio</span>
-          <textarea name="${role.key}-bio">${(profile.bio || '').replace(/"/g, '&quot;')}</textarea>
-        </label>
-      `;
-      excoDashboardGrid.appendChild(card);
-    });
+  applyGalleryFilter('all');
+}
+
+function renderNews() {
+  if (!newsGrid) return;
+  // Render news from backend or state
+  newsGrid.innerHTML = '<p>Latest news will be displayed here.</p>';
+}
+
+function openGalleryPreview(item) {
+  if (!item) return;
+  if (galleryPreviewImage) {
+    const imagePath = resolveImagePath(item.src);
+    galleryPreviewImage.src = imagePath;
+    galleryPreviewImage.alt = item.title;
   }
-
-  function openExcoDashboard() {
-    if (!isCommanderLoggedIn()) {
-      showToast('Admin access is required to open the EXCO dashboard.');
-      window.open('commander-dashboard.html', '_blank', 'noopener,noreferrer');
-      return;
-    }
-
-    buildExcoDashboard();
-
-    if (window.location.pathname.includes('exco-dashboard.html')) {
-      return;
-    }
-
-    const targetUrl = 'exco-dashboard.html?excoOpenRequest=true';
-    window.open(targetUrl, '_blank', 'noopener,noreferrer');
+  if (galleryPreviewTitle) {
+    galleryPreviewTitle.textContent = item.title;
   }
+  if (galleryPreviewDescription) {
+    galleryPreviewDescription.textContent = item.description;
+  }
+  if (galleryPreviewCategory) {
+    galleryPreviewCategory.textContent = (item.category || 'parades').charAt(0).toUpperCase() + (item.category || 'parades').slice(1);
+  }
+  openModal('galleryModal');
+}
 
-  function bindForms() {
-    captainForm?.addEventListener('submit', (event) => {
-      event.preventDefault();
-      const mode = captainForm.dataset.mode || 'login';
-      const email = captainEmail.value.trim().toLowerCase();
-      const password = captainPassword.value.trim();
-      const companyId = captainCompany.value;
+function applyGalleryFilter(filter, elements = null) {
+  galleryFilters.forEach((button) => {
+    button.classList.toggle('active', button.dataset.filter === filter);
+  });
 
-      if (!email || !password) {
-        captainNotice.textContent = 'Please complete the email and password fields.';
-        captainNotice.style.color = 'hsl(0, 70%, 60%)';
-        return;
+  const itemsToToggle = elements || Array.from(galleryGrid?.querySelectorAll('.gallery-item') || []);
+  itemsToToggle.forEach((item) => {
+    const show = filter === 'all' || item.dataset.category === filter;
+    item.classList.toggle('is-hidden', !show);
+  });
+}
+
+function bindGallery() {
+  galleryToggle?.addEventListener('click', () => {
+    const hidden = galleryPanel?.classList.toggle('is-collapsed');
+    galleryToggle.textContent = hidden ? 'Open Gallery' : 'Hide Gallery';
+    galleryToggle.setAttribute('aria-expanded', hidden ? 'false' : 'true');
+  });
+
+  galleryGrid?.addEventListener('click', (event) => {
+    const button = event.target.closest('.gallery-thumb');
+    if (!button) return;
+    const card = button.closest('.gallery-item');
+    if (!card) return;
+    const index = Number(card.dataset.index);
+    if (!Number.isNaN(index)) {
+      const sourceItems = getGalleryItems();
+      const item = sourceItems[index];
+      if (item) {
+        openGalleryPreview(item);
       }
+    }
+  });
 
-      if (mode === 'register') {
-        if (!companyId) {
-          captainNotice.textContent = 'Please select your company before registering.';
-          captainNotice.style.color = 'hsl(0, 70%, 60%)';
-          return;
-        }
-        if (state.captainAccounts[email]) {
-          captainNotice.textContent = 'This email already has a captain account.';
-          captainNotice.style.color = 'hsl(0, 70%, 60%)';
-          return;
-        }
-        if (state.captainRequests[email]) {
-          captainNotice.textContent = 'A request for this email is already pending approval.';
-          captainNotice.style.color = 'hsl(0, 70%, 60%)';
-          return;
-        }
-
-        state.captainRequests[email] = {
-          email,
-          password,
-          companyId,
-          submittedAt: new Date().toISOString()
-        };
-        saveCaptainRequests();
-        captainForm.reset();
-        captainForm.dataset.mode = 'login';
-        updateCaptainCompanyMode('login');
-        captainNotice.textContent = 'Captain registration submitted. Await admin approval before logging in.';
-        captainNotice.style.color = 'var(--gold-400)';
-        return;
+  galleryGrid?.addEventListener('keydown', (event) => {
+    if (!['Enter', ' '].includes(event.key)) return;
+    const button = event.target.closest('.gallery-thumb');
+    if (!button) return;
+    event.preventDefault();
+    const card = button.closest('.gallery-item');
+    if (!card) return;
+    const index = Number(card.dataset.index);
+    if (!Number.isNaN(index)) {
+      const sourceItems = getGalleryItems();
+      const item = sourceItems[index];
+      if (item) {
+        openGalleryPreview(item);
       }
+    }
+  });
 
-      const account = state.captainAccounts[email];
-      if (!account || account.password !== password) {
-        captainNotice.textContent = 'Invalid captain email or password.';
-        captainNotice.style.color = 'hsl(0, 70%, 60%)';
-        return;
-      }
-
-      const accountCompanyId = String(account.companyId || companyId || '');
-      if (!accountCompanyId) {
-        captainNotice.textContent = 'This captain account is missing a company assignment.';
-        captainNotice.style.color = 'hsl(0, 70%, 60%)';
-        return;
-      }
-
-      if (captainCompany) {
-        captainCompany.value = accountCompanyId;
-      }
-
-      setActiveRole('captain', accountCompanyId);
-      captainNotice.textContent = 'Access granted. Opening your company dashboard.';
-      captainNotice.style.color = 'var(--gold-400)';
-      closeModal('captainModal');
-      openCaptainDashboard(accountCompanyId);
-      if (window.location.pathname.includes('captain-dashboard.html')) {
-        renderCaptainWorkspaceAccess();
-      }
+  // Handle gallery filters
+  galleryFilters.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const filter = btn.dataset.filter;
+      applyGalleryFilter(filter);
     });
 
     commanderForm?.addEventListener('submit', (event) => {
@@ -3043,88 +2135,11 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
       formSuccess?.classList.remove('active');
     });
   }
+}
 
-  function init() {
-    window.__royalShepherdInit = true;
-    window.addEventListener('scroll', () => {
-      header?.classList.toggle('scrolled', window.scrollY > 50);
-    });
-    bindMobileMenu();
-    bindSmoothScrolling();
-    bindOpeners();
-    bindAuthTabs();
-    updateCaptainCompanyMode(captainForm?.dataset.mode || 'login');
-    bindModalCloseButtons();
-    bindEscapeKey();
-    bindSymbolCards();
-    bindGallery();
-    bindForms();
-    document.addEventListener('click', (event) => {
-      const toggle = event.target.closest('.company-toggle');
-      if (!toggle) return;
-      const card = toggle.closest('.company-card');
-      const details = card?.querySelector('.company-details');
-      if (!details) return;
-      const hidden = details.hidden;
-      details.hidden = !hidden;
-      toggle.textContent = hidden ? 'Hide Members' : 'View Members';
-    });
-    ensureDefaultCommanderAccount();
-    ensureLegacyCaptainAccounts();
-    window.__royalShepherdState = state;
-    window.__royalShepherdRenderCommanderWorkspaceAccess = renderCommanderWorkspaceAccess;
-    window.__royalShepherdIsCommanderLoggedIn = isCommanderLoggedIn;
-    window.__royalShepherdBootstrapStarted = true;
-    bootstrapCompanyData().then(() => {
-      window.__royalShepherdBootstrapResolved = true;
-      checkBackendHealth().catch(() => {});
-      populateCaptainCompanySelect();
-      populateEnlistmentCompanySelect();
-      renderCompanyLists();
-      if (window.location.pathname.includes('commander-dashboard.html')) {
-        window.__royalShepherdCommanderPath = true;
-        if (renderCommanderWorkspaceAccess()) {
-          buildCommanderDashboard();
-        }
-      }
-      if (window.location.pathname.includes('captain-dashboard.html')) {
-        window.__royalShepherdCaptainPath = true;
-        const queryParams = new URLSearchParams(window.location.search);
-        const companyId = queryParams.get('company') || state.activeCaptainCompany;
-        if (companyId && state.companyData[companyId]) {
-          state.activeCaptainCompany = companyId;
-          buildCaptainDashboard(companyId);
-        }
-        renderCaptainWorkspaceAccess();
-      }
-      if (window.location.pathname.includes('exco-dashboard.html')) {
-        window.__royalShepherdExcoPath = true;
-        const queryParams = new URLSearchParams(window.location.search);
-        const openRequest = queryParams.get('excoOpenRequest') === 'true';
-
-        if (!isCommanderLoggedIn() && !openRequest) {
-          renderExcoAccessDenied();
-        } else {
-          buildExcoDashboard();
-          if (openRequest && window.history && window.history.replaceState) {
-            window.history.replaceState(null, '', window.location.pathname);
-          }
-        }
-      }
-    }).catch((error) => {
-      window.__royalShepherdBootstrapFailed = true;
-      window.__royalShepherdBootstrapError = error?.message || String(error);
-    });
-    renderFounderStory();
-    renderOfficerLeadership();
-    renderGallery();
-    renderNews();
-  }
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
-  } else {
-    init();
-  }
-})();
-
+// Start the application when DOM is ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initializeApp);
+} else {
+  initializeApp();
+}
