@@ -584,16 +584,42 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
   const ACTIVE_ROLE_KEY = 'royalShepherdActiveRole';
   const ACTIVE_CAPTAIN_COMPANY_KEY = 'royalShepherdActiveCaptainCompany';
 
+  function getSessionStorageSafely() {
+    try {
+      return window.sessionStorage;
+    } catch (error) {
+      console.warn('Session storage unavailable; continuing as a visitor.', error);
+      return null;
+    }
+  }
+
   function getActiveCommanderEmail() {
-    return sessionStorage.getItem(ACTIVE_COMMANDER_KEY) || null;
+    const storage = getSessionStorageSafely();
+    if (!storage) return null;
+    try {
+      return storage.getItem(ACTIVE_COMMANDER_KEY) || null;
+    } catch (error) {
+      console.warn('Session storage read failed; continuing as a visitor.', error);
+      return null;
+    }
   }
 
   function setActiveCommanderEmail(email) {
+    const storage = getSessionStorageSafely();
     if (email) {
-      sessionStorage.setItem(ACTIVE_COMMANDER_KEY, email.toString().trim().toLowerCase());
-      state.activeCommanderEmail = email.toString().trim().toLowerCase();
+      const normalizedEmail = email.toString().trim().toLowerCase();
+      try {
+        storage?.setItem(ACTIVE_COMMANDER_KEY, normalizedEmail);
+      } catch (error) {
+        console.warn('Session storage write failed.', error);
+      }
+      state.activeCommanderEmail = normalizedEmail;
     } else {
-      sessionStorage.removeItem(ACTIVE_COMMANDER_KEY);
+      try {
+        storage?.removeItem(ACTIVE_COMMANDER_KEY);
+      } catch (error) {
+        console.warn('Session storage clear failed.', error);
+      }
       state.activeCommanderEmail = null;
     }
   }
