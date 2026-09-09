@@ -28,12 +28,13 @@ window.galleryData = [
     title: 'Parade',
     description: galleryCategoryLabels.parades
   },
-  ...createGalleryItems('parade', 63, 'parades', 'Parade'),
-  ...createGalleryItems('band', 46, 'band', 'Band'),
-  ...createGalleryItems('rehearsal', 2, 'rehearsals', 'Rehearsal'),
+  ...createGalleryItems('parade', 78, 'parades', 'Parade'),
+  ...createGalleryItems('band', 95, 'band', 'Band'),
+  ...createGalleryItems('rehearsal', 30, 'rehearsals', 'Rehearsal'),
+  ...createGalleryItems('rehersal', 16, 'rehearsals', 'Rehearsal'),
   { src: 'image/exam.jpeg', category: 'exams', title: 'Exam 0', description: galleryCategoryLabels.exams },
   ...createGalleryItems('exam', 11, 'exams', 'Exam'),
-  ...createGalleryItems('members cat', 84, 'member-catalogue', 'Unmatched member photo')
+  ...createGalleryItems('members cat', 242, 'member-catalogue', 'Unmatched member photo')
     .map((item) => ({
       ...item,
       description: 'Member Catalogue. Name not stored in the repository.'
