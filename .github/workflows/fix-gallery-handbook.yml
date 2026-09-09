@@ -1,0 +1,76 @@
+name: Safe gallery and handbook repair
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Apply minimal gallery and handbook fixes
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          app = Path('app.js')
+          text = app.read_text(encoding='utf-8')
+
+          if 'const uploadedItems = await Promise.all(pendingGalleryFiles.map(async (entry) =>' not in text:
+              pattern = re.compile(r'          const uploadedItems = await Promise\.all\(pendingGalleryFiles\.map\(\(entry\) => new Promise\(\(resolve, reject\) => \{.*?          \}\)\)\);', re.S)
+              replacement = '''          const uploadedItems = await Promise.all(pendingGalleryFiles.map(async (entry) => {
+            const file = entry.file;
+            const src = await resizeImageFileToDataUrl(file, 1024);
+            return {
+              id: `gallery-${Date.now()}-${Math.random().toString(36).slice(2)}`,
+              src,
+              category: entry.category,
+              title: file.name,
+              description: `Royal Shepherd ${entry.category.replace('-', ' ')} moment`
+            };
+          }));'''
+              text, count = pattern.subn(replacement, text, count=1)
+              if count != 1:
+                  raise SystemExit('Could not locate the gallery upload block; no changes made to app.js')
+
+          old_download = '<a class="gallery-download btn btn-outline" href="${resolveImagePath(item.src)}" download aria-label="Download ${item.title}">Download</a>'
+          if old_download in text:
+              new_download = '<a class="gallery-download btn btn-outline" href="${resolveImagePath(item.src)}" download="${(item.title || \'Royal-Shepherd-Gallery-Moment\').replace(/[^a-z0-9._-]+/gi, \'-\')}" aria-label="Download ${item.title}">Download</a>'
+              text = text.replace(old_download, new_download, 1)
+
+          app.write_text(text, encoding='utf-8')
+
+          css = Path('index.css')
+          css_text = css.read_text(encoding='utf-8')
+          marker = '.gallery-grid {\n  display: grid;\n  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));\n  gap: 1rem;\n}\n'
+          if marker in css_text and '.gallery-thumb {' not in css_text:
+              rules = marker + '''\n.gallery-thumb {\n  width: 100%;\n  display: block;\n  touch-action: manipulation;\n  -webkit-tap-highlight-color: transparent;\n}\n\n.gallery-thumb img {\n  width: 100%;\n  height: auto;\n  object-fit: cover;\n}\n\n.gallery-download {\n  touch-action: manipulation;\n}\n'''
+              css.write_text(css_text.replace(marker, rules, 1), encoding='utf-8')
+
+          html = Path('index.html')
+          html_text = html.read_text(encoding='utf-8')
+          old_handbook = '<a href="RS%20New%20Constitution%20Book.pdf" target="_blank" rel="noopener" class="btn btn-outline">Open RS New Constitution Handbook</a>'
+          if old_handbook in html_text and 'Download RS Handbook' not in html_text:
+              new_handbook = '''<div class="hero-actions section-actions">\n              <a href="RS%20New%20Constitution%20Book.pdf" target="_blank" rel="noopener" class="btn btn-outline">Open RS New Constitution Handbook</a>\n              <a href="RS%20New%20Constitution%20Book.pdf" download="RS-New-Constitution-Book.pdf" class="btn btn-secondary">Download RS Handbook</a>\n            </div>'''
+              html.write_text(html_text.replace(old_handbook, new_handbook, 1), encoding='utf-8')
+          PY
+
+      - name: Validate JavaScript
+        run: node --check app.js
+
+      - name: Commit only if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add app.js index.css index.html
+          git diff --cached --quiet && echo "No changes needed" && exit 0
+          git commit -m "Fix gallery uploads and handbook download"
+          git push

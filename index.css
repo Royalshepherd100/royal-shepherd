@@ -88,6 +88,46 @@ h4 {
   margin-bottom: 2rem;
 }
 
+.news-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1rem;
+}
+
+.news-card {
+  overflow: hidden;
+  padding: 0;
+}
+
+.news-image {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+}
+
+.news-card-copy {
+  display: grid;
+  gap: 0.55rem;
+  padding: 1.25rem;
+}
+
+.news-actions {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  margin-top: 0.5rem;
+}
+
+.news-date,
+.news-admin-item small {
+  color: var(--gold-400);
+  font-size: 0.82rem;
+}
+
+.news-empty {
+  color: var(--silver-200);
+}
+
 .section-actions {
   margin-top: 1rem;
 }
@@ -696,12 +736,13 @@ h4 {
   border-radius: 1rem;
   background: rgba(255,255,255,0.04);
   border: 1px solid rgba(255,255,255,0.12);
-  min-height: 220px;
+  min-height: 0;
 }
 
 .leadership-photo {
   width: 100%;
-  height: 220px;
+  height: auto;
+  aspect-ratio: 4 / 5;
   object-fit: cover;
 }
 
@@ -806,6 +847,67 @@ h4 {
 .dashboard-card textarea {
   min-height: 110px;
   resize: vertical;
+}
+
+.news-admin-list {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.news-admin-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 0.75rem;
+  background: rgba(255,255,255,0.04);
+}
+
+.news-admin-item > div:first-child {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.gallery-upload-preview {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: 0.65rem;
+  margin-top: 0.8rem;
+}
+
+.gallery-upload-preview-item {
+  display: grid;
+  gap: 0.3rem;
+  min-width: 0;
+  color: var(--silver-200);
+  font-size: 0.75rem;
+}
+
+.gallery-upload-preview-item img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 0.65rem;
+}
+
+.gallery-admin-list {
+  display: grid;
+  gap: 0.6rem;
+  margin-top: 1rem;
+}
+
+.gallery-admin-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.65rem;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 0.7rem;
+  color: var(--silver-200);
 }
 
 .print-report {
@@ -966,6 +1068,12 @@ h4 {
   border-radius: 999px;
 }
 
+.gallery-grid:empty::before {
+  content: 'Gallery pictures are loading...';
+  color: var(--silver-200);
+  padding: 1rem 0;
+}
+
 .gallery-panel-header {
   display: flex;
   justify-content: space-between;
@@ -981,11 +1089,30 @@ h4 {
   flex-wrap: wrap;
 }
 
+.gallery-search {
+  flex: 1 1 220px;
+  min-width: 180px;
+}
+
+.gallery-search input {
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0.7rem 0.9rem;
+  border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 0.7rem;
+  background: rgba(255,255,255,0.06);
+  color: var(--white-100);
+}
+
 .gallery-toggle {
   min-width: 120px;
 }
 
 .gallery-panel.is-collapsed .gallery-panel-inner {
+  display: block;
+}
+
+.gallery-panel.is-collapsed .gallery-grid {
   display: none;
 }
 
@@ -997,6 +1124,7 @@ h4 {
   border-radius: 999px;
   cursor: pointer;
   transition: transform 0.2s ease, background 0.2s ease;
+  touch-action: manipulation;
 }
 
 .filter-btn:hover,
@@ -1016,6 +1144,14 @@ h4 {
   gap: 1rem;
 }
 
+.gallery-empty-state {
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: 2rem 1rem;
+  color: var(--silver-200);
+  text-align: center;
+}
+
 .gallery-item {
   position: relative;
   overflow: hidden;
@@ -1026,11 +1162,30 @@ h4 {
   border: 1px solid rgba(255,255,255,0.08);
 }
 
+.gallery-download {
+  display: inline-flex;
+  width: 100%;
+  justify-content: center;
+  margin-top: 0.75rem;
+}
+
 .gallery-item .gallery-thumb img {
   width: 100%;
-  height: 100%;
+  aspect-ratio: 4 / 3;
+  height: auto;
   object-fit: cover;
   display: block;
+}
+
+.gallery-thumb {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  color: inherit;
+  background: transparent;
+  cursor: pointer;
+  touch-action: manipulation;
 }
 
 .gallery-overlay {
@@ -1081,6 +1236,10 @@ h4 {
 .gallery-preview-copy h3 {
   margin: 0 0 0.75rem;
   font-size: 1.4rem;
+}
+
+.gallery-preview-copy .btn {
+  margin-top: 0.75rem;
 }
 
 .enlistment-grid {

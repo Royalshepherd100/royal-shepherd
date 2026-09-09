@@ -1,9 +1,8 @@
 (() => {
   console.log('app.js starting');
-  // Set default backend URL only if not already provided by the hosting environment.
-  if (!window.RS_BACKEND_URL) {
-    window.RS_BACKEND_URL = 'https://royal-shepherd-backend.onrender.com';
-  }
+  // Force the canonical Render backend for all deployed pages.
+  // This overrides any stale fallback embedded in cached HTML or scripts.
+  window.RS_BACKEND_URL = 'https://royal-shepherd-bacl.onrender.com';
   window.__rsAppJsLoaded = true;
   const header = document.querySelector('.site-header');
   const menuToggle = document.getElementById('menuToggle');

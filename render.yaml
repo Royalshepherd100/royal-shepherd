@@ -9,12 +9,11 @@ services:
     buildCommand: echo "No build required"
 
   - type: web_service
-    name: "royal-shepherd bacl"
+    name: "royal-shepherd-bacl"
     env: python
     branch: main
     plan: starter
     root: backend
     buildCommand: pip install -r requirements/requirements.txt
     startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
-    # Use the API health endpoint so Render's health check hits the FastAPI route.
-    healthCheckPath: /api/health
+    healthCheckPath: /

@@ -1,11 +1,15 @@
 from datetime import datetime
 import json
 import os
+from copy import deepcopy
+from threading import RLock
 from pathlib import Path
 from typing import Any, Dict, List
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 
 
@@ -93,10 +97,13 @@ def normalize_state_payload(payload: Dict[str, Any] | None, existing_state: Dict
     if not isinstance(payload, dict):
         return merged_state
 
+    full_state = payload.get("_fullState") is True
     for key, value in payload.items():
+        if key == "_fullState":
+            continue
         if key in REQUEST_COLLECTION_KEYS:
             continue
-        merged_state[key] = merge_state_value(merged_state.get(key), value)
+        merged_state[key] = deepcopy(value) if full_state else merge_state_value(merged_state.get(key), value)
 
     request_payload: Dict[str, Any] = {}
     for key in REQUEST_COLLECTION_KEYS:
@@ -134,6 +141,7 @@ def build_default_state() -> Dict[str, Any]:
         "commandStructure": {"officers": []},
         "founderStory": "",
         "excoProfiles": {},
+        "newsItems": [],
         "examScores": {},
         "activeExamYear": str(datetime.utcnow().year),
         "galleryItems": [],
@@ -181,8 +189,18 @@ def get_section_and_rank(dob_value: str) -> Dict[str, str]:
 
 
 store = load_state()
+store_lock = RLock()
 
 app = FastAPI(title="Royal Shepherd Backend", version="1.0.0")
+
+# Serve frontend static files from the workspace root (one level above `backend/`).
+ROOT_DIR = Path(__file__).resolve().parent.parent
+try:
+    # Mount static files under /static to avoid intercepting API routes.
+    app.mount("/static", StaticFiles(directory=str(ROOT_DIR), html=True), name="static")
+except Exception:
+    # If StaticFiles can't be mounted (missing aiofiles), continue — API still works.
+    pass
 
 app.add_middleware(
     CORSMiddleware,
@@ -192,26 +210,34 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.get("/")
+@app.get("/api/health")
 def health_check():
     return {"status": "ok", "message": "Royal Shepherd backend is running"}
 
 
 @app.get("/state")
 def get_state():
-    return store
+    with store_lock:
+        return deepcopy(store)
 
 
 @app.post("/state")
 def save_full_state(payload: Dict[str, Any]):
-    merged_state = normalize_state_payload(payload, store)
-    store.clear()
-    store.update(merged_state)
-    save_state()
-    print("[RS-BACKEND] Members before save", store.get("companies", {}))
-    print("[RS-BACKEND] Payload sent to backend", payload)
-    print("[RS-BACKEND] Backend state after save", store.get("companies", {}))
-    return store
+    with store_lock:
+        merged_state = normalize_state_payload(payload, store)
+        store.clear()
+        store.update(merged_state)
+        save_state()
+        print("[RS-BACKEND] Members before save", store.get("companies", {}))
+        print("[RS-BACKEND] Payload sent to backend", payload)
+        print("[RS-BACKEND] Backend state after save", store.get("companies", {}))
+        return deepcopy(store)
+
+
+# Provide API-prefixed aliases so frontend code can use /api/state without
+# requiring the static mounting to change.
+app.add_api_route("/api/state", get_state, methods=["GET"])
+app.add_api_route("/api/state", save_full_state, methods=["POST"])
 
 
 @app.get("/companies")
@@ -340,3 +366,12 @@ def deny_application(application_id: str):
     application["updatedAt"] = datetime.utcnow().isoformat()
     save_state()
     return application
+
+
+# Catch-all route to serve the frontend's index.html for non-API paths.
+@app.get("/{full_path:path}")
+def serve_index(full_path: str):
+    index_file = ROOT_DIR / "index.html"
+    if index_file.exists():
+        return FileResponse(str(index_file))
+    raise HTTPException(status_code=404, detail="Not Found")

@@ -170,3 +170,85 @@ def test_post_state_preserves_existing_members_when_partial_company_payload_arri
     assert company["anchor"] == ["Ada"]
     assert company["active"] == ["Ada"]
     assert company["members"][0]["name"] == "Ada"
+
+
+def test_post_state_preserves_gallery_items_across_partial_updates():
+    client = new_client()
+
+    first_response = client.post(
+        "/state",
+        json={
+            "galleryItems": [
+                {"src": "uploaded-image.png", "title": "Uploaded", "description": "Shared gallery image", "category": "parades"}
+            ]
+        },
+    )
+    assert first_response.status_code == 200
+
+    second_response = client.post(
+        "/state",
+        json={
+            "companies": {
+                "1": {
+                    "name": "Company 1",
+                    "anchor": [],
+                    "junior": [],
+                    "intermediate": [],
+                    "senior": [],
+                    "officer": [],
+                    "active": [],
+                    "inactive": [],
+                    "officers": [],
+                    "members": [],
+                    "totalMembers": 0,
+                    "totalNcos": 0,
+                    "totalOfficers": 0,
+                }
+            }
+        },
+    )
+    assert second_response.status_code == 200
+
+    state = client.get("/state").json()
+    assert state["galleryItems"] == [
+        {"src": "uploaded-image.png", "title": "Uploaded", "description": "Shared gallery image", "category": "parades"}
+    ]
+
+
+def test_full_state_save_can_intentionally_clear_a_collection():
+    client = new_client()
+    item = {"src": "saved.png", "title": "Saved", "description": "Saved", "category": "parades"}
+    assert client.post("/state", json={"galleryItems": [item]}).status_code == 200
+    assert client.post("/state", json={"_fullState": True, "galleryItems": []}).status_code == 200
+    assert client.get("/state").json()["galleryItems"] == []
+
+
+def test_post_state_preserves_news_items_across_partial_updates():
+    client = new_client()
+    news_item = {
+        "id": "news-1",
+        "title": "Shared update",
+        "date": "2026-09-08",
+        "description": "Visible to every visitor",
+        "image": "image/parade.png",
+    }
+
+    assert client.post("/state", json={"newsItems": [news_item]}).status_code == 200
+    assert client.get("/state").json()["newsItems"] == [news_item]
+    assert client.post("/state", json={"founderStory": "Updated"}).status_code == 200
+    assert client.get("/state").json()["newsItems"] == [news_item]
+
+
+def test_gallery_items_survive_refresh_and_later_partial_state_save():
+    client = new_client()
+    gallery_item = {
+        "src": "WhatsApp Image 2026-07-12 at 7.52.56 AM.jpeg",
+        "title": "Shared moment",
+        "description": "Visible to every visitor",
+        "category": "training",
+    }
+
+    assert client.post("/state", json={"galleryItems": [gallery_item]}).status_code == 200
+    assert client.get("/state").json()["galleryItems"] == [gallery_item]
+    assert client.post("/state", json={"founderStory": "Updated"}).status_code == 200
+    assert client.get("/state").json()["galleryItems"] == [gallery_item]

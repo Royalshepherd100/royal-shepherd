@@ -1,0 +1,362 @@
+﻿{
+    "companies":  {
+                      "1":  {
+                                "name":  "Company 1",
+                                "anchor":  [
+                                               "Ada"
+                                           ],
+                                "junior":  [
+                                               "John Doe",
+                                               "John Doe"
+                                           ],
+                                "intermediate":  [
+
+                                                 ],
+                                "senior":  [
+
+                                           ],
+                                "officer":  [
+
+                                            ],
+                                "active":  [
+                                               "Ada"
+                                           ],
+                                "inactive":  [
+
+                                             ],
+                                "officers":  [
+
+                                             ],
+                                "members":  [
+                                                {
+                                                    "name":  "Ada",
+                                                    "section":  "anchor"
+                                                }
+                                            ],
+                                "totalMembers":  1,
+                                "totalNcos":  0,
+                                "totalOfficers":  0
+                            },
+                      "2":  {
+                                "name":  "Ikorodu - 15th Akiling Regional Coy",
+                                "anchor":  [
+
+                                           ],
+                                "junior":  [
+
+                                           ],
+                                "intermediate":  [
+
+                                                 ],
+                                "senior":  [
+
+                                           ],
+                                "officer":  [
+
+                                            ],
+                                "active":  [
+
+                                           ],
+                                "inactive":  [
+
+                                             ],
+                                "officers":  [
+
+                                             ],
+                                "members":  [
+
+                                            ],
+                                "totalMembers":  0,
+                                "totalNcos":  0,
+                                "totalOfficers":  0
+                            },
+                      "3":  {
+                                "name":  "Iyesi - 17th Akiling Regional Coy",
+                                "anchor":  [
+
+                                           ],
+                                "junior":  [
+
+                                           ],
+                                "intermediate":  [
+
+                                                 ],
+                                "senior":  [
+
+                                           ],
+                                "officer":  [
+
+                                            ],
+                                "active":  [
+
+                                           ],
+                                "inactive":  [
+
+                                             ],
+                                "officers":  [
+
+                                             ],
+                                "members":  [
+
+                                            ],
+                                "totalMembers":  0,
+                                "totalNcos":  0,
+                                "totalOfficers":  0
+                            },
+                      "4":  {
+                                "name":  "Sango - 28th Akiling Regional Coy",
+                                "anchor":  [
+
+                                           ],
+                                "junior":  [
+
+                                           ],
+                                "intermediate":  [
+
+                                                 ],
+                                "senior":  [
+
+                                           ],
+                                "officer":  [
+
+                                            ],
+                                "active":  [
+
+                                           ],
+                                "inactive":  [
+
+                                             ],
+                                "officers":  [
+
+                                             ],
+                                "members":  [
+
+                                            ],
+                                "totalMembers":  0,
+                                "totalNcos":  0,
+                                "totalOfficers":  0
+                            },
+                      "5":  {
+                                "name":  "Command - 31st Akiling Regional Coy",
+                                "anchor":  [
+
+                                           ],
+                                "junior":  [
+
+                                           ],
+                                "intermediate":  [
+
+                                                 ],
+                                "senior":  [
+
+                                           ],
+                                "officer":  [
+
+                                            ],
+                                "active":  [
+
+                                           ],
+                                "inactive":  [
+
+                                             ],
+                                "officers":  [
+
+                                             ],
+                                "members":  [
+
+                                            ],
+                                "totalMembers":  0,
+                                "totalNcos":  0,
+                                "totalOfficers":  0
+                            },
+                      "6":  {
+                                "name":  "Ipaja - 38th Akiling Regional Coy",
+                                "anchor":  [
+
+                                           ],
+                                "junior":  [
+
+                                           ],
+                                "intermediate":  [
+
+                                                 ],
+                                "senior":  [
+
+                                           ],
+                                "officer":  [
+
+                                            ],
+                                "active":  [
+
+                                           ],
+                                "inactive":  [
+
+                                             ],
+                                "officers":  [
+
+                                             ],
+                                "members":  [
+
+                                            ],
+                                "totalMembers":  0,
+                                "totalNcos":  0,
+                                "totalOfficers":  0
+                            },
+                      "7":  {
+                                "name":  "Ijaba - 44th Akiling Regional Coy",
+                                "anchor":  [
+
+                                           ],
+                                "junior":  [
+
+                                           ],
+                                "intermediate":  [
+
+                                                 ],
+                                "senior":  [
+
+                                           ],
+                                "officer":  [
+
+                                            ],
+                                "active":  [
+
+                                           ],
+                                "inactive":  [
+
+                                             ],
+                                "officers":  [
+
+                                             ],
+                                "members":  [
+
+                                            ],
+                                "totalMembers":  0,
+                                "totalNcos":  0,
+                                "totalOfficers":  0
+                            },
+                      "8":  {
+                                "name":  "Ijoko - 48th Akiling Regional Coy",
+                                "anchor":  [
+
+                                           ],
+                                "junior":  [
+
+                                           ],
+                                "intermediate":  [
+
+                                                 ],
+                                "senior":  [
+
+                                           ],
+                                "officer":  [
+
+                                            ],
+                                "active":  [
+
+                                           ],
+                                "inactive":  [
+
+                                             ],
+                                "officers":  [
+
+                                             ],
+                                "members":  [
+
+                                            ],
+                                "totalMembers":  0,
+                                "totalNcos":  0,
+                                "totalOfficers":  0
+                            },
+                      "9":  {
+                                "name":  "Ikeja - 49th Akiling Regional Coy",
+                                "anchor":  [
+
+                                           ],
+                                "junior":  [
+
+                                           ],
+                                "intermediate":  [
+
+                                                 ],
+                                "senior":  [
+
+                                           ],
+                                "officer":  [
+
+                                            ],
+                                "active":  [
+
+                                           ],
+                                "inactive":  [
+
+                                             ],
+                                "officers":  [
+
+                                             ],
+                                "members":  [
+
+                                            ],
+                                "totalMembers":  0,
+                                "totalNcos":  0,
+                                "totalOfficers":  0
+                            }
+                  },
+    "captainAccounts":  {
+
+                        },
+    "commanderAccounts":  {
+                              "commander@royalshepherd.com":  {
+                                                                  "password":  "royalshepherd2026",
+                                                                  "verified":  true,
+                                                                  "email":  "commander@royalshepherd.com"
+                                                              }
+                          },
+    "captainRequests":  {
+                            "first@example.com":  {
+                                                      "email":  "first@example.com",
+                                                      "companyId":  "1",
+                                                      "submittedAt":  "2026-08-04T00:00:00Z"
+                                                  },
+                            "second@example.com":  {
+                                                       "email":  "second@example.com",
+                                                       "companyId":  "2",
+                                                       "submittedAt":  "2026-08-04T00:01:00Z"
+                                                   }
+                        },
+    "enlistmentApplications":  {
+                                   "app_test":  {
+                                                    "id":  "app_test",
+                                                    "fullName":  "John Doe",
+                                                    "email":  "john@example.com",
+                                                    "dob":  "2016-05-14",
+                                                    "phone":  "1234567890",
+                                                    "gender":  "Male",
+                                                    "company":  "1",
+                                                    "reason":  "To serve",
+                                                    "status":  "Approved",
+                                                    "approvedAt":  "2026-08-04T19:00:48.314758"
+                                                }
+                               },
+    "divisionMembers":  {
+                            "active":  [
+
+                                       ]
+                        },
+    "commandStructure":  {
+                             "officers":  [
+
+                                          ]
+                         },
+    "founderStory":  "",
+    "excoProfiles":  {
+
+                     },
+    "examScores":  {
+
+                   },
+    "activeExamYear":  "2026",
+    "galleryItems":  [
+
+                     ]
+}

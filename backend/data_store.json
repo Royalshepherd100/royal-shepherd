@@ -7,13 +7,15 @@
       ],
       "junior": [
         "John Doe",
+        "John Doe",
         "John Doe"
       ],
       "intermediate": [],
       "senior": [],
       "officer": [],
       "active": [
-        "Ada"
+        "Ada",
+        "John Doe"
       ],
       "inactive": [],
       "officers": [],
@@ -21,10 +23,17 @@
         {
           "name": "Ada",
           "section": "anchor"
+        },
+        {
+          "name": "John Doe",
+          "section": "junior",
+          "rank": "NCO",
+          "email": "john@example.com",
+          "phone": "1234567890"
         }
       ],
-      "totalMembers": 1,
-      "totalNcos": 0,
+      "totalMembers": 2,
+      "totalNcos": 1,
       "totalOfficers": 0
     },
     "2": {
@@ -146,6 +155,21 @@
       "totalMembers": 0,
       "totalNcos": 0,
       "totalOfficers": 0
+    },
+    "10": {
+      "name": "Test Co",
+      "active": [],
+      "inactive": [],
+      "officers": [],
+      "anchor": [],
+      "junior": [],
+      "intermediate": [],
+      "senior": [],
+      "officer": [],
+      "totalMembers": 0,
+      "totalNcos": 0,
+      "totalOfficers": 0,
+      "members": []
     }
   },
   "captainAccounts": {},
@@ -179,7 +203,7 @@
       "company": "1",
       "reason": "To serve",
       "status": "Approved",
-      "approvedAt": "2026-08-04T19:00:48.314758"
+      "approvedAt": "2026-08-18T09:07:46.471686"
     }
   },
   "divisionMembers": {
@@ -188,7 +212,7 @@
   "commandStructure": {
     "officers": []
   },
-  "founderStory": "",
+  "founderStory": "Updated via test",
   "excoProfiles": {},
   "examScores": {},
   "activeExamYear": "2026",

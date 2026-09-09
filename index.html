@@ -23,12 +23,10 @@
     <meta name="twitter:image" content="https://royalshepherd100.github.io/royal-shepherd/image/logo.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <meta name="rs-backend-url" content="https://royal-shepherd-backend.onrender.com" />
+    <meta name="rs-backend-url" content="https://royal-shepherd-bacl.onrender.com" />
     <script>
-      // Set a default backend URL only when not already provided by the hosting environment.
-      if (!window.RS_BACKEND_URL) {
-        window.RS_BACKEND_URL = 'https://royal-shepherd-backend.onrender.com';
-      }
+      // Force canonical backend URL for all deployments
+      window.RS_BACKEND_URL = 'https://royal-shepherd-bacl.onrender.com';
     </script>
     <link
       href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap"
@@ -69,6 +67,7 @@
           <a href="#about" class="nav-link">About Us</a>
           <a href="#symbolism" class="nav-link">Values &amp; Pledge</a>
           <a href="#wings" class="nav-link">Our Wings</a>
+          <a href="#latest-news" class="nav-link">Latest News &amp; Updates</a>
           <a href="#gallery" class="nav-link">Gallery</a>
           <a href="#enlistment" class="nav-link cta-link">Join Division</a>
           <a href="captain-dashboard.html" target="_blank" rel="noopener" class="nav-link cta-link captain-trigger" data-dashboard-page="captain-dashboard.html">Captain Dashboard</a>
@@ -475,6 +474,17 @@
         </div>
       </section>
 
+      <section class="section news-section" id="latest-news">
+        <div class="container">
+          <div class="section-heading">
+            <p class="eyebrow">Latest News &amp; Updates</p>
+            <h2 class="text-gradient">Latest News &amp; Updates</h2>
+            <p>Read the latest Royal Shepherd announcements, events, and important updates.</p>
+          </div>
+          <div class="news-grid" id="newsGrid" aria-live="polite"></div>
+        </div>
+      </section>
+
       <section class="section gallery-section" id="gallery">
         <div class="container">
           <div class="section-heading">
@@ -488,10 +498,18 @@
               <div class="gallery-panel-header">
                 <div class="gallery-filters" role="toolbar" aria-label="Gallery filters">
                   <button class="filter-btn active" data-filter="all">All</button>
-                  <button class="filter-btn" data-filter="parades">Parades</button>
-                  <button class="filter-btn" data-filter="band">Band Corps</button>
-                  <button class="filter-btn" data-filter="training">Training</button>
+                  <button class="filter-btn" data-filter="parades">PARADES PICS</button>
+                  <button class="filter-btn" data-filter="band">BAND PICS</button>
+                  <button class="filter-btn" data-filter="rehearsals">REHEARSAL PICS</button>
+                  <button class="filter-btn" data-filter="moments-enjoyment">Moments of Enjoyment</button>
+                  <button class="filter-btn" data-filter="exams">EXAMS PICS</button>
+                  <button class="filter-btn" data-filter="trophies">TROPHIES CABINET</button>
+                  <button class="filter-btn" data-filter="member-catalogue">MEMBER CATALOGUE</button>
                 </div>
+                <label class="gallery-search">
+                  <span class="sr-only">Find a gallery picture</span>
+                  <input type="search" id="gallerySearch" placeholder="Find a picture or member" autocomplete="off" />
+                </label>
                 <button type="button" class="gallery-toggle btn btn-outline" aria-expanded="false">Open Gallery</button>
               </div>
 
@@ -716,18 +734,20 @@
       <div class="modal-backdrop" data-close="true"></div>
       <div class="modal-content glass-card gallery-preview-modal" role="dialog" aria-modal="true" aria-labelledby="galleryPreviewTitle">
         <button class="modal-close" id="galleryClose" aria-label="Close gallery preview">&times;</button>
-        <img id="galleryPreviewImage" class="gallery-preview-image" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" alt="Gallery preview" />
+        <img id="galleryPreviewImage" class="gallery-preview-image" alt="Gallery preview" hidden />
         <div class="gallery-preview-copy">
           <span class="gallery-preview-category" id="galleryPreviewCategory"></span>
           <h3 id="galleryPreviewTitle">Gallery Preview</h3>
           <p id="galleryPreviewDescription">Select a photo from the gallery to view it larger here.</p>
+          <a id="galleryPreviewDownload" class="btn btn-gold" href="#" download>Download Picture</a>
         </div>
       </div>
     </div>
 
-    <script defer src="gallery-data.js?v=6"></script>
-    <script defer src="app.v11.js"></script>
+    <script defer src="gallery-data.js?v=9"></script>
+    <script defer src="app.js?v=16"></script>
     <script type="application/ld+json">
+      
       {
         "@context": "https://schema.org",
         "@type": "Organization",
