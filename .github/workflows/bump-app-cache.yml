@@ -18,13 +18,26 @@ jobs:
 
       - name: Refresh frontend cache version
         run: |
-          python -c "from pathlib import Path; p=Path('index.html'); s=p.read_text(encoding='utf-8-sig'); old=s; s=s.replace('app.js?v=17','app.js?v=18',1); assert s!=old, 'app.js cache reference not found'; p.write_text(s,encoding='utf-8')"
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          path = Path('index.html')
+          text = path.read_text(encoding='utf-8-sig')
+          match = re.search(r'app\.js\?v=(\d+)', text)
+          if not match:
+              raise SystemExit('app.js cache reference not found')
+          version = int(match.group(1)) + 1
+          updated = text[:match.start(1)] + str(version) + text[match.end(1):]
+          path.write_text(updated, encoding='utf-8')
+          print(f'Bumped app.js cache version to {version}')
+          PY
 
       - name: Validate JavaScript
         run: node --check app.js
 
       - name: Verify cache refresh
-        run: grep -q 'app.js?v=18' index.html
+        run: grep -Eq 'app.js\?v=[0-9]+' index.html
 
       - name: Commit cache refresh
         run: |
