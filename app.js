@@ -737,6 +737,9 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     }
   ];
   let pendingGalleryFiles = [];
+  let galleryRenderItems = [];
+  let galleryRenderOffset = 0;
+  const GALLERY_RENDER_CHUNK_SIZE = 36;
 
   function ensureDefaultCommanderAccount() {
     const defaultEmail = 'commander@royalshepherd.com';
@@ -1284,16 +1287,25 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     return Array.from(mergedItems.values());
   }
 
-  function renderGallery() {
-    if (!galleryGrid) return;
-    galleryGrid.innerHTML = '';
+  function getGalleryRenderItems(filter = 'all') {
+    const query = (gallerySearch?.value || '').trim().toLowerCase();
+    return getGalleryItems().filter((item) => {
+      const matchesCategory = filter === 'all' || item.category === filter;
+      const searchable = `${item.title || ''} ${item.description || ''} ${item.category || ''}`.toLowerCase();
+      return matchesCategory && (!query || searchable.includes(query));
+    });
+  }
 
-    const itemsToRender = getGalleryItems();
-    itemsToRender.forEach((item, index) => {
+  function appendGalleryChunk() {
+    if (!galleryGrid || galleryRenderOffset >= galleryRenderItems.length) return;
+    const fragment = document.createDocumentFragment();
+    const end = Math.min(galleryRenderOffset + GALLERY_RENDER_CHUNK_SIZE, galleryRenderItems.length);
+    for (let index = galleryRenderOffset; index < end; index += 1) {
+      const item = galleryRenderItems[index];
       const article = document.createElement('article');
       article.className = 'gallery-item glass-card';
       article.dataset.category = item.category || 'parades';
-      article.dataset.index = index;
+      article.dataset.index = String(getGalleryItems().findIndex((candidate) => candidate.src === item.src));
       article.innerHTML = `
         <button type="button" class="gallery-thumb" aria-label="${escapeHtml(item.title || 'Gallery picture')}">
           <img src="${resolveImagePath(item.src)}" alt="${escapeHtml(item.title || 'Gallery picture')}" loading="lazy" decoding="async" fetchpriority="low" />
@@ -1302,17 +1314,26 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
             <p>${escapeHtml(item.description || '')}</p>
           </div>
         </button>
-        <a class="gallery-download btn btn-outline" href="${resolveImagePath(item.src)}" download aria-label="Download ${item.title}">Download</a>
+        <a class="gallery-download btn btn-outline" href="${resolveImagePath(item.src)}" download aria-label="Download ${escapeHtml(item.title || 'Gallery picture')}">Download</a>
       `;
-      galleryGrid.appendChild(article);
-    });
+      fragment.appendChild(article);
+    }
+    galleryRenderOffset = end;
+    galleryGrid.appendChild(fragment);
+  }
 
+  function renderGallery(filter = 'all') {
+    if (!galleryGrid) return;
+    galleryGrid.innerHTML = '';
+    galleryRenderItems = getGalleryRenderItems(filter);
+    galleryRenderOffset = 0;
+    appendGalleryChunk();
     const emptyState = document.createElement('p');
     emptyState.className = 'gallery-empty-state';
-    emptyState.hidden = true;
+    emptyState.hidden = galleryRenderItems.length > 0;
+    emptyState.textContent = 'No gallery pictures match this search.';
     galleryGrid.appendChild(emptyState);
-
-    applyGalleryFilter('all');
+    applyGalleryFilter(filter);
   }
 
   function renderNews() {
@@ -1381,6 +1402,13 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
   }
 
   function bindGallery() {
+    galleryPanel?.querySelector('.gallery-panel-inner')?.addEventListener('scroll', () => {
+      const scrollContainer = galleryPanel.querySelector('.gallery-panel-inner');
+      if (scrollContainer.scrollTop + scrollContainer.clientHeight >= scrollContainer.scrollHeight - 600) {
+        appendGalleryChunk();
+      }
+    }, { passive: true });
+
     galleryToggle?.addEventListener('click', () => {
       const hidden = galleryPanel?.classList.toggle('is-collapsed');
       galleryToggle.textContent = hidden ? 'Open Gallery' : 'Hide Gallery';
@@ -1420,11 +1448,11 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     });
 
     galleryFilters.forEach((button) => {
-      button.addEventListener('click', () => applyGalleryFilter(button.dataset.filter));
+      button.addEventListener('click', () => renderGallery(button.dataset.filter));
     });
     gallerySearch?.addEventListener('input', () => {
       const activeFilter = document.querySelector('.filter-btn.active')?.dataset.filter || 'all';
-      applyGalleryFilter(activeFilter);
+      renderGallery(activeFilter);
     });
   }
 
