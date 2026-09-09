@@ -125,16 +125,16 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     'pastor-s-o-oladele': { name: 'Pastor S.O Oladele', email: '', phone: '', bio: 'CAC President W/W.' },
     'pastor-e-olusoko': { name: 'Pastor S.O. Olukoso', email: '', phone: '', bio: 'Akiling Region Superintendent.' },
     'bishop-kehinde-abiara': { name: 'Bishop Isaac Kehinde Abiara', email: '', phone: '', bio: 'Agbala-Itura DCC Superintendent Lagos.' },
-    'rs-major-general-e-b-adegbite': { name: 'RS Major General E. B. Adegbite', email: '', phone: '', bio: 'National Organizing Secretary.' },
-    'rs-brigadier-general-s-oludahunsi': { name: 'Pastor S.O. Oladahusi', email: '', phone: '', bio: 'Assistant National Organizing Secretary.' },
+    'rs-major-general-e-b-adegbite': { name: 'RS MAJOR GENERAL J.P. AKINYEMI', email: '', phone: '', bio: 'National Organizing Secretary.' },
+    'rs-brigadier-general-s-oludahunsi': { name: 'RS BRIGADIER GENERAL S. OLUDAHUNSI', email: '', phone: '', bio: 'Assistant National Organizing Secretary.' },
     'rs-major-general-j-p-akinyemi': { name: 'Pastor J.P. Akinyemi', email: '', phone: '', bio: 'Akiling Region Commander.' },
     'rs-colonel-o-olowe': { name: 'Colonel Olamide Olowe', email: '', phone: '', bio: 'Akiling Region Deputy Commander.' },
     'rs-lt-colonel-o-olasupo': { name: 'Lieutenant Colonel (Elder) Olasupo Olukunmi', email: '', phone: '', bio: 'Akiling Region Organizing Secretary.' },
     'rs-captain-s-a-ilori': { name: 'Captain Samuel A. Ilori', email: '', phone: '', bio: 'Akiling Region Training Officer 1 / Acting Divisional Commander.' },
     'akiling-region-superintendent': { name: 'Pastor S.O. Olukoso', email: '', phone: '', bio: 'Akiling Region Superintendent.' },
     'agbala-itura-dcc-superintendent-lagos': { name: 'Bishop Isaac Kehinde Abiara', email: '', phone: '', bio: 'Agbala-Itura DCC Superintendent Lagos.' },
-    'national-organizing-secretary': { name: 'RS Major General E. B. Adegbite', email: '', phone: '', bio: 'National Organizing Secretary.' },
-    'assistant-national-organizing-secretary': { name: 'Pastor S.O. Oladahusi', email: '', phone: '', bio: 'Assistant National Organizing Secretary.' },
+    'national-organizing-secretary': { name: 'RS MAJOR GENERAL J.P. AKINYEMI', email: '', phone: '', bio: 'National Organizing Secretary.' },
+    'assistant-national-organizing-secretary': { name: 'RS BRIGADIER GENERAL S. OLUDAHUNSI', email: '', phone: '', bio: 'Assistant National Organizing Secretary.' },
     'akiling-region-commander': { name: 'Pastor J.P. Akinyemi', email: '', phone: '', bio: 'Akiling Region Commander.' },
     'akiling-region-deputy-commander': { name: 'Colonel Olamide Olowe', email: '', phone: '', bio: 'Akiling Region Deputy Commander.' },
     'akiling-region-organizing-secretary': { name: 'Lieutenant Colonel (Elder) Olasupo Olukunmi', email: '', phone: '', bio: 'Akiling Region Organizing Secretary.' },
@@ -155,13 +155,13 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     'pastor-s-o-oladele': './pastor s.o oladele cac president.jpeg',
     'pastor-e-olusoko': 'Pastor S.O. Olukoso.jpeg',
     'bishop-kehinde-abiara': 'bishop isaac.jpeg',
-    'rs-major-general-e-b-adegbite': 'RS Major General E. B. Adegbite.jpeg',
+    'rs-major-general-e-b-adegbite': 'akiling regional commander  akinyemi.jpeg',
     'rs-brigadier-general-s-oludahunsi': 'pastor s.o oladahusi.jpeg',
     'rs-major-general-j-p-akinyemi': 'akiling regional commander  akinyemi.jpeg',
     'rs-colonel-o-olowe': 'RS Colonel O. Olowe.jpeg',
     'rs-lt-colonel-o-olasupo': 'major olasupo .jpeg',
     'rs-captain-s-a-ilori': 'captain samuel.A.ilori divisional commander and also region training officer 1.jpeg',
-    'national-organizing-secretary': 'RS Major General E. B. Adegbite.jpeg',
+    'national-organizing-secretary': 'akiling regional commander  akinyemi.jpeg',
     'assistant-national-organizing-secretary': 'pastor s.o oladahusi.jpeg',
     'general-secretary': 'rs lieu.olamilekan o. aina.jpeg',
     'financial-secretary-provost-anjola-olayiwola': 'fin sec anjola jesu.jpeg',
@@ -1793,11 +1793,22 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     }
   }
 
+  function getExcoDisplayName(key, profile, roleDefinition, isExcoGroup) {
+    const fixedNames = {
+      'national-organizing-secretary': 'RS MAJOR GENERAL J.P. AKINYEMI',
+      'assistant-national-organizing-secretary': 'RS BRIGADIER GENERAL S. OLUDAHUNSI'
+    };
+    const name = fixedNames[key] || (profile.name || roleDefinition?.label || 'Enter name here').trim();
+    if (!isExcoGroup || /^RS\s/i.test(name)) return name;
+    return `RS ${name}`;
+  }
+
   function renderLeadershipGroup(container, group) {
+    const isExcoGroup = group.title !== 'CAC Authorities';
     const visibleKeys = group.keys.filter((key) => {
       const roleDefinition = excoRoleDefinitions.find((entry) => entry.key === key);
       const profile = state.excoProfiles[key] || defaultExcoProfiles[key] || {};
-      const name = (profile.name || '').trim();
+      const name = getExcoDisplayName(key, profile, roleDefinition, isExcoGroup);
       const role = (leadershipTitleOverrides[key] || profile.role || roleDefinition?.label || '').trim();
       const photo = (profile.photo || leadershipPhotoMap[key] || '').trim();
       return Boolean(name || photo);
@@ -1819,13 +1830,17 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     visibleKeys.forEach((key) => {
       const roleDefinition = excoRoleDefinitions.find((entry) => entry.key === key);
       const profile = state.excoProfiles[key] || defaultExcoProfiles[key] || {};
-      const name = (profile.name || roleDefinition?.label || 'Enter name here').trim();
+      const name = getExcoDisplayName(key, profile, roleDefinition, isExcoGroup);
       const role = leadershipTitleOverrides[key] || (profile.role || roleDefinition?.label || 'Leadership Post').trim();
 
       const card = document.createElement('article');
       card.className = 'leadership-card';
 
-      const photo = profile.photo || leadershipPhotoMap[key] || '';
+      const fixedPhotos = {
+        'national-organizing-secretary': 'akiling regional commander  akinyemi.jpeg',
+        'assistant-national-organizing-secretary': 'pastor s.o oladahusi.jpeg'
+      };
+      const photo = fixedPhotos[key] || profile.photo || leadershipPhotoMap[key] || '';
       const imageSrc = resolveImagePath(photo);
       const initials = (name || role || 'RS')
         .split(/\s+/)
@@ -2288,7 +2303,20 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
 
     excoRoleDefinitions.forEach((role) => {
       const profile = state.excoProfiles[role.key] || {};
-      const profilePhoto = profile.photo || '';
+      const fixedNames = {
+        'rs-major-general-e-b-adegbite': 'RS MAJOR GENERAL J.P. AKINYEMI',
+        'rs-brigadier-general-s-oludahunsi': 'RS BRIGADIER GENERAL S. OLUDAHUNSI',
+        'national-organizing-secretary': 'RS MAJOR GENERAL J.P. AKINYEMI',
+        'assistant-national-organizing-secretary': 'RS BRIGADIER GENERAL S. OLUDAHUNSI'
+      };
+      const fixedPhotos = {
+        'rs-major-general-e-b-adegbite': 'akiling regional commander  akinyemi.jpeg',
+        'rs-brigadier-general-s-oludahunsi': 'pastor s.o oladahusi.jpeg',
+        'national-organizing-secretary': 'akiling regional commander  akinyemi.jpeg',
+        'assistant-national-organizing-secretary': 'pastor s.o oladahusi.jpeg'
+      };
+      const profileName = fixedNames[role.key] || profile.name || '';
+      const profilePhoto = fixedPhotos[role.key] || profile.photo || '';
       const card = document.createElement('div');
       card.className = 'dashboard-card';
       card.dataset.role = role.key;
@@ -2314,7 +2342,7 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
         </div>
         <label>
           <span>Full Name</span>
-          <input type="text" name="${role.key}-name" value="${(profile.name || '').replace(/"/g, '&quot;')}" />
+          <input type="text" name="${role.key}-name" value="${profileName.replace(/"/g, '&quot;')}" />
         </label>
         <label>
           <span>Email Address</span>
