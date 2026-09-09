@@ -125,7 +125,7 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     'pastor-s-o-oladele': { name: 'Pastor S.O Oladele', email: '', phone: '', bio: 'CAC President W/W.' },
     'pastor-e-olusoko': { name: 'Pastor S.O. Olukoso', email: '', phone: '', bio: 'Akiling Region Superintendent.' },
     'bishop-kehinde-abiara': { name: 'Bishop Isaac Kehinde Abiara', email: '', phone: '', bio: 'Agbala-Itura DCC Superintendent Lagos.' },
-    'rs-major-general-e-b-adegbite': { name: 'RS MAJOR GENERAL J.P. AKINYEMI', email: '', phone: '', bio: 'National Organizing Secretary.' },
+    'rs-major-general-e-b-adegbite': { name: 'RS MAJOR GENERAL E. B. ADEGBITE', email: '', phone: '', bio: 'National Organizing Secretary.' },
     'rs-brigadier-general-s-oludahunsi': { name: 'RS BRIGADIER GENERAL S. OLUDAHUNSI', email: '', phone: '', bio: 'Assistant National Organizing Secretary.' },
     'rs-major-general-j-p-akinyemi': { name: 'Pastor J.P. Akinyemi', email: '', phone: '', bio: 'Akiling Region Commander.' },
     'rs-colonel-o-olowe': { name: 'Colonel Olamide Olowe', email: '', phone: '', bio: 'Akiling Region Deputy Commander.' },
@@ -133,7 +133,7 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     'rs-captain-s-a-ilori': { name: 'Captain Samuel A. Ilori', email: '', phone: '', bio: 'Akiling Region Training Officer 1 / Acting Divisional Commander.' },
     'akiling-region-superintendent': { name: 'Pastor S.O. Olukoso', email: '', phone: '', bio: 'Akiling Region Superintendent.' },
     'agbala-itura-dcc-superintendent-lagos': { name: 'Bishop Isaac Kehinde Abiara', email: '', phone: '', bio: 'Agbala-Itura DCC Superintendent Lagos.' },
-    'national-organizing-secretary': { name: 'RS MAJOR GENERAL J.P. AKINYEMI', email: '', phone: '', bio: 'National Organizing Secretary.' },
+    'national-organizing-secretary': { name: 'RS MAJOR GENERAL E. B. ADEGBITE', email: '', phone: '', bio: 'National Organizing Secretary.' },
     'assistant-national-organizing-secretary': { name: 'RS BRIGADIER GENERAL S. OLUDAHUNSI', email: '', phone: '', bio: 'Assistant National Organizing Secretary.' },
     'akiling-region-commander': { name: 'Pastor J.P. Akinyemi', email: '', phone: '', bio: 'Akiling Region Commander.' },
     'akiling-region-deputy-commander': { name: 'Colonel Olamide Olowe', email: '', phone: '', bio: 'Akiling Region Deputy Commander.' },
@@ -155,13 +155,13 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     'pastor-s-o-oladele': './pastor s.o oladele cac president.jpeg',
     'pastor-e-olusoko': 'Pastor S.O. Olukoso.jpeg',
     'bishop-kehinde-abiara': 'bishop isaac.jpeg',
-    'rs-major-general-e-b-adegbite': 'akiling regional commander  akinyemi.jpeg',
+    'rs-major-general-e-b-adegbite': 'RS Major General E. B. Adegbite.jpeg',
     'rs-brigadier-general-s-oludahunsi': 'pastor s.o oladahusi.jpeg',
     'rs-major-general-j-p-akinyemi': 'akiling regional commander  akinyemi.jpeg',
     'rs-colonel-o-olowe': 'RS Colonel O. Olowe.jpeg',
     'rs-lt-colonel-o-olasupo': 'major olasupo .jpeg',
     'rs-captain-s-a-ilori': 'captain samuel.A.ilori divisional commander and also region training officer 1.jpeg',
-    'national-organizing-secretary': 'akiling regional commander  akinyemi.jpeg',
+    'national-organizing-secretary': 'RS Major General E. B. Adegbite.jpeg',
     'assistant-national-organizing-secretary': 'pastor s.o oladahusi.jpeg',
     'general-secretary': 'rs lieu.olamilekan o. aina.jpeg',
     'financial-secretary-provost-anjola-olayiwola': 'fin sec anjola jesu.jpeg',
@@ -1795,7 +1795,7 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
 
   function getExcoDisplayName(key, profile, roleDefinition, isExcoGroup) {
     const fixedNames = {
-      'national-organizing-secretary': 'RS MAJOR GENERAL J.P. AKINYEMI',
+      'national-organizing-secretary': 'RS MAJOR GENERAL E. B. ADEGBITE',
       'assistant-national-organizing-secretary': 'RS BRIGADIER GENERAL S. OLUDAHUNSI'
     };
     const name = fixedNames[key] || (profile.name || roleDefinition?.label || 'Enter name here').trim();
@@ -1837,7 +1837,7 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
       card.className = 'leadership-card';
 
       const fixedPhotos = {
-        'national-organizing-secretary': 'akiling regional commander  akinyemi.jpeg',
+        'national-organizing-secretary': 'RS Major General E. B. Adegbite.jpeg',
         'assistant-national-organizing-secretary': 'pastor s.o oladahusi.jpeg'
       };
       const photo = fixedPhotos[key] || profile.photo || leadershipPhotoMap[key] || '';
@@ -2304,15 +2304,15 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     excoRoleDefinitions.forEach((role) => {
       const profile = state.excoProfiles[role.key] || {};
       const fixedNames = {
-        'rs-major-general-e-b-adegbite': 'RS MAJOR GENERAL J.P. AKINYEMI',
+        'rs-major-general-e-b-adegbite': 'RS MAJOR GENERAL E. B. ADEGBITE',
         'rs-brigadier-general-s-oludahunsi': 'RS BRIGADIER GENERAL S. OLUDAHUNSI',
-        'national-organizing-secretary': 'RS MAJOR GENERAL J.P. AKINYEMI',
+        'national-organizing-secretary': 'RS MAJOR GENERAL E. B. ADEGBITE',
         'assistant-national-organizing-secretary': 'RS BRIGADIER GENERAL S. OLUDAHUNSI'
       };
       const fixedPhotos = {
-        'rs-major-general-e-b-adegbite': 'akiling regional commander  akinyemi.jpeg',
+        'rs-major-general-e-b-adegbite': 'RS Major General E. B. Adegbite.jpeg',
         'rs-brigadier-general-s-oludahunsi': 'pastor s.o oladahusi.jpeg',
-        'national-organizing-secretary': 'akiling regional commander  akinyemi.jpeg',
+        'national-organizing-secretary': 'RS Major General E. B. Adegbite.jpeg',
         'assistant-national-organizing-secretary': 'pastor s.o oladahusi.jpeg'
       };
       const profileName = fixedNames[role.key] || profile.name || '';
