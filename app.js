@@ -126,16 +126,16 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     'pastor-e-olusoko': { name: 'Pastor S.O. Olukoso', email: '', phone: '', bio: 'Akiling Region Superintendent.' },
     'bishop-kehinde-abiara': { name: 'Bishop Isaac Kehinde Abiara', email: '', phone: '', bio: 'Agbala-Itura DCC Superintendent Lagos.' },
     'rs-major-general-e-b-adegbite': { name: 'RS Major General E. B. Adegbite', email: '', phone: '', bio: 'National Organizing Secretary.' },
-    'rs-brigadier-general-s-oludahunsi': { name: 'Pastor S.O. Oladahusi', email: '', phone: '', bio: 'Assistant National Organizing Secretary.' },
-    'rs-major-general-j-p-akinyemi': { name: 'Pastor J.P. Akinyemi', email: '', phone: '', bio: 'Akiling Region Commander.' },
+    'rs-brigadier-general-s-oludahunsi': { name: 'RS Brigadier General S. O. Oladahunsi', email: '', phone: '', bio: 'Assistant National Organizing Secretary.' },
+    'rs-major-general-j-p-akinyemi': { name: 'Pastor J. P. Akinyemi', email: '', phone: '', bio: 'Akiling Region Commander.' },
     'rs-colonel-o-olowe': { name: 'Colonel Olamide Olowe', email: '', phone: '', bio: 'Akiling Region Deputy Commander.' },
     'rs-lt-colonel-o-olasupo': { name: 'Lieutenant Colonel (Elder) Olasupo Olukunmi', email: '', phone: '', bio: 'Akiling Region Organizing Secretary.' },
     'rs-captain-s-a-ilori': { name: 'Captain Samuel A. Ilori', email: '', phone: '', bio: 'Akiling Region Training Officer 1 / Acting Divisional Commander.' },
     'akiling-region-superintendent': { name: 'Pastor S.O. Olukoso', email: '', phone: '', bio: 'Akiling Region Superintendent.' },
     'agbala-itura-dcc-superintendent-lagos': { name: 'Bishop Isaac Kehinde Abiara', email: '', phone: '', bio: 'Agbala-Itura DCC Superintendent Lagos.' },
     'national-organizing-secretary': { name: 'RS Major General E. B. Adegbite', email: '', phone: '', bio: 'National Organizing Secretary.' },
-    'assistant-national-organizing-secretary': { name: 'Pastor S.O. Oladahusi', email: '', phone: '', bio: 'Assistant National Organizing Secretary.' },
-    'akiling-region-commander': { name: 'Pastor J.P. Akinyemi', email: '', phone: '', bio: 'Akiling Region Commander.' },
+    'assistant-national-organizing-secretary': { name: 'RS Brigadier General S. O. Oladahunsi', email: '', phone: '', bio: 'Assistant National Organizing Secretary.' },
+    'akiling-region-commander': { name: 'Pastor J. P. Akinyemi', email: '', phone: '', bio: 'Akiling Region Commander.' },
     'akiling-region-deputy-commander': { name: 'Colonel Olamide Olowe', email: '', phone: '', bio: 'Akiling Region Deputy Commander.' },
     'akiling-region-organizing-secretary': { name: 'Lieutenant Colonel (Elder) Olasupo Olukunmi', email: '', phone: '', bio: 'Akiling Region Organizing Secretary.' },
     'akiling-region-training-officer-acting-divisional-commander': { name: 'Captain Samuel A. Ilori', email: '', phone: '', bio: 'Akiling Region Training Officer 1 / Acting Divisional Commander.' },
@@ -1793,11 +1793,23 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     }
   }
 
+  function getExcoDisplayName(key, profile, roleDefinition, isExcoGroup) {
+    const fixedNames = {
+      'national-organizing-secretary': 'RS Major General E. B. Adegbite',
+      'assistant-national-organizing-secretary': 'RS Brigadier General S. O. Oladahunsi',
+      'akiling-region-commander': 'Pastor J. P. Akinyemi'
+    };
+    const name = fixedNames[key] || (profile.name || roleDefinition?.label || 'Enter name here').trim();
+    if (!isExcoGroup || /^RS\s/i.test(name)) return name;
+    return `RS ${name}`;
+  }
+
   function renderLeadershipGroup(container, group) {
+    const isExcoGroup = group.title !== 'CAC Authorities';
     const visibleKeys = group.keys.filter((key) => {
       const roleDefinition = excoRoleDefinitions.find((entry) => entry.key === key);
       const profile = state.excoProfiles[key] || defaultExcoProfiles[key] || {};
-      const name = (profile.name || '').trim();
+      const name = getExcoDisplayName(key, profile, roleDefinition, isExcoGroup);
       const role = (leadershipTitleOverrides[key] || profile.role || roleDefinition?.label || '').trim();
       const photo = (profile.photo || leadershipPhotoMap[key] || '').trim();
       return Boolean(name || photo);
@@ -1819,13 +1831,18 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     visibleKeys.forEach((key) => {
       const roleDefinition = excoRoleDefinitions.find((entry) => entry.key === key);
       const profile = state.excoProfiles[key] || defaultExcoProfiles[key] || {};
-      const name = (profile.name || roleDefinition?.label || 'Enter name here').trim();
+      const name = getExcoDisplayName(key, profile, roleDefinition, isExcoGroup);
       const role = leadershipTitleOverrides[key] || (profile.role || roleDefinition?.label || 'Leadership Post').trim();
 
       const card = document.createElement('article');
       card.className = 'leadership-card';
 
-      const photo = profile.photo || leadershipPhotoMap[key] || '';
+      const fixedPhotos = {
+        'national-organizing-secretary': 'RS Major General E. B. Adegbite.jpeg',
+        'assistant-national-organizing-secretary': 'pastor s.o oladahusi.jpeg',
+        'akiling-region-commander': 'akiling regional commander  akinyemi.jpeg'
+      };
+      const photo = fixedPhotos[key] || profile.photo || leadershipPhotoMap[key] || '';
       const imageSrc = resolveImagePath(photo);
       const initials = (name || role || 'RS')
         .split(/\s+/)
