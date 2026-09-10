@@ -155,14 +155,14 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     'pastor-s-o-oladele': './pastor s.o oladele cac president.jpeg',
     'pastor-e-olusoko': 'Pastor S.O. Olukoso.jpeg',
     'bishop-kehinde-abiara': 'bishop isaac.jpeg',
-    'rs-major-general-e-b-adegbite': 'RS Major General E. B. Adegbite.jpeg',
-    'rs-brigadier-general-s-oludahunsi': 'pastor s.o oladahusi.jpeg',
+    'rs-major-general-e-b-adegbite': 'nos adegnite.jpeg',
+    'rs-brigadier-general-s-oludahunsi': 'RS Major General E. B. Adegbite.jpeg',
     'rs-major-general-j-p-akinyemi': 'akiling regional commander  akinyemi.jpeg',
     'rs-colonel-o-olowe': 'RS Colonel O. Olowe.jpeg',
     'rs-lt-colonel-o-olasupo': 'major olasupo .jpeg',
     'rs-captain-s-a-ilori': 'captain samuel.A.ilori divisional commander and also region training officer 1.jpeg',
-    'national-organizing-secretary': 'RS Major General E. B. Adegbite.jpeg',
-    'assistant-national-organizing-secretary': 'pastor s.o oladahusi.jpeg',
+    'national-organizing-secretary': 'nos adegnite.jpeg',
+    'assistant-national-organizing-secretary': 'RS Major General E. B. Adegbite.jpeg',
     'general-secretary': 'rs lieu.olamilekan o. aina.jpeg',
     'financial-secretary-provost-anjola-olayiwola': 'fin sec anjola jesu.jpeg',
     'akiling-region-commander': 'akiling regional commander  akinyemi.jpeg',
@@ -1838,8 +1838,8 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
       card.className = 'leadership-card';
 
       const fixedPhotos = {
-        'national-organizing-secretary': 'RS Major General E. B. Adegbite.jpeg',
-        'assistant-national-organizing-secretary': 'pastor s.o oladahusi.jpeg',
+        'national-organizing-secretary': 'nos adegnite.jpeg',
+        'assistant-national-organizing-secretary': 'RS Major General E. B. Adegbite.jpeg',
         'akiling-region-commander': 'akiling regional commander  akinyemi.jpeg'
       };
       const photo = fixedPhotos[key] || profile.photo || leadershipPhotoMap[key] || '';
