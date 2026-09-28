@@ -609,6 +609,31 @@ h4 {
   margin-bottom: 0.25rem;
 }
 
+.company-pdf-columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+
+.company-pdf-columns-single {
+  grid-template-columns: 1fr;
+}
+
+.company-pdf-members {
+  padding-left: 1.5rem;
+  color: var(--silver-200);
+}
+
+.company-pdf-members li {
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 620px) {
+  .company-pdf-columns {
+    grid-template-columns: 1fr;
+  }
+}
+
 .training-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -775,6 +800,211 @@ h4 {
 .leadership-details h4 {
   font-size: 1.1rem;
   color: var(--white-100);
+}
+
+.captains-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.membership-stat-trigger {
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: center;
+  cursor: pointer;
+}
+
+.membership-stat-trigger:focus-visible {
+  outline: 2px solid var(--gold-400);
+  outline-offset: 4px;
+}
+
+.membership-list-modal {
+  width: min(94vw, 1050px);
+  max-width: 1050px;
+  max-height: 88vh;
+  padding: 1.25rem;
+}
+
+.membership-list-modal h2 {
+  margin: 0 2.5rem 0.75rem 0;
+  font-size: 1.35rem;
+}
+
+.membership-list-modal > p {
+  margin-bottom: 0.75rem;
+}
+
+.membership-lookup {
+  margin-bottom: 1rem;
+  padding: 1.2rem;
+}
+
+.membership-lookup .section-heading {
+  margin-bottom: 1rem;
+}
+
+.membership-lookup-form {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.membership-lookup-controls {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.membership-lookup-controls input {
+  min-width: 0;
+  flex: 1;
+}
+
+.membership-lookup-results {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.membership-match-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+  gap: 0.75rem;
+}
+
+.membership-match {
+  display: grid;
+  gap: 0.35rem;
+  padding: 0.8rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 0.5rem;
+  background: rgba(255, 255, 255, 0.04);
+  color: inherit;
+  text-align: left;
+  font: inherit;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+
+.membership-match[aria-pressed="true"] {
+  border-color: var(--gold-400);
+  background: rgba(253, 194, 79, 0.1);
+}
+
+@media (max-width: 520px) {
+  .membership-lookup-controls {
+    flex-direction: column;
+  }
+}
+
+.total-membership-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.5rem 0.75rem;
+  list-style: none;
+  max-height: min(70vh, 760px);
+  overflow-y: auto;
+  padding-right: 0.5rem;
+}
+
+.total-membership-grid li {
+  min-width: 0;
+  padding: 0.5rem 0.65rem;
+  overflow-wrap: anywhere;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 0.5rem;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+@media (max-width: 900px) {
+  .total-membership-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 620px) {
+  .total-membership-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 380px) {
+  .total-membership-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.captain-card {
+  position: relative;
+  display: grid;
+  gap: 0.9rem;
+  padding: 1rem;
+  border-radius: 1.15rem;
+  background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04));
+  border: 1px solid rgba(255,255,255,0.12);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.22);
+}
+
+.captain-card::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto auto 0;
+  width: 100%;
+  height: 4px;
+  border-radius: 1.15rem 1.15rem 0 0;
+  background: linear-gradient(90deg, var(--gold-500), transparent);
+}
+
+.captain-photo-wrap {
+  overflow: hidden;
+  border-radius: 1rem;
+  background: linear-gradient(135deg, rgba(253,194,79,0.18), rgba(255,255,255,0.04));
+  border: 1px solid rgba(255,255,255,0.12);
+}
+
+.captain-photo {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  display: block;
+  background: rgba(255,255,255,0.04);
+}
+
+.captain-photo-placeholder {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  color: var(--silver-200);
+  text-align: center;
+}
+
+.captain-details {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.captain-role {
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--gold-400);
+}
+
+.captain-details h3 {
+  font-size: 1.15rem;
+  color: var(--white-100);
+}
+
+.captain-bio {
+  color: var(--silver-200);
+  font-size: 0.95rem;
 }
 
 .dashboard-modal {
