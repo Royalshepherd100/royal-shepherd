@@ -161,13 +161,13 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     'pastor-e-olusoko': 'Pastor S.O. Olukoso.jpeg',
     'bishop-kehinde-abiara': 'bishop isaac.jpeg',
     'rs-major-general-e-b-adegbite': 'nos adegnite.jpeg',
-    'rs-brigadier-general-s-oludahunsi': 'RS Major General E. B. Adegbite.jpeg',
+    'rs-brigadier-general-s-oludahunsi': './RS Major General E. B. Adegbite.jpeg',
     'rs-major-general-j-p-akinyemi': 'akiling regional commander  akinyemi.jpeg',
     'rs-colonel-o-olowe': 'RS Colonel O. Olowe.jpeg',
     'rs-lt-colonel-o-olasupo': 'major olasupo .jpeg',
     'rs-captain-s-a-ilori': 'captain samuel.A.ilori divisional commander and also region training officer 1.jpeg',
     'national-organizing-secretary': 'nos adegnite.jpeg',
-    'assistant-national-organizing-secretary': 'RS Major General E. B. Adegbite.jpeg',
+    'assistant-national-organizing-secretary': './RS Major General E. B. Adegbite.jpeg',
     'general-secretary': 'rs lieu.olamilekan o. aina.jpeg',
     'financial-secretary-provost-anjola-olayiwola': 'fin sec anjola jesu.jpeg',
     'akiling-region-commander': 'akiling regional commander  akinyemi.jpeg',
@@ -800,11 +800,17 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     return name || defaultCompanyData[companyId]?.name || `Company ${companyId}`;
   }
 
+  function getOfficialCompanyEntries() {
+    return Object.entries(state.companyData || {})
+      .filter(([companyId]) => Object.prototype.hasOwnProperty.call(defaultCompanyData, companyId))
+      .sort(([leftId], [rightId]) => Number(leftId) - Number(rightId));
+  }
+
   function populateCaptainCompanySelect() {
     if (!captainCompany) return;
 
     const currentValue = captainCompany.value || '';
-    const companyEntries = Object.entries(state.companyData || {}).sort(([a], [b]) => Number(a) - Number(b));
+    const companyEntries = getOfficialCompanyEntries();
 
     captainCompany.innerHTML = '<option value="">Select Company</option>' + companyEntries.map(([companyId, company]) => {
       const label = getCompanyDisplayName(companyId, company);
@@ -820,7 +826,7 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     const enlistmentCompanySelect = document.getElementById('enlistmentCompany');
     if (!enlistmentCompanySelect) return;
 
-    const companyEntries = Object.entries(state.companyData || {}).sort(([a], [b]) => Number(a) - Number(b));
+    const companyEntries = getOfficialCompanyEntries();
     enlistmentCompanySelect.innerHTML = '<option value="">Select Company</option>' + companyEntries.map(([companyId, company]) => {
       const label = getCompanyDisplayName(companyId, company);
       return `<option value="${companyId}">${escapeHtml(label)}</option>`;
@@ -1851,7 +1857,7 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
 
       const fixedPhotos = {
         'national-organizing-secretary': 'nos adegnite.jpeg',
-        'assistant-national-organizing-secretary': 'RS Major General E. B. Adegbite.jpeg',
+        'assistant-national-organizing-secretary': './RS Major General E. B. Adegbite.jpeg',
         'akiling-region-commander': 'akiling regional commander  akinyemi.jpeg'
       };
       const photo = fixedPhotos[key] || profile.photo || leadershipPhotoMap[key] || '';
@@ -1983,7 +1989,11 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
         : [];
       const pdfMemberCount = pdfSections.reduce((total, section) => total + section.members.length, 0);
       const memberCount = pdfMembership ? pdfMemberCount : getCompanyMemberCount(company);
-      stats.innerHTML = `<span>${memberCount} members</span><span>${getCompanyNcoCount(company)} NCOs</span><span>${getCompanyOfficerCount(company)} officers</span>`;
+      stats.innerHTML = `
+        <div><h4>MEMBERS</h4><strong>${memberCount}</strong></div>
+        <div><h4>NCOs</h4><strong>${getCompanyNcoCount(company)}</strong></div>
+        <div><h4>OFFICERS</h4><strong>${getCompanyOfficerCount(company)}</strong></div>
+      `;
 
       const details = card.querySelector('.company-details');
       if (details) {
@@ -2282,7 +2292,7 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
       });
     }
 
-    Object.entries(state.companyData).forEach(([companyId, company]) => {
+    getOfficialCompanyEntries().forEach(([companyId, company]) => {
       const examData = getExamDataForCompany(companyId, state.activeExamYear || getLatestExamYear());
       const card = document.createElement('div');
       card.className = 'dashboard-card';
@@ -2438,9 +2448,9 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
         'assistant-national-organizing-secretary': 'RS BRIGADIER GENERAL S. OLUDAHUNSI'
       };
       const fixedPhotos = {
-        'rs-major-general-e-b-adegbite': 'RS Major General E. B. Adegbite.jpeg',
+        'rs-major-general-e-b-adegbite': './RS Major General E. B. Adegbite.jpeg',
         'rs-brigadier-general-s-oludahunsi': 'pastor s.o oladahusi.jpeg',
-        'national-organizing-secretary': 'RS Major General E. B. Adegbite.jpeg',
+        'national-organizing-secretary': './RS Major General E. B. Adegbite.jpeg',
         'assistant-national-organizing-secretary': 'pastor s.o oladahusi.jpeg'
       };
       const profileName = fixedNames[role.key] || profile.name || '';

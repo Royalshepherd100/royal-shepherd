@@ -556,10 +556,22 @@ h4 {
   font-size: 0.9rem;
 }
 
-.company-stats span {
+.company-stats > div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
   padding: 0.35rem 0.6rem;
   border-radius: 999px;
   background: rgba(255,255,255,0.05);
+}
+
+.company-stats h4 {
+  margin: 0;
+  font-size: inherit;
+}
+
+.company-stats strong {
+  font-size: 1.05rem;
 }
 
 .company-toggle {
