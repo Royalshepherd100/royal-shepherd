@@ -200,7 +200,7 @@ window.RS_COY_MEMBERSHIP = {
       ],
       [
         {
-          "heading": "JUNIOR SECTIONS",
+          "heading": "255th LAGOS COMPANY - JUNIOR SECTIONS",
           "members": [
             "Alabi Samuel",
             "Omoingho Richard",
@@ -219,7 +219,7 @@ window.RS_COY_MEMBERSHIP = {
           ]
         },
         {
-          "heading": "ANCHOR SECTIONS",
+          "heading": "255th LAGOS COMPANY - ANCHOR SECTIONS",
           "members": [
             "Busari Deborah",
             "Sulaimon Christiana",
