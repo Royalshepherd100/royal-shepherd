@@ -512,6 +512,8 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
         }
         image.src = profile.photo;
         image.alt = `Captain ${captainName || 'photograph'}, ${displayName}`;
+      } else if (photoWrap && captainCard.dataset.captainLocked === 'blank') {
+        photoWrap.replaceChildren();
       } else if (photoWrap) {
         let placeholder = photoWrap.querySelector('.captain-photo-placeholder');
         if (!placeholder) {
