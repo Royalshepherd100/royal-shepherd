@@ -43,5 +43,7 @@
     'Anifowoshe Ifeoluwa', 'Eldad M. Rapheal', 'Akinogun Glory', 'Agboola David', 'Anifowoshe Ire', 'Akinsiku Daniel',
     'Allen Destiny', 'Medad J. Rapheal', 'Fatunbi Prevail'
   );
+
+  officialMembers.push('Abdulliah Prosper', 'Ogunmakin Temitope');
   window.RS_TOTAL_MEMBERS = officialMembers;
 })();

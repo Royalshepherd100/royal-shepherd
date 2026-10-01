@@ -240,7 +240,15 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
       'Adedigba Samuel', 'Adisa Darasimi', 'Awoyomi Elijah (SERGEANT)', 'Eriayo Charles', 'Eruje Gideon', 'Foyinkayomi Ayansola (SERGEANT)', 'Kolawole Mathew', 'Nifemi Joshua', 'Ogundare Kolade (STAFF SERGEANT)', 'Ogunsanya Caleb (CORPORAL)', 'Ogunsanya Joshua (SERGEANT)', 'Olaitan Omotayo (STAFF SERGEANT)', 'Omokehinde Ayomide', 'Omolade Mathew (SERGEANT)', 'Onyema Moses (SERGEANT)', 'Adesanya Timileyin', 'Eniola Semilore', 'Erujeje Joshua', 'Fashila Ayomi De', 'Odunsanya Samuel (LANCE CORPORAL)', 'Ogundare Omotola', 'Olatunde Adura', 'Olaitan Damilola', 'Oluwo Moyin', 'Omokehinde Emmanuel', 'Omolade Oyindamola', 'Ajetumobi Isreal', 'Ajike Oladapo', 'Darasimi Awoyomi', 'Darasimi Ayo Dele', 'Idowu Taiwo', 'Odunsanya Samson', 'Onyema Tochukwu', 'Seun Banjoko', 'Taiye Obafemi', 'Kehinde Obafemi', 'Ayodele Kenny', 'Ayodele Taiye', 'Dauda Adesope', 'Ogundare Ajike'
     ],
     3: [
-      'Abiola Oluwafisayo', 'Adedayo Boluwatife', 'Adedokun Adedamola', 'Adedokun Adebusayo', 'Adedokun Temiloluwa', 'Ademola Success', 'Adeniyi Ebunoluwa', 'Adekunle Christianah', 'Adepoju Precious', 'Adepoju Tobiloba', 'Adio Favour', 'Ajiboye Ololade', 'Akinola Samuel', 'Emmanuel Temitope', 'Fashola Ayomide', 'Kudabo Victoria', 'Olaleye Omobolawa', 'Olaleye Oluwabori', 'Olawuyi Isreal', 'Oluwunmi Ebunoluwa', 'Oretuga Tosin', 'Adewole Julius', 'Adewole Nifemi', 'Adewole Peace', 'Idowu Elisabeth', 'Kudabo Victor', 'Obasi Chimaze', 'Obasi Sharon', 'Ogunleye Tomiwa', 'Solomon Emmanuel', 'Taiwo Moyinoluwa', 'Tomiwa Ogunmeye', 'Abioye Divine', 'Abiola Inioluwa', 'Ademola Olamilekan', 'Adewole Jude', 'Adio David', 'Alonge Martyr', 'Idowu David', 'Joseph Prince', 'Kudabo Semilore', 'Obasi Zion', 'Okanlawon Emmanuel', 'Olaleye Babalola', 'Olanipekun Kehinde', 'Pamilerin', 'Taiwo Mary', 'Abioye Oluwakisi', 'Ajani Moreoluwa', 'Farayola', 'Olaleye Elizabeth', 'Oseni Richard'
+      'Abdulliah Anjolajesu', 'Abdulliah Prosper', 'Adebeshin Taiwo', 'Adepoju Emmanuel', 'Dada Ifeoluwa', 'Ogunmakin Temitope',
+      'Abiola Oluwafisayo', 'Adedayo Bioluwatife', 'Adedokun Adebusayo', 'Adedokun Adedamola', 'Adedokun Temiloluwa', 'Ademola Success',
+      'Adeniyi Ebunoluwa', 'Adepoju Prescious', 'Adepoju Tobiloba', 'Adio Favour', 'Ajiboye Ololade', 'Akinola Samuel',
+      'Emmanuel Temitope', 'Fashola Ayomide', 'Kudabo Victoria', 'Olalaye Omobolawa', 'Olaleye Oluwabori', 'Olawuyi Israel', 'Oretuga Tosin',
+      'Abiola Inioluwa', 'Adekunle Christiana', 'Adewole Julius', 'Adewole Nifemi', 'Idowu Elizabeth', 'Kudaabo Victor',
+      'Obasi Chimeze', 'Obasi Sharon', 'Ogunleye Tomiwa', 'Solomon Emmanuel', 'Taiwo Moyinoluwa',
+      'Abioye Divine', 'Ademola Olamilekan', 'Adewole Jude', 'Adio David', 'Alonge Martyr', 'Idowu David', 'Joseph Prince',
+      'Kudabo Semilore', 'Obasi Zion', 'Okanlawon Emmanuel', 'Olaleye Babalola', 'Olanipekun Kehinde', 'Taiwo Mary',
+      'Abioye Oluwa Kiisi', 'Ajani Morireoluwa', 'Olaleye Elizabeth', 'Oseni Richard'
     ],
     4: [
       'Capt. Segun Lawal', 'Akinsinde Oluwatimileyin', 'Adewole Samuel Ayodele', 'Adesanya Abisola Elizabeth', 'Michael Esther Oluwafunke', 'Olaleye Adeyemi David', 'Alabi Mariam Iremide', 'Alabi Lekan Mohammed', 'Ogunwede Ezekiel Tolulope', 'Adeniyi Samuel Adeyemi', 'Samson David Oluwaseun', 'Oyedotun Boluwatife Samson', 'Adesanya Favour Oluwapelumi', 'Sulaimon Praise Iyanuoluwa', 'Michael Samuel Olatoye', 'Abiola Solomon Ayodele', 'Shobola Iyanuoluwa Boluwatife', 'Tanimowo Covenant Toluwanimi', 'Sobayo Olamilekan Ezekiel', 'Adebowale Oluwatoyin Esther', 'Olorode Paul Oluwaseun', 'Adesina Oreoluwa Christiana', 'James Desmond', 'Ogunsina Elizabeth Adenike', 'Ogunsina Tofunmi Enioluwa', 'Adewunmi Oluwatunmise Naomi', 'Ifeanyi Chisom', 'Oladega Israel Jesutobiloba', 'Bamidele Elizabeth Oluwabusayomi'
@@ -309,10 +317,11 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
       { key: 'anchor', heading: 'ANCHOR SECTION', members: officialCompanyMemberRosterConfig[2].slice(36, 40) }
     ],
     3: [
-      { key: 'senior', heading: 'SNR SECTION', members: officialCompanyMemberRosterConfig[3].slice(0, 21) },
-      { key: 'intermediate', heading: 'INTER SECTION', members: officialCompanyMemberRosterConfig[3].slice(21, 32) },
-      { key: 'junior', heading: 'JNR SECTION', members: officialCompanyMemberRosterConfig[3].slice(32, 47) },
-      { key: 'anchor', heading: 'ANCHOR SECTION', members: officialCompanyMemberRosterConfig[3].slice(47, 52) }
+      { key: 'officer', heading: 'Officer Section', members: officialCompanyMemberRosterConfig[3].slice(0, 6) },
+      { key: 'senior', heading: 'Senior Section', members: officialCompanyMemberRosterConfig[3].slice(6, 25) },
+      { key: 'intermediate', heading: 'Intermediate Section', members: officialCompanyMemberRosterConfig[3].slice(25, 36) },
+      { key: 'junior', heading: 'Junior Section', members: officialCompanyMemberRosterConfig[3].slice(36, 49) },
+      { key: 'anchor', heading: 'Anchor Section', members: officialCompanyMemberRosterConfig[3].slice(49, 53) }
     ],
     4: [
       { key: 'officer', heading: 'OFFICER SECTIONS', members: officialCompanyMemberRosterConfig[4].slice(0, 7) },
@@ -2741,6 +2750,15 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
         if (hasOfficialRoster) {
           details.classList.add('company-pdf-details');
           details.replaceChildren();
+          if (companyId === '3') {
+            const rosterPdfLink = document.createElement('a');
+            rosterPdfLink.className = 'btn btn-outline';
+            rosterPdfLink.href = 'new 17th iyana  list.pdf';
+            rosterPdfLink.target = '_blank';
+            rosterPdfLink.rel = 'noopener';
+            rosterPdfLink.textContent = 'Complete Alphabetical List by Section (PDF)';
+            details.appendChild(rosterPdfLink);
+          }
           const columns = configuredSections
             ? [configuredSections]
             : (pdfMembership?.layout === 'columns' ? pdfMembership.columns : [pdfSections]);

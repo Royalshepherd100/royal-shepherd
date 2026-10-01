@@ -97,29 +97,56 @@ function getCompanyCandidates(companyId) {
   return candidates;
 }
 
+const new17thSourceFile = 'new 17th iyana  list.pdf';
+const new17thSourceTitle = 'Complete Alphabetical List by Section';
+const expected17thSections = [
+  ['Abdulliah Anjolajesu', 'Abdulliah Prosper', 'Adebeshin Taiwo', 'Adepoju Emmanuel', 'Dada Ifeoluwa', 'Ogunmakin Temitope'],
+  ['Abiola Oluwafisayo', 'Adedayo Bioluwatife', 'Adedokun Adebusayo', 'Adedokun Adedamola', 'Adedokun Temiloluwa', 'Ademola Success', 'Adeniyi Ebunoluwa', 'Adepoju Prescious', 'Adepoju Tobiloba', 'Adio Favour', 'Ajiboye Ololade', 'Akinola Samuel', 'Emmanuel Temitope', 'Fashola Ayomide', 'Kudabo Victoria', 'Olalaye Omobolawa', 'Olaleye Oluwabori', 'Olawuyi Israel', 'Oretuga Tosin'],
+  ['Abiola Inioluwa', 'Adekunle Christiana', 'Adewole Julius', 'Adewole Nifemi', 'Idowu Elizabeth', 'Kudaabo Victor', 'Obasi Chimeze', 'Obasi Sharon', 'Ogunleye Tomiwa', 'Solomon Emmanuel', 'Taiwo Moyinoluwa'],
+  ['Abioye Divine', 'Ademola Olamilekan', 'Adewole Jude', 'Adio David', 'Alonge Martyr', 'Idowu David', 'Joseph Prince', 'Kudabo Semilore', 'Obasi Zion', 'Okanlawon Emmanuel', 'Olaleye Babalola', 'Olanipekun Kehinde', 'Taiwo Mary'],
+  ['Abioye Oluwa Kiisi', 'Ajani Morireoluwa', 'Olaleye Elizabeth', 'Oseni Richard']
+];
+assert.ok(fs.existsSync(new17thSourceFile), `Missing current 17th Coy source ${new17thSourceFile}`);
+assert.equal(new17thSourceTitle, 'Complete Alphabetical List by Section');
+assert.ok(appSource.includes(`rosterPdfLink.href = '${new17thSourceFile}'`), 'Company 03 does not link the current 17th Coy PDF');
+assert.ok(appSource.includes(`${new17thSourceTitle} (PDF)`), 'Company 03 PDF link title is stale');
+assert.deepEqual(
+  JSON.parse(JSON.stringify(sectionRosters[3].map((section) => section.members))),
+  expected17thSections,
+  'Company 03 roster differs from the current 17th Coy PDF'
+);
+
 const originalMasterCount = 475;
+const priorSupplementalCount = 86;
 const supplementalMasterNames = masterNames.slice(originalMasterCount);
 const supplementalMasterKeys = supplementalMasterNames.map(normalizeMemberComparisonKey);
 const supplementalMasterKeySet = new Set(supplementalMasterKeys);
-assert.equal(masterNames.length, 561, 'Expected the 475-entry Division master plus 86 supported additions');
-assert.equal(supplementalMasterNames.length, 86, 'Unexpected supplemental member count');
+const newSupplementalNames = masterNames.slice(originalMasterCount + priorSupplementalCount);
+const newSupplementalKeys = newSupplementalNames.map(normalizeMemberComparisonKey);
+const newSupplementalKeySet = new Set(newSupplementalKeys);
+assert.equal(masterNames.length, 563, 'Expected the existing 561-entry master plus two new 17th Coy members');
+assert.equal(supplementalMasterNames.length, 88, 'Existing supplemental Division serials were changed or lost');
+assert.deepEqual(newSupplementalNames, ['Abdulliah Prosper', 'Ogunmakin Temitope']);
+assert.deepEqual(
+  getCompanyCandidates(3).map((entry) => normalizeMemberComparisonKey(entry.name)).filter((key) => newSupplementalKeySet.has(key)),
+  newSupplementalKeys,
+  'New 17th Coy serials do not follow PDF section/list order'
+);
 assert.equal(supplementalMasterKeySet.size, supplementalMasterKeys.length, 'Duplicate supplemental names were added');
 const separate255thNames = coyMembership['4'].columns.flat()
   .filter((section) => /\b255th\b/i.test(section.heading || ''))
   .flatMap((section) => section.members || []);
 assert.equal(separate255thNames.length, 22, 'The separate 255th roster must remain intact and unnumbered as Company 04');
-const supplementalSourceOrder = [];
 const supplementalOwners = new Map();
 for (let companyId = 1; companyId <= 9; companyId += 1) {
   getCompanyCandidates(companyId).forEach((entry) => {
     const key = normalizeMemberComparisonKey(entry.name);
-    if (!supplementalMasterKeySet.has(key)) return;
-    supplementalSourceOrder.push(key);
+    if (!newSupplementalKeySet.has(key)) return;
     supplementalOwners.set(key, (supplementalOwners.get(key) || 0) + 1);
   });
 }
-assert.deepEqual(supplementalSourceOrder, supplementalMasterKeys, 'Supplemental serials do not follow company/list source order');
 supplementalOwners.forEach((ownerCount, key) => assert.equal(ownerCount, 1, `Supplemental member ${key} is not assigned to exactly one company`));
+newSupplementalKeys.forEach((key) => assert.equal(supplementalOwners.get(key), 1, `New 17th member ${key} is not assigned to exactly one company`));
 
 const serialsByName = new Map();
 const duplicateMasterNames = new Set();
@@ -186,8 +213,11 @@ for (let companyId = 1; companyId <= 9; companyId += 1) {
 assert.equal(`AI.D08/${String(7).padStart(3, '0')}/${String(1).padStart(3, '0')}`, 'AI.D08/007/001');
 console.log(JSON.stringify({
   masterEntries: masterNames.length,
-  supplementalMembersAdded: supplementalMasterNames.length,
-  firstSupplementalSerial: originalMasterCount + 1,
+  new17thSourceFile,
+  new17thSourceTitle,
+  new17thPdfMembers: expected17thSections.reduce((total, section) => total + section.length, 0),
+  newMembersNumbered: newSupplementalNames.length,
+  firstNewSerial: originalMasterCount + priorSupplementalCount + 1,
   finalDivisionSerial: masterNames.length,
   duplicateMasterNames: duplicateMasterNames.size,
   separate255thEntriesExcluded: separate255thNames.length,
