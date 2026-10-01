@@ -580,6 +580,16 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     return counts;
   }
 
+  function getPersonnelNameTokenCount(name) {
+    const personalName = String(name || '')
+      .normalize('NFKD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/^(?:(?:\d+(?:st|nd|rd|th)\s*)?(?:captain|capt|officer|warrant\s+officer|warrant|lieutenant|provost|evang|evangelist|mr|mrs|miss|rev|reverend)\.?\s*)+/i, '')
+      .replace(/\s*\((?:sergeant|staff sergeant|corporal|lance corporal|mr|mrs)\)\s*$/i, '')
+      .trim();
+    return personalName ? personalName.split(/\s+/).length : 0;
+  }
+
   function getOfficialCompanyMemberRoster(companyId) {
     return getOfficialCompanySections(companyId)
       .flatMap((section) => section.members);
@@ -2817,6 +2827,7 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
             ? 'company-pdf-columns'
             : 'company-pdf-columns company-pdf-columns-single';
           let nextMemberSerial = 1;
+          let nextPersonnelListSerial = 1;
           renderColumns.forEach((sections) => {
             const column = document.createElement('div');
             column.className = 'company-pdf-column';
@@ -2832,6 +2843,13 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
                 const item = document.createElement('li');
                 item.dataset.companySerial = String(nextMemberSerial).padStart(3, '0');
                 const display = renderMemberNameWithDivisionId(name, companyId, section.key || getCompanySectionKey(section.heading), nextMemberSerial);
+                if (getPersonnelNameTokenCount(name) >= 2) {
+                  const serial = document.createElement('span');
+                  serial.className = 'personnel-list-serial';
+                  serial.textContent = `${nextPersonnelListSerial}. `;
+                  display.insertBefore(serial, display.firstChild);
+                  nextPersonnelListSerial += 1;
+                }
                 if (section.key === 'captain') {
                   display.insertBefore(document.createTextNode('Company Captain — '), display.firstChild);
                 }
@@ -2858,6 +2876,13 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
               const item = document.createElement('li');
               item.dataset.companySerial = String(nextMemberSerial).padStart(3, '0');
               const display = renderMemberNameWithDivisionId(name, companyId, sectionKey, nextMemberSerial);
+              if (getPersonnelNameTokenCount(name) >= 2) {
+                const serial = document.createElement('span');
+                serial.className = 'personnel-list-serial';
+                serial.textContent = `${nextPersonnelListSerial}. `;
+                display.insertBefore(serial, display.firstChild);
+                nextPersonnelListSerial += 1;
+              }
               const note = document.createElement('span');
               note.textContent = `Website-only; ${sectionKey} section; ID unassigned`;
               display.appendChild(note);
@@ -2879,6 +2904,7 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
       }
 
       let nextMemberSerial = 1;
+  let nextPersonnelListSerial = 1;
       card.querySelectorAll('.company-list').forEach((sourceList) => {
         let list = sourceList;
         if (list.tagName !== 'OL') {
@@ -2896,6 +2922,13 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
           const li = document.createElement('li');
           li.dataset.companySerial = String(nextMemberSerial).padStart(3, '0');
           const content = renderMemberNameWithDivisionId(item, companyId, type, nextMemberSerial);
+          if (getPersonnelNameTokenCount(item) >= 2) {
+            const serial = document.createElement('span');
+            serial.className = 'personnel-list-serial';
+            serial.textContent = `${nextPersonnelListSerial}. `;
+            content.insertBefore(serial, content.firstChild);
+            nextPersonnelListSerial += 1;
+          }
           li.replaceChildren(content);
           list.appendChild(li);
           nextMemberSerial += 1;

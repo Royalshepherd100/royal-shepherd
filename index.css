@@ -632,8 +632,15 @@ h4 {
 }
 
 .company-pdf-members {
+  list-style: none;
   padding-left: 1.5rem;
   color: var(--silver-200);
+}
+
+.personnel-list-serial {
+  display: inline-block;
+  min-width: 2rem;
+  font-variant-numeric: tabular-nums;
 }
 
 .company-pdf-members li {
