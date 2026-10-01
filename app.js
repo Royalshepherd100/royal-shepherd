@@ -631,17 +631,120 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     return entries;
   }
 
+  let divisionMemberNumberByCompanyRow = new Map();
+
+  function ensureDivisionWideMemberNumbers() {
+    const usedNumbers = new Set();
+    const pendingRows = [];
+    const rowsByCompany = new Map();
+    const legacyIdsByCompanyRow = new Map();
+    const highestDivisionRosterNumber = Array.isArray(window.RS_TOTAL_MEMBERS)
+      ? window.RS_TOTAL_MEMBERS.length
+      : 0;
+    (Array.isArray(state.memberDivisionIds) ? state.memberDivisionIds : []).forEach((record) => {
+      const companyId = String(Number(record.companyRecordId));
+      const companySerial = Number(record.memberSerial);
+      if (!companyId || !Number.isInteger(companySerial) || companySerial < 1) return;
+      legacyIdsByCompanyRow.set(`${companyId}:${companySerial}`, record);
+    });
+
+    Object.keys(officialCompanySerialByRecordId)
+      .sort((first, second) => Number(first) - Number(second))
+      .forEach((companyId) => {
+        const company = state.companyData[companyId];
+        if (!company) return;
+        const previousRows = Array.isArray(company.companyMemberSerials) ? company.companyMemberSerials : [];
+        const rows = getRenderedCompanyMemberEntries(companyId).map((entry, index) => {
+          const companySerial = index + 1;
+          const previousRow = previousRows[index];
+          const previousDivisionNumber = Number(previousRow?.divisionNumber);
+          const legacyRecord = legacyIdsByCompanyRow.get(`${companyId}:${companySerial}`);
+          const legacyDivisionNumber = Number(legacyRecord?.generalSerial);
+          const candidateNumber = Number.isInteger(previousDivisionNumber) && previousDivisionNumber > 0
+            ? previousDivisionNumber
+            : legacyDivisionNumber;
+          const expectedDivisionNumber = getGeneralDivisionMemberSerial(entry.name)
+            || (entry.sectionKey === 'captain' ? getOfficialCaptainDivisionSerial(companyId, entry.name) : null);
+          const matchesPreviousRow = previousRow
+            && Number(previousRow.companySerial) === companySerial
+            && normalizeMemberComparisonKey(previousRow.name) === normalizeMemberComparisonKey(entry.name);
+          const matchesLegacyRow = legacyRecord
+            && normalizeMemberComparisonKey(legacyRecord.name) === normalizeMemberComparisonKey(entry.name);
+          const generatedNumberIsStable = previousRow?.divisionNumberSource === 'assigned'
+            && candidateNumber > highestDivisionRosterNumber;
+          const legacyNumberIsValid = candidateNumber <= highestDivisionRosterNumber
+            && (candidateNumber < highestDivisionRosterNumber || expectedDivisionNumber === candidateNumber);
+          const preservedNumber = ((matchesPreviousRow || matchesLegacyRow) && legacyNumberIsValid || generatedNumberIsStable)
+            && Number.isInteger(candidateNumber)
+            && candidateNumber > 0
+            && !usedNumbers.has(candidateNumber)
+            ? candidateNumber
+            : null;
+
+          if (preservedNumber) {
+            usedNumbers.add(preservedNumber);
+          } else {
+            pendingRows.push({ companyId, companySerial });
+          }
+
+          return {
+            ...(matchesPreviousRow ? previousRow : {}),
+            name: entry.name,
+            section: entry.sectionKey,
+            companySerial: String(companySerial).padStart(3, '0'),
+            divisionNumber: preservedNumber,
+            divisionNumberSource: preservedNumber
+              ? (generatedNumberIsStable ? 'assigned' : 'division')
+              : ''
+          };
+        });
+        rowsByCompany.set(companyId, rows);
+      });
+
+    let nextDivisionNumber = Math.max(highestDivisionRosterNumber, 0, ...usedNumbers);
+    pendingRows.forEach(({ companyId, companySerial }) => {
+      nextDivisionNumber += 1;
+      const rows = rowsByCompany.get(companyId);
+      rows[companySerial - 1].divisionNumber = nextDivisionNumber;
+      rows[companySerial - 1].divisionNumberSource = 'assigned';
+    });
+
+    const nextNumberMap = new Map();
+    let changed = false;
+    rowsByCompany.forEach((rows, companyId) => {
+      const company = state.companyData[companyId];
+      if (JSON.stringify(company.companyMemberSerials || []) !== JSON.stringify(rows)) {
+        company.companyMemberSerials = rows;
+        changed = true;
+      }
+      rows.forEach((row) => {
+        nextNumberMap.set(`${companyId}:${Number(row.companySerial)}`, row.divisionNumber);
+      });
+    });
+    divisionMemberNumberByCompanyRow = nextNumberMap;
+    return changed;
+  }
+
   function syncOfficialCompanyMembersToState() {
     let changed = false;
     Object.keys(officialCompanySerialByRecordId).forEach((recordId) => {
       const company = state.companyData[recordId];
       if (!company) return;
       const sections = getOfficialCompanySections(recordId);
-      const companyMemberSerials = getRenderedCompanyMemberEntries(recordId).map((entry, index) => ({
-        name: entry.name,
-        section: entry.sectionKey,
-        companySerial: String(index + 1).padStart(3, '0')
-      }));
+      const previousSerials = Array.isArray(company.companyMemberSerials) ? company.companyMemberSerials : [];
+      const companyMemberSerials = getRenderedCompanyMemberEntries(recordId).map((entry, index) => {
+        const previous = previousSerials[index];
+        const companySerial = index + 1;
+        const sameMemberRow = previous
+          && Number(previous.companySerial) === companySerial
+          && normalizeMemberComparisonKey(previous.name) === normalizeMemberComparisonKey(entry.name);
+        return {
+          ...(sameMemberRow ? previous : {}),
+          name: entry.name,
+          section: entry.sectionKey,
+          companySerial: String(companySerial).padStart(3, '0')
+        };
+      });
       if (JSON.stringify(company.companyMemberSerials || []) !== JSON.stringify(companyMemberSerials)) {
         company.companyMemberSerials = companyMemberSerials;
         changed = true;
@@ -701,6 +804,7 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
         changed = true;
       }
     });
+    if (ensureDivisionWideMemberNumbers()) changed = true;
     return changed;
   }
 
@@ -717,51 +821,18 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
 
   function getOfficialMemberDivisionId(companyId, memberName, companySerialOverride = null) {
     const companyIdText = officialCompanySerialByRecordId[companyId];
-    const roster = getOfficialCompanyMemberRoster(companyId);
     const cleanedName = String(memberName || '').trim();
     if (!companyIdText || !cleanedName) return '';
 
-    const targetKey = normalizeMemberComparisonKey(cleanedName);
-    if (!targetKey) return '';
-
-    const generalSerial = getGeneralDivisionMemberSerial(cleanedName);
     const overrideSerial = Number(companySerialOverride);
     const companySerial = Number.isInteger(overrideSerial) && overrideSerial > 0
       ? overrideSerial
       : getCompanySerialForMember(companyId, cleanedName);
-    if (generalSerial && companySerial) {
-      return `AI.D/${String(companyIdText).padStart(2, '0')}/${String(generalSerial).padStart(3, '0')}/${String(companySerial).padStart(3, '0')}`;
-    }
-
-    const captainName = getOfficialCaptainForCompany(companyId);
-    if (captainName && normalizeMemberComparisonKey(captainName) === targetKey) {
-      const captainDivisionSerial = generalSerial || getOfficialCaptainDivisionSerial(companyId, captainName) || Number(companyId) + 1;
-      return `AI.D/${String(companyIdText).padStart(2, '0')}/${String(captainDivisionSerial).padStart(3, '0')}/${String(companySerial || 1).padStart(3, '0')}`;
-    }
-
-    if (generalSerial && generalSerial <= 11 && Number(companyIdText) === generalSerial) {
-      return `AI.D/${String(generalSerial).padStart(2, '0')}/${String(generalSerial).padStart(3, '0')}/${String(companySerial || 1).padStart(3, '0')}`;
-    }
-
-    if (!roster.length) return '';
-
-    const matchingIndexes = roster
-      .map((candidate, index) => normalizeMemberComparisonKey(candidate) === targetKey ? index : -1)
-      .filter((index) => index !== -1);
-    if (matchingIndexes.length !== 1) return '';
-    const matchingIndex = matchingIndexes[0];
-
-    const companyOccurrenceCount = Object.keys(officialCompanySerialByRecordId).reduce((count, recordId) => {
-      return count + getOfficialCompanyMemberRoster(recordId)
-        .filter((candidate) => normalizeMemberComparisonKey(candidate) === targetKey).length;
-    }, 0);
-    if (companyOccurrenceCount !== 1) return '';
-
-    const matchedGeneralSerial = getGeneralDivisionMemberSerial(roster[matchingIndex]);
-    if (!matchedGeneralSerial) return '';
-
-    const fallbackCompanySerial = company || matchingIndex + 2;
-    return `AI.D/${companyIdText}/${String(matchedGeneralSerial).padStart(3, '0')}/${String(fallbackCompanySerial).padStart(3, '0')}`;
+    if (!Number.isInteger(companySerial) || companySerial < 1) return '';
+    if (!divisionMemberNumberByCompanyRow.size) ensureDivisionWideMemberNumbers();
+    const divisionNumber = divisionMemberNumberByCompanyRow.get(`${companyId}:${companySerial}`);
+    if (!Number.isInteger(divisionNumber) || divisionNumber < 1) return '';
+    return `AI.D/${String(companyIdText).padStart(2, '0')}/${String(divisionNumber).padStart(3, '0')}/${String(companySerial).padStart(3, '0')}`;
   }
 
   function getOfficialDivisionIdForMember(memberName) {
