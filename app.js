@@ -568,7 +568,10 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
       counts[getPersonnelCategory(name, companyId, sectionKey, company)] += 1;
     });
     const captainName = getOfficialCaptainForCompany(companyId);
-    if (captainName) counts.commissioned += 1;
+    const captainIsInRoster = captainName && sourceEntries.some(({ name }) => (
+      normalizeMemberComparisonKey(name) === normalizeMemberComparisonKey(captainName)
+    ));
+    if (captainName && !captainIsInRoster) counts.commissioned += 1;
     if (useOfficialRoster) {
       getWebsiteOnlyCompanyMembers(companyId).forEach(({ name, sectionKey }) => {
         counts[getPersonnelCategory(name, companyId, sectionKey, company)] += 1;
@@ -1470,15 +1473,6 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
   const newsGrid = document.getElementById('newsGrid');
   const defaultNewsItems = [
     {
-      id: 'rs-handbook',
-      title: 'RS Handbook',
-      date: '2026-09-08',
-      description: 'Read the Royal Shepherd RS Handbook.',
-      image: '',
-      link: 'RS New Constitution Book.pdf',
-      downloadName: 'RS-Handbook.pdf'
-    },
-    {
       id: 'rs-constitution',
       title: 'RS New Constitution',
       date: '2026-09-08',
@@ -2162,6 +2156,7 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     const items = [...defaultNewsItems, ...(Array.isArray(state.newsItems) ? state.newsItems : [])]
       .filter((item, index, allItems) => allItems.findIndex((candidate) => candidate.id === item.id) === index)
       .filter((item) => item && item.title && item.description)
+      .filter((item) => item.id === 'rs-constitution' || !/constitution/i.test(String(item.title || '')))
       .sort((first, second) => new Date(second.date || 0) - new Date(first.date || 0));
     newsGrid.innerHTML = items.length ? items.map((item) => `
       <article class="news-card glass-card">
@@ -2778,12 +2773,14 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
         : []);
       const pdfMemberCount = pdfSections.reduce((total, section) => total + section.members.length, 0);
       const personnelCounts = getCompanyPersonnelCounts(companyId, company);
+      const totalPersonnel = Object.values(personnelCounts).reduce((total, count) => total + count, 0);
       const captainName = getOfficialCaptainForCompany(companyId);
       stats.innerHTML = `
         <div><h4>MEMBERS</h4><strong>${personnelCounts.member}</strong></div>
         <div><h4>NCOs</h4><strong>${personnelCounts.nco}</strong></div>
         <div><h4>OFFICERS</h4><strong>${personnelCounts.officer}</strong></div>
         <div><h4>C.O — COMMISSIONED OFFICERS</h4><strong>${personnelCounts.commissioned}</strong></div>
+        <div><h4>TOTAL</h4><strong>${totalPersonnel}</strong></div>
       `;
 
       const details = card.querySelector('.company-details');
