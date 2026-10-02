@@ -146,7 +146,7 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     'akiling-region-training-officer-acting-divisional-commander': { name: 'Captain Samuel A. Ilori', email: '', phone: '', bio: 'Akiling Region Training Officer 1 / Acting Divisional Commander.' },
     'pro-captain-olaitan-awoniyi': { name: 'Captain Olaitan Awoniyi', email: '', phone: '', bio: 'Divisional PRO.' },
     'financial-secretary-provost-anjola-olayiwola': { name: 'Provost Anjola Olayiwola', email: '', phone: '', bio: 'Divisional Financial Secretary.' },
-    'general-secretary': { name: 'RS Lieu. Olamilekan O. Aina', email: '', phone: '', bio: 'Divisional General Secretary.' },
+    'general-secretary': { name: 'RS Captain Olamilekan O. Aina', email: '', phone: '', bio: 'Divisional General Secretary.' },
     'divisional-commander': { name: '', email: '', phone: '', bio: 'Divisional Commander.' },
     'band-master-lieu-solomon-o-adeniji': { name: 'Lieu. Solomon O. Adeniji', email: '', phone: '', bio: 'Divisional Band Master.' },
     'assistant-band-master': { name: '', email: '', phone: '', bio: 'Divisional Assistant Band Master.' },
@@ -286,6 +286,7 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
   const captainDivisionNameAliases = {
     1: 'Ilori Samuel A.',
     2: 'Adebayo Joseph',
+    3: 'Abdullahi John Olayiwala',
     4: 'Lawal Segun Q.',
     5: 'Awoniyi Olaitan',
     8: 'Aina Olamilekan O.'
@@ -375,6 +376,19 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
       .trim()
       .replace(/\s+/g, ' ');
   }
+
+  const officialMemberDivisionNameAliases = {
+    'abdulliah anjolajesu': 'Abdullahi Anjolajesu',
+    'adebeshin taiwo': 'Taiwo Adebeshin',
+    'adedayo bioluwatife': 'Adedayo Boluwatife',
+    'adepoju prescious': 'Adepoju Precious',
+    'olalaye omobolawa': 'Olaleye Omobolawa',
+    'olawuyi israel': 'Olawuyi Isreal',
+    'idowu elizabeth': 'Idowu Elisabeth',
+    'kudaabo victor': 'Kudabo Victor',
+    'obasi chimeze': 'Obasi Chimaze',
+    'abioye oluwa kiisi': 'Abioye Oluwakisi'
+  };
   
   const unwantedCompanyMemberPlaceholders = new Set(['ada', 'john doe']);
   
@@ -793,9 +807,10 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     const lookupNames = Array.isArray(window.RS_TOTAL_MEMBERS) ? window.RS_TOTAL_MEMBERS : [];
     const targetKey = normalizeMemberComparisonKey(memberName);
     if (!targetKey || getPersonnelNameTokenCount(memberName) < 2) return null;
+    const lookupKey = normalizeMemberComparisonKey(officialMemberDivisionNameAliases[targetKey] || memberName);
 
     const matchingIndexes = lookupNames
-      .map((candidate, index) => normalizeMemberComparisonKey(candidate) === targetKey ? index + 1 : -1)
+      .map((candidate, index) => normalizeMemberComparisonKey(candidate) === lookupKey ? index + 1 : -1)
       .filter((index) => index !== -1);
     return matchingIndexes.length === 1 ? matchingIndexes[0] : null;
   }
