@@ -1,12 +1,15 @@
 from datetime import datetime
 import json
 import os
+import secrets
+import time
 from copy import deepcopy
 from threading import RLock
 from pathlib import Path
+from pathlib import PurePosixPath
 from typing import Any, Dict, List
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
@@ -36,6 +39,9 @@ class CompanyBulkPayload(BaseModel):
 
 DEFAULT_DATA_FILE = Path(__file__).resolve().parent / "data_store.json"
 DATA_FILE = Path(os.environ.get("RS_DATA_FILE", DEFAULT_DATA_FILE))
+ADMIN_SESSION_TTL_SECONDS = 12 * 60 * 60
+ADMIN_SESSIONS: Dict[str, tuple[str, float]] = {}
+ADMIN_SESSIONS_LOCK = RLock()
 REQUEST_COLLECTION_KEYS = (
     "captainRequests",
     "companyDashboardRequests",
@@ -43,6 +49,31 @@ REQUEST_COLLECTION_KEYS = (
     "companyRequests",
     "pendingRequests",
     "pendingCompanyRequests",
+)
+PUBLIC_ROOT_FILES = {
+    "index.html",
+    "index-v2.html",
+    "captain-dashboard.html",
+    "commander-dashboard.html",
+    "exco-dashboard.html",
+    "index.css",
+    "app.js",
+    "gallery-data.js",
+    "membership-data.js",
+    "official-division-serials.js",
+    "coy-membership-data.js",
+    "CNAME",
+    "robots.txt",
+    "sitemap.xml",
+    "RS New Constitution Book.pdf",
+}
+PUBLIC_ASSET_FILES = {"assets/jspdf.umd.min.js", "assets/emblem.svg"}
+PUBLIC_IMAGE_EXTENSIONS = {".avif", ".gif", ".jpeg", ".jpg", ".png", ".svg", ".webp"}
+PUBLIC_PRIVATE_COLLECTION_KEYS = (
+    *REQUEST_COLLECTION_KEYS,
+    "enlistmentApplications",
+    "commanderVerificationCodes",
+    "commanderSettings",
 )
 
 
@@ -195,9 +226,75 @@ app = FastAPI(title="Royal Shepherd Backend", version="1.0.0")
 
 # Serve frontend static files from the workspace root (one level above `backend/`).
 ROOT_DIR = Path(__file__).resolve().parent.parent
+def get_admin_email(request: Request) -> str | None:
+    authorization = request.headers.get("authorization", "")
+    scheme, _, token = authorization.partition(" ")
+    if not authorization:
+        return None
+    if scheme.lower() != "bearer" or not token:
+        raise HTTPException(status_code=401, detail="Admin authentication is required.")
+    now = time.monotonic()
+    with ADMIN_SESSIONS_LOCK:
+        session = ADMIN_SESSIONS.get(token)
+        if not session or session[1] <= now:
+            ADMIN_SESSIONS.pop(token, None)
+            raise HTTPException(status_code=401, detail="Admin session expired. Please sign in again.")
+        return session[0]
+
+
+def is_public_static_path(path: str) -> bool:
+    normalized = PurePosixPath(path.replace("\\", "/"))
+    if normalized.is_absolute() or ".." in normalized.parts:
+        return False
+    public_path = normalized.as_posix()
+    if public_path in PUBLIC_ROOT_FILES or public_path in PUBLIC_ASSET_FILES:
+        return True
+    if len(normalized.parts) == 2 and normalized.parts[0] in {"image", "images"}:
+        return normalized.suffix.lower() in PUBLIC_IMAGE_EXTENSIONS
+    if len(normalized.parts) == 1:
+        return normalized.suffix.lower() in PUBLIC_IMAGE_EXTENSIONS
+    return False
+
+
+class PublicRootStaticFiles(StaticFiles):
+    async def get_response(self, path: str, scope: Dict[str, Any]):
+        if not is_public_static_path(path):
+            raise HTTPException(status_code=404, detail="Not Found")
+        return await super().get_response(path, scope)
+
+
+def public_state_snapshot(state: Dict[str, Any]) -> Dict[str, Any]:
+    public_state = deepcopy(state)
+    for key in PUBLIC_PRIVATE_COLLECTION_KEYS:
+        if key in public_state:
+            public_state[key] = {}
+    public_state["commanderAccounts"] = {}
+    public_state["captainAccounts"] = {}
+
+    public_state["galleryItems"] = [
+        {
+            key: item[key]
+            for key in ("id", "src", "title", "description", "category", "uploadedAt")
+            if key in item
+        }
+        for item in public_state.get("galleryItems", [])
+        if isinstance(item, dict)
+    ]
+    public_state["companyDocuments"] = [
+        {
+            key: item[key]
+            for key in ("id", "companyId", "documentName", "src", "uploadedAt")
+            if key in item
+        }
+        for item in public_state.get("companyDocuments", [])
+        if isinstance(item, dict)
+    ]
+    return public_state
+
+
 try:
     # Mount static files under /static to avoid intercepting API routes.
-    app.mount("/static", StaticFiles(directory=str(ROOT_DIR), html=True), name="static")
+    app.mount("/static", PublicRootStaticFiles(directory=str(ROOT_DIR), html=True), name="static")
 except Exception:
     # If StaticFiles can't be mounted (missing aiofiles), continue — API still works.
     pass
@@ -216,14 +313,17 @@ def health_check():
 
 
 @app.get("/state")
-def get_state():
+def get_state(request: Request):
     with store_lock:
-        return deepcopy(store)
+        if get_admin_email(request):
+            return deepcopy(store)
+        return public_state_snapshot(store)
 
 
 @app.post("/state")
-def save_full_state(payload: Dict[str, Any]):
+def save_full_state(payload: Dict[str, Any], request: Request):
     with store_lock:
+        admin_email = get_admin_email(request)
         merged_state = normalize_state_payload(payload, store)
         store.clear()
         store.update(merged_state)
@@ -231,7 +331,9 @@ def save_full_state(payload: Dict[str, Any]):
         print("[RS-BACKEND] Members before save", store.get("companies", {}))
         print("[RS-BACKEND] Payload sent to backend", payload)
         print("[RS-BACKEND] Backend state after save", store.get("companies", {}))
-        return deepcopy(store)
+        if admin_email:
+            return deepcopy(store)
+        return public_state_snapshot(store)
 
 
 # Provide API-prefixed aliases so frontend code can use /api/state without
@@ -312,7 +414,10 @@ def commander_login(payload: Dict[str, Any]):
     password = str(payload.get("password", "")).strip()
     account = store.get("commanderAccounts", {}).get(email)
     if account and account.get("password") == password and account.get("verified"):
-        return {"ok": True, "email": email, "role": "commander"}
+        token = secrets.token_urlsafe(32)
+        with ADMIN_SESSIONS_LOCK:
+            ADMIN_SESSIONS[token] = (email, time.monotonic() + ADMIN_SESSION_TTL_SECONDS)
+        return {"ok": True, "email": email, "role": "commander", "token": token}
     raise HTTPException(status_code=401, detail="Invalid commander credentials")
 
 
