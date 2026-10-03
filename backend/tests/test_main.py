@@ -17,6 +17,44 @@ def new_client():
     return TestClient(main.app)
 
 
+def test_public_state_redacts_private_request_records():
+    client = new_client()
+    import backend.main as main
+
+    record = {"name": "Private Name", "email": "private@example.com", "phone": "555-0100", "message": "Private message"}
+    for key in main.REQUEST_COLLECTION_KEYS:
+        main.store[key] = {"request-1": record}
+    main.store["enlistmentApplications"] = {"application-1": {"fullName": "Private Applicant", "email": "applicant@example.com"}}
+
+    for path in ("/state", "/api/state"):
+        response = client.get(path)
+        assert response.status_code == 200
+        state = response.json()
+        assert all(state[key] == {} for key in main.REQUEST_COLLECTION_KEYS)
+        assert state["enlistmentApplications"] == {}
+        assert "Private Name" not in response.text and "private@example.com" not in response.text
+        assert "Private Applicant" not in response.text and "Private message" not in response.text
+
+    main.store["commanderAccounts"] = {"admin@example.com": {"password": "admin-test-password", "verified": True}}
+    login = client.post("/auth/commander/login", json={"email": "admin@example.com", "password": "admin-test-password"})
+    assert login.status_code == 200
+    admin_state = client.get("/state", headers={"Authorization": f"Bearer {login.json()['token']}"}).json()
+    assert admin_state["enlistmentApplications"]["application-1"]["fullName"] == "Private Applicant"
+
+    response = client.post("/state", json={"founderStory": "Public story"})
+    assert response.status_code == 200
+    assert response.json()["enlistmentApplications"] == {}
+    assert "Private Applicant" not in response.text
+
+
+def test_static_allowlist_blocks_internal_files_and_keeps_public_assets():
+    client = new_client()
+    for path in ("/static/index.css", "/static/app.js", "/static/image/pa%20sk%20abiara.jpeg"):
+        assert client.get(path).status_code == 200
+    for path in ("/static/backend/data_store.json", "/static/backend_state.json", "/static/backend/main.py", "/static/backend/tests/test_main.py"):
+        assert client.get(path).status_code == 404
+
+
 def test_get_company_by_id_returns_company():
     client = new_client()
     response = client.get("/companies/1")
