@@ -124,6 +124,13 @@ def test_approve_application_assigns_member_to_company_and_section():
 
 def test_post_state_merges_pending_requests_instead_of_overwriting_them():
     client = new_client()
+    import backend.main as main
+
+    for key in main.REQUEST_COLLECTION_KEYS:
+        main.store[key] = {}
+    main.store["commanderAccounts"] = {"admin@example.com": {"password": "admin-test-password", "verified": True}}
+    login = client.post("/auth/commander/login", json={"email": "admin@example.com", "password": "admin-test-password"})
+    assert login.status_code == 200
     first_response = client.post(
         "/state",
         json={
@@ -152,7 +159,7 @@ def test_post_state_merges_pending_requests_instead_of_overwriting_them():
     )
     assert second_response.status_code == 200
 
-    state = client.get("/state").json()
+    state = client.get("/state", headers={"Authorization": f"Bearer {login.json()['token']}"}).json()
     requests = state.get("companyDashboardRequests") or state.get("captainRequests") or {}
     assert set(requests.keys()) == {"first@example.com", "second@example.com"}
 
