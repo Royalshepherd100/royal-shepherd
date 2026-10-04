@@ -1,0 +1,21 @@
+exclude:
+  - backend/
+  - uploads/
+  - scripts/
+  - downloads/
+  - attached_assets/
+  - "*.json"
+  - "*.py"
+  - "*.txt"
+  - "*.md"
+  - "*.log"
+  - "*.pdf"
+  - raw_*
+  - live_app_*
+  - app.v11.js
+  - diff_*
+  - temp_*
+  - tmp_*
+
+include:
+  - "RS New Constitution Book.pdf"

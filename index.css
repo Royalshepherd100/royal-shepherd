@@ -606,6 +606,31 @@ h4 {
   margin-top: 0.3rem;
 }
 
+.company-public-documents {
+  margin-top: 0.8rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid rgba(255,255,255,0.12);
+}
+
+.company-public-documents h4 {
+  margin: 0 0 0.5rem;
+  color: var(--gold-400);
+  font-size: 0.95rem;
+}
+
+.company-public-document {
+  display: grid;
+  gap: 0.45rem;
+  padding: 0.55rem 0;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.company-public-document-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
 .company-details h4 {
   font-size: 0.95rem;
   margin: 0.7rem 0 0.35rem;

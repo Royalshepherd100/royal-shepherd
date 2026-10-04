@@ -3,10 +3,10 @@
 This project is configured for deployment on Render using `render.yaml`.
 
 ## Frontend
-- The frontend is served as a static site from the project root.
+- The frontend is served as a static site built from the project root.
 - Render service name: `royal-shepherd`
-- Static site root: `/`
-- No build command is required.
+- The build command creates an allowlisted `dist/` directory containing public pages and media, excluding backend state and uploads.
+- Render publishes `dist/`.
 
 ## Backend
 - The backend is a FastAPI app in `backend/main.py`.
@@ -15,6 +15,8 @@ This project is configured for deployment on Render using `render.yaml`.
 - Install command: `pip install -r requirements/requirements.txt`
 - Start command: `uvicorn main:app --host 0.0.0.0 --port $PORT`
 - Render health check endpoint: `/` (the API health endpoint is `/api/health` in the current backend source)
+- The backend mounts a 1 GB persistent disk at `/var/data`; `data_store.json` and uploaded gallery/PDF files are stored there.
+- Set `RS_ADMIN_EMAIL` and `RS_ADMIN_PASSWORD` as private Render environment values for the authorized admin account. Admin self-registration is disabled.
 
 ## How to deploy on Render
 1. Sign in to Render at https://render.com.
@@ -29,3 +31,5 @@ This project is configured for deployment on Render using `render.yaml`.
 - The backend is available as a separate HTTP service.
 - If `https://royal-shepherd-bacl.onrender.com/` does not return HTTP 200, Render is using the wrong repository, branch, root directory, or service instance. Verify the backend service settings and deploy the latest `main` commit.
 - If you change `render.yaml`, push the update to GitHub and re-deploy on Render.
+- `_config.yml` also excludes backend state, uploads, data dumps, and root PDFs from a branch-root GitHub Pages build; the public constitution is explicitly included.
+- The backend copies bundled `backend/data_store.json` and `uploads/` into a newly mounted disk if those sources are present. Data that exists only on an already-running ephemeral Render filesystem is not included in a fresh disk; export and migrate that live state/files before switching the service to the persistent volume.
