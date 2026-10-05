@@ -21,8 +21,10 @@
     <meta name="twitter:title" content="Royal Shepherd Nigeria" />
     <meta name="twitter:description" content="Official Royal Shepherd Nigeria Website" />
     <meta name="twitter:image" content="https://royalshepherd100.github.io/royal-shepherd/image/logo.png" />
+    <link rel="preload" as="image" href="image/new%20division%20image.jpeg?v=2" fetchpriority="high" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
     <meta name="rs-backend-url" content="https://royal-shepherd-bacl.onrender.com" />
     <script>
       // Force canonical backend URL for all deployments
@@ -31,15 +33,30 @@
     <link
       href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap"
       rel="stylesheet"
+      media="print"
+      onload="this.media='all'"
     />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
+      media="print"
+      onload="this.media='all'"
     />
+    <noscript>
+      <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap"
+        rel="stylesheet"
+      />
+      <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+        crossorigin="anonymous"
+        referrerpolicy="no-referrer"
+      />
+    </noscript>
     <link rel="stylesheet" href="index.css?v=8" />
-    <script defer src="assets/jspdf.umd.min.js?v=1"></script>
   </head>
   <body>
     <header class="site-header" id="top">
@@ -93,7 +110,7 @@
           <div class="hero-visual">
             <div class="ring"></div>
             <div class="hero-image-card">
-              <img src="image/new%20division%20image.jpeg?v=2" alt="New division logo" />
+              <img src="image/new%20division%20image.jpeg?v=2" alt="New division logo" fetchpriority="high" decoding="async" />
             </div>
           </div>
         </div>
@@ -867,7 +884,7 @@
     <script defer src="membership-data.js?v=1"></script>
     <script defer src="official-division-serials.js?v=3"></script>
     <script defer src="coy-membership-data.js?v=2"></script>
-    <script defer src="app.js?v=58"></script>
+    <script defer src="app.js?v=59"></script>
     <script type="application/ld+json">
       
       {
