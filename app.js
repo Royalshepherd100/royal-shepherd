@@ -28,9 +28,19 @@
   const dashboardGrid = document.querySelector('#dashboardModal .dashboard-grid, #captainDashboardGrid');
   const commanderDashboardGrid = document.querySelector('#commanderDashboardModal .dashboard-grid, #commanderDashboardGrid');
   const divisionTotalMembers = document.getElementById('divisionTotalMembers');
+  const divisionTotalRankedOfficers = document.getElementById('divisionTotalRankedOfficers');
+  const divisionTotalNcos = document.getElementById('divisionTotalNcos');
   const divisionTotalOfficers = document.getElementById('divisionTotalOfficers');
   const homeTotalMembers = document.getElementById('homeTotalMembers');
-  const homeTotalOfficers = document.getElementById('homeTotalOfficers');
+  const homeTotalNcos = document.getElementById('homeTotalNcos');
+  const homeTotalRankedOfficers = document.getElementById('homeTotalRankedOfficers');
+  const membershipStatTrigger = document.getElementById('membershipStatTrigger');
+  const rankedPersonnelToggle = document.getElementById('rankedPersonnelToggle');
+  const rankedPersonnelRosters = document.getElementById('rankedPersonnelRosters');
+  const membershipClose = document.getElementById('totalMembershipClose');
+  const membershipLookupForm = document.getElementById('membershipLookupForm');
+  const membershipLookupInput = document.getElementById('membershipLookupInput');
+  const membershipLookupResults = document.getElementById('membershipLookupResults');
   const dashboardForm = document.getElementById('dashboardForm');
   const commanderDashboardForm = document.getElementById('commanderDashboardForm');
   const commanderImportBtn = document.getElementById('commanderImportMembers');
@@ -106,11 +116,11 @@
   ];
 
   const companySectionDefinitions = [
-    { key: 'anchor', label: 'Anchor Section' },
-    { key: 'junior', label: 'Junior Section' },
-    { key: 'intermediate', label: 'Intermediate Section' },
+    { key: 'officer', label: 'Officer Section' },
     { key: 'senior', label: 'Senior Section' },
-    { key: 'officer', label: 'Officer Section' }
+    { key: 'intermediate', label: 'Intermediate Section' },
+    { key: 'junior', label: 'Junior Section' },
+    { key: 'anchor', label: 'Anchor Section' }
   ];
 
   const defaultFounderStory = `Prophet Samuel Kayode Abiara, fondly called Pa SK Abiara, is the revered founder of CAC Agbala Itura Worldwide and the former General Evangelist of CAC Worldwide. He is one of the spiritual pillars of Royal Shepherd and a great servant of God whose ministry has touched many lives through evangelism, discipline, and unwavering faith.
@@ -125,23 +135,23 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     'pastor-s-o-oladele': { name: 'Pastor S.O Oladele', email: '', phone: '', bio: 'CAC President W/W.' },
     'pastor-e-olusoko': { name: 'Pastor S.O. Olukoso', email: '', phone: '', bio: 'Akiling Region Superintendent.' },
     'bishop-kehinde-abiara': { name: 'Bishop Isaac Kehinde Abiara', email: '', phone: '', bio: 'Agbala-Itura DCC Superintendent Lagos.' },
-    'rs-major-general-e-b-adegbite': { name: 'RS Major General E. B. Adegbite', email: '', phone: '', bio: 'National Organizing Secretary.' },
-    'rs-brigadier-general-s-oludahunsi': { name: 'RS Brigadier General S. O. Oladahunsi', email: '', phone: '', bio: 'Assistant National Organizing Secretary.' },
-    'rs-major-general-j-p-akinyemi': { name: 'Pastor J. P. Akinyemi', email: '', phone: '', bio: 'Akiling Region Commander.' },
+    'rs-major-general-e-b-adegbite': { name: 'RS MAJOR GENERAL E. B. ADEGBITE', email: '', phone: '', bio: 'National Organizing Secretary.' },
+    'rs-brigadier-general-s-oludahunsi': { name: 'RS BRIGADIER GENERAL S. OLUDAHUNSI', email: '', phone: '', bio: 'Assistant National Organizing Secretary.' },
+    'rs-major-general-j-p-akinyemi': { name: 'RS MAJOR GENERAL J.P. AKINYEMI', email: '', phone: '', bio: 'Akiling Region Commander.' },
     'rs-colonel-o-olowe': { name: 'Colonel Olamide Olowe', email: '', phone: '', bio: 'Akiling Region Deputy Commander.' },
     'rs-lt-colonel-o-olasupo': { name: 'Lieutenant Colonel (Elder) Olasupo Olukunmi', email: '', phone: '', bio: 'Akiling Region Organizing Secretary.' },
     'rs-captain-s-a-ilori': { name: 'Captain Samuel A. Ilori', email: '', phone: '', bio: 'Akiling Region Training Officer 1 / Acting Divisional Commander.' },
     'akiling-region-superintendent': { name: 'Pastor S.O. Olukoso', email: '', phone: '', bio: 'Akiling Region Superintendent.' },
     'agbala-itura-dcc-superintendent-lagos': { name: 'Bishop Isaac Kehinde Abiara', email: '', phone: '', bio: 'Agbala-Itura DCC Superintendent Lagos.' },
-    'national-organizing-secretary': { name: 'RS Major General E. B. Adegbite', email: '', phone: '', bio: 'National Organizing Secretary.' },
-    'assistant-national-organizing-secretary': { name: 'RS Brigadier General S. O. Oladahunsi', email: '', phone: '', bio: 'Assistant National Organizing Secretary.' },
-    'akiling-region-commander': { name: 'Pastor J. P. Akinyemi', email: '', phone: '', bio: 'Akiling Region Commander.' },
+    'national-organizing-secretary': { name: 'RS MAJOR GENERAL E. B. ADEGBITE', email: '', phone: '', bio: 'National Organizing Secretary.' },
+    'assistant-national-organizing-secretary': { name: 'RS BRIGADIER GENERAL S. OLUDAHUNSI', email: '', phone: '', bio: 'Assistant National Organizing Secretary.' },
+    'akiling-region-commander': { name: 'RS MAJOR GENERAL J.P. AKINYEMI', email: '', phone: '', bio: 'Akiling Region Commander.' },
     'akiling-region-deputy-commander': { name: 'Colonel Olamide Olowe', email: '', phone: '', bio: 'Akiling Region Deputy Commander.' },
     'akiling-region-organizing-secretary': { name: 'Lieutenant Colonel (Elder) Olasupo Olukunmi', email: '', phone: '', bio: 'Akiling Region Organizing Secretary.' },
     'akiling-region-training-officer-acting-divisional-commander': { name: 'Captain Samuel A. Ilori', email: '', phone: '', bio: 'Akiling Region Training Officer 1 / Acting Divisional Commander.' },
     'pro-captain-olaitan-awoniyi': { name: 'Captain Olaitan Awoniyi', email: '', phone: '', bio: 'Divisional PRO.' },
     'financial-secretary-provost-anjola-olayiwola': { name: 'Provost Anjola Olayiwola', email: '', phone: '', bio: 'Divisional Financial Secretary.' },
-    'general-secretary': { name: 'RS Lieu. Olamilekan O. Aina', email: '', phone: '', bio: 'Divisional General Secretary.' },
+    'general-secretary': { name: 'RS Captain Olamilekan O. Aina', email: '', phone: '', bio: 'Divisional General Secretary.' },
     'divisional-commander': { name: '', email: '', phone: '', bio: 'Divisional Commander.' },
     'band-master-lieu-solomon-o-adeniji': { name: 'Lieu. Solomon O. Adeniji', email: '', phone: '', bio: 'Divisional Band Master.' },
     'assistant-band-master': { name: '', email: '', phone: '', bio: 'Divisional Assistant Band Master.' },
@@ -155,14 +165,14 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     'pastor-s-o-oladele': './pastor s.o oladele cac president.jpeg',
     'pastor-e-olusoko': 'Pastor S.O. Olukoso.jpeg',
     'bishop-kehinde-abiara': 'bishop isaac.jpeg',
-    'rs-major-general-e-b-adegbite': 'RS Major General E. B. Adegbite.jpeg',
-    'rs-brigadier-general-s-oludahunsi': 'pastor s.o oladahusi.jpeg',
+    'rs-major-general-e-b-adegbite': 'nos adegnite.jpeg',
+    'rs-brigadier-general-s-oludahunsi': './RS Major General E. B. Adegbite.jpeg',
     'rs-major-general-j-p-akinyemi': 'akiling regional commander  akinyemi.jpeg',
     'rs-colonel-o-olowe': 'RS Colonel O. Olowe.jpeg',
     'rs-lt-colonel-o-olasupo': 'major olasupo .jpeg',
     'rs-captain-s-a-ilori': 'captain samuel.A.ilori divisional commander and also region training officer 1.jpeg',
-    'national-organizing-secretary': 'RS Major General E. B. Adegbite.jpeg',
-    'assistant-national-organizing-secretary': 'pastor s.o oladahusi.jpeg',
+    'national-organizing-secretary': 'nos adegnite.jpeg',
+    'assistant-national-organizing-secretary': './RS Major General E. B. Adegbite.jpeg',
     'general-secretary': 'rs lieu.olamilekan o. aina.jpeg',
     'financial-secretary-provost-anjola-olayiwola': 'fin sec anjola jesu.jpeg',
     'akiling-region-commander': 'akiling regional commander  akinyemi.jpeg',
@@ -196,13 +206,11 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     {
       title: 'Division EXCO Leadership',
       keys: [
-        'divisional-commander',
         'general-secretary',
         'financial-secretary-provost-anjola-olayiwola',
         'training-officer-capt-segun',
         'band-master-lieu-solomon-o-adeniji',
-        'pro-captain-olaitan-awoniyi',
-        'assistant-band-master'
+        'pro-captain-olaitan-awoniyi'
       ]
     }
   ];
@@ -223,7 +231,7 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
   const defaultCompanyData = {
     1: { name: 'Oke Odo - 12th Akiling Regional Coy', anchor: [], junior: [], intermediate: [], senior: [], officer: [], active: [], inactive: [], officers: [] },
     2: { name: 'Ikorodu - 15th Akiling Regional Coy', anchor: [], junior: [], intermediate: [], senior: [], officer: [], active: [], inactive: [], officers: [] },
-    3: { name: 'Iyesi - 17th Akiling Regional Coy', anchor: [], junior: [], intermediate: [], senior: [], officer: [], active: [], inactive: [], officers: [] },
+    3: { name: 'Iyana Iyesi - 17th Akiling Regional Coy', anchor: [], junior: [], intermediate: [], senior: [], officer: [], active: [], inactive: [], officers: [] },
     4: { name: 'Sango - 28th Akiling Regional Coy', anchor: [], junior: [], intermediate: [], senior: [], officer: [], active: [], inactive: [], officers: [] },
     5: { name: 'Command - 31st Akiling Regional Coy', anchor: [], junior: [], intermediate: [], senior: [], officer: [], active: [], inactive: [], officers: [] },
     6: { name: 'Ipaja - 38th Akiling Regional Coy', anchor: [], junior: [], intermediate: [], senior: [], officer: [], active: [], inactive: [], officers: [] },
@@ -231,6 +239,941 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     8: { name: 'Ijoko - 48th Akiling Regional Coy', anchor: [], junior: [], intermediate: [], senior: [], officer: [], active: [], inactive: [], officers: [] },
     9: { name: 'Ikeja - 49th Akiling Regional Coy', anchor: [], junior: [], intermediate: [], senior: [], officer: [], active: [], inactive: [], officers: [] }
   };
+  const suspendedCompanyIds = new Set(['7']);
+
+  function isSuspendedCompany(companyId) {
+    return suspendedCompanyIds.has(String(companyId));
+  }
+
+  const officialCompanyMemberRosterConfig = {
+    2: [
+      'Adedigba Samuel', 'Adisa Darasimi', 'Awoyomi Elijah (SERGEANT)', 'Eriayo Charles', 'Eruje Gideon', 'Foyinkayomi Ayansola (SERGEANT)', 'Kolawole Mathew', 'Nifemi Joshua', 'Ogundare Kolade (STAFF SERGEANT)', 'Ogunsanya Caleb (CORPORAL)', 'Ogunsanya Joshua (SERGEANT)', 'Olaitan Omotayo (STAFF SERGEANT)', 'Omokehinde Ayomide', 'Omolade Mathew (SERGEANT)', 'Onyema Moses (SERGEANT)', 'Adesanya Timileyin', 'Eniola Semilore', 'Erujeje Joshua', 'Fashila Ayomi De', 'Odunsanya Samuel (LANCE CORPORAL)', 'Ogundare Omotola', 'Olatunde Adura', 'Olaitan Damilola', 'Oluwo Moyin', 'Omokehinde Emmanuel', 'Omolade Oyindamola', 'Ajetumobi Isreal', 'Ajike Oladapo', 'Darasimi Awoyomi', 'Darasimi Ayo Dele', 'Idowu Taiwo', 'Odunsanya Samson', 'Onyema Tochukwu', 'Seun Banjoko', 'Taiye Obafemi', 'Kehinde Obafemi', 'Ayodele Kenny', 'Ayodele Taiye', 'Dauda Adesope', 'Ogundare Ajike'
+    ],
+    3: [
+      'Abdulliah Anjolajesu', 'Abdulliah Prosper', 'Adebeshin Taiwo', 'Adepoju Emmanuel', 'Dada Ifeoluwa', 'Ogunmakin Temitope',
+      'Abiola Oluwafisayo', 'Adedayo Bioluwatife', 'Adedokun Adebusayo', 'Adedokun Adedamola', 'Adedokun Temiloluwa', 'Ademola Success',
+      'Adeniyi Ebunoluwa', 'Adepoju Prescious', 'Adepoju Tobiloba', 'Adio Favour', 'Ajiboye Ololade', 'Akinola Samuel',
+      'Emmanuel Temitope', 'Fashola Ayomide', 'Kudabo Victoria', 'Olalaye Omobolawa', 'Olaleye Oluwabori', 'Olawuyi Israel', 'Oretuga Tosin',
+      'Abiola Inioluwa', 'Adekunle Christiana', 'Adewole Julius', 'Adewole Nifemi', 'Idowu Elizabeth', 'Kudaabo Victor',
+      'Obasi Chimeze', 'Obasi Sharon', 'Ogunleye Tomiwa', 'Solomon Emmanuel', 'Taiwo Moyinoluwa',
+      'Abioye Divine', 'Ademola Olamilekan', 'Adewole Jude', 'Adio David', 'Alonge Martyr', 'Idowu David', 'Joseph Prince',
+      'Kudabo Semilore', 'Obasi Zion', 'Okanlawon Emmanuel', 'Olaleye Babalola', 'Olanipekun Kehinde', 'Taiwo Mary',
+      'Abioye Oluwa Kiisi', 'Ajani Morireoluwa', 'Olaleye Elizabeth', 'Oseni Richard'
+    ],
+    4: [
+      'Capt. Segun Lawal', 'Akinsinde Oluwatimileyin', 'Adewole Samuel Ayodele', 'Adesanya Abisola Elizabeth', 'Michael Esther Oluwafunke', 'Olaleye Adeyemi David', 'Alabi Mariam Iremide', 'Alabi Lekan Mohammed', 'Ogunwede Ezekiel Tolulope', 'Adeniyi Samuel Adeyemi', 'Samson David Oluwaseun', 'Oyedotun Boluwatife Samson', 'Adesanya Favour Oluwapelumi', 'Sulaimon Praise Iyanuoluwa', 'Michael Samuel Olatoye', 'Abiola Solomon Ayodele', 'Shobola Iyanuoluwa Boluwatife', 'Tanimowo Covenant Toluwanimi', 'Sobayo Olamilekan Ezekiel', 'Adebowale Oluwatoyin Esther', 'Olorode Paul Oluwaseun', 'Adesina Oreoluwa Christiana', 'James Desmond', 'Ogunsina Elizabeth Adenike', 'Ogunsina Tofunmi Enioluwa', 'Adewunmi Oluwatunmise Naomi', 'Ifeanyi Chisom', 'Oladega Israel Jesutobiloba', 'Bamidele Elizabeth Oluwabusayomi'
+    ],
+    5: [
+      'Captain Olaitan Ayodele Awoniyi', 'Albert Ndidi Blessing', 'Ibikunle Olamide Emmanuel', 'Shoyemi Damilola Abidemi', 'Albert Samuel Darasimi', 'Ayodele Anuoluwapo Victoria', 'Babafemi Favour Diekolaoluwa', 'Daodu Favour Christianah', 'Olosunde Oluwajuwon Francis', 'Olayera Omobolanle Mary', 'Orelusi Gift Esther', 'Fagbuaro Dorcas Jesutofunmi', 'Adegbola Christiana Boluwatife', 'Adedeji David', 'Ademola Esther Omolade', 'Albert Darasimi Hannah', 'Albert Emmanuel Chukwudi', 'Fagbuaro Esther Jesumolawa', 'Felix Elizabeth Mercy', 'Obidele Dorcas Feyikemi', 'Obidele Ezekiel Fisayomi', 'Ojo Mercy Omolola', 'Oladehinde Elizabeth Damilola', 'Olayera Tobiloba Ebenezer', 'Olayinka Ayomide Isreal', 'Olufodunrin Anjolaoluwa Grace', 'Oke Moriyanu Sesede', 'Orelusi Testimony Oluwasemilore', 'Shoyemi Anuoluwapo Deborah', 'Taiwo Deborah Inioluwa', 'Obidele Fiyinfoluwa', 'Adaramola Joseph Kehinde', 'Adaramola John Taiwo', 'Adeola Ayodele Desmond', 'Adelani Deborah Oluwatoyin', 'Agunbiade Faridah Ibukunoluwa', 'Awoniyi Asamoh Andrew', 'Emmanuel Ayomiposi Ibukun', 'Fakolade Motunrayo Monsurat', 'Ilebiyi Bolarinwa Ayanfe', 'Obidele Emmanuel Foladara', 'Oladehinde Emmanuel Damilare', 'Taiwo Dorcas Ireoluwa', 'Temilade Racheal Dewunmi', 'Adedoyin Inioluwa Ashabi', 'Awoniyi Cecilia Hephzibah', 'Awoniyi Adoa Peace', 'Oladehinde Micheal Darasimi', 'Taiwo Christiana Ayanfeoluwa', 'Ilebiyi Solomon iremide'
+    ],
+    6: [
+      'Adebayo Femi', 'Ogundele Bisola', 'Akingbolu Daniel', 'Akingbolu Dorcas', 'Akinlade Isreal', 'Adeolu Anjola', 'Awofala Pamilerin', 'Ayanjimi Sarah', 'Dehinola Samuel', 'Obe Fisayo', 'Olumekun Olumide', 'Olorunjuwon Fikayo', 'Adesola Deborah', 'Adesola Joseph', 'Adewaye Gbogo', 'Akingbolu Deborah', 'Ajayi David', 'Ajayi Mary', 'Dehinola Treasure', 'Joseph Posi', 'Olorunfunmi Esther', 'Adesola Destiny', 'Adeyinka Mitchelle', 'Ajiboye Samuel', 'Olushola Gold'
+    ],
+    7: [
+      'Adelani David', 'Saidi Adunola', 'Fagbire Mary', 'Oluyide Mohammed', 'Idowu Omolayo', 'Idowu Precious', 'Arowolo Ayodeji', 'Adeyemi Isaac', 'Alonge Victor', 'Oludele Pecious', 'Sunday Isaac', 'Ayegboyin Ezekiel', 'Daini Tiwalade adare Deborah', 'Dlagoke Israel', 'Dluvole Pelumi', 'Sikiru Testimony', 'Adenuga Comfort', 'Igbinosu Rokanmi', 'Oluwole Taiwo', 'Oluwole Kehinde', 'Obakoya Taiwo', 'Obakoya Kehinde', 'Adenuga Favour', 'Sikiru Miracle', 'Olujumoke Aramide', 'Adenisimi David', 'Bamiteko Abigeal Adeyemi Mayowa', 'Ogedengbe Felix', 'Ogunronbi Hannah', 'Oluwole Emmanuel', 'Timileyin', 'Officer Sikiru', 'Officer B.O.', 'Officer Olu', 'Officer Fadare', 'Officer Akinb', 'Officer Bukola', 'A Ire', 'Zoe', 'Obagade', 'Damilare', 'Ismail', 'Oludele Semilog', 'Daini Tiwalade', 'Adenuga Good luck', 'Otunmakinwa Victoria', 'Ajayi Tope', 'Daini Akinsanmi', 'Fagbire Mercy', 'Igbinosu Benedicta', 'Dada Tumininu', 'Arowolo Ayomikun', 'Sikiru Obanijesu', 'Ayegboyin Deborah', 'Adeyemi Olamide', 'Idowu Adeola', 'Ifeoluwa Oluwakemi', 'Makinde Sarah', 'Bamiteko Blessing', 'Ogedengbe Festus'
+    ],
+    8: [
+      'Officer Afusat Ajiboye', 'Officer Elizabeth Salako', 'Anjorin Funmilayo', 'Ayodele Praise', 'Increase Olukayode', 'Moyinoluwa Owolawi', 'Olusesi Alex', 'Paul Deborah', 'Rotimi Abimbola Mary', 'Fatunbi Victor', 'Anifowoshe Ogooluwa', 'Abolarinwa Emmanuel', 'Adeyemo Prince Orikomiyo', 'Akala Peace', 'Fatunbi Peculiar', 'Kehinde Ezekiel', 'Marvellous Olukayode', 'Olusesi Israel', 'Rasheed Rodia', 'Sharon Olukayode', 'Akinogun Abigail', 'Anifowoshe Ifeoluwa', 'Bolade Emmanuel', 'Eldad M. Rapheal', 'Salako Ayomiposi', 'Shofela Desola', 'Akinogun Glory', 'Agboola David', 'Anifowoshe Ire', 'Akinsiku Daniel', 'Allen Destiny', 'Medad J. Rapheal', 'Salako Oluwatumininu', 'Fatunbi Prevail'
+    ],
+    9: [
+      'Jacob Tomiwa B.', 'Eyinfunjowo Elijah O', 'Babatunde Waris', 'Agboola Aanuoluwapo', 'Agboola Inioluwa', 'Bankole Adeola', 'Ilori Oyindamola', 'Ishola Happiness', 'Ishola Oyindamola', 'Julius Hephzibah', 'Opaleye Precious', 'Ilori Similoluwa', 'Julius Israel', 'Opaleye Caleb', 'Salako Joshua', 'Ayodele Emmanuel'
+    ],
+    11: [
+      'Ajisegiri Eniola Samuel', 'Sobayo Anjola Marvelous', 'Osunyinka David', 'Sulaimon Emmanuel Ayomide', 'Olaleye Josiah Opeyemi', 'Ogunni Samuel Adeyemi', 'Osunyinka Peter', 'Otun Basit', 'Oluwagbemiga Deborah', 'Alabi Samuel', 'Omoingho Richard', 'Olugbade Ayomide', 'Adeyemi Inioluwa Barakat', 'Ogunsakin Moyinoluwa Eunice', 'Akinsola Oluwaseyi', 'Oluwagbemiga James', 'Jolaosho Bose', 'Busari Elijah Qudus', 'Olabanji Enouch', 'Olabanji Boluwatife', 'Anfela Jesulayomi', 'Akintunde Blessing', 'Moses Oyinkansola', 'Busari Deborah', 'Sulaimon Christiana', 'Oluwadimu Samuel Oluwashindara', 'Alabi Barnabas', 'Anfela Semilore', 'Akinsinde Elizabeth', 'Kusimo James', 'Shobola Emmanuel'
+    ]
+  };
+
+  const officialCompanySerialByRecordId = Object.fromEntries(
+    Object.keys(defaultCompanyData)
+      .map((recordId) => [recordId, String(Number(recordId)).padStart(2, '0')])
+  );
+
+  const captainDivisionNameAliases = {
+    1: 'Ilori Samuel A.',
+    2: 'Adebayo Joseph',
+    3: 'Abdullahi John O.',
+    4: 'Lawal Segun Q.',
+    5: 'Awoniyi Olaitan',
+    8: 'Aina Olamilekan O.'
+  };
+  const officialCompanyOfficerInChargeNames = {
+    6: 'Oyeniran Ayinke Adedoja',
+    9: 'Jacob Tomiwa B.'
+  };
+  const officialCompanyCaptainProfiles = Object.fromEntries(
+    Array.from(document.querySelectorAll('.captains-grid .captain-card[data-company]'))
+      .map((card) => {
+        const companyId = String(card.dataset.company || '').trim();
+        const captainLine = Array.from(card.querySelectorAll('.captain-bio'))
+          .find((line) => line.textContent.trim().startsWith('Captain:'));
+        const captainName = String(captainLine?.textContent || '')
+          .replace(/^\s*Captain:\s*/i, '')
+          .trim();
+        const officerInChargeLine = Array.from(card.querySelectorAll('.captain-bio'))
+          .find((line) => line.textContent.trim().startsWith('Officer in Charge:'));
+        const officerInCharge = String(officerInChargeLine?.textContent || '')
+          .replace(/^\s*Officer in Charge:\s*/i, '')
+          .trim();
+        return [companyId, {
+          name: /^(?:not provided|not available)$/i.test(captainName) ? '' : captainName,
+          divisionName: captainDivisionNameAliases[companyId] || captainName,
+          officerInCharge,
+          photo: card.querySelector('img.captain-photo')?.getAttribute('src') || ''
+        }];
+      })
+      .filter(([companyId]) => companyId)
+  );
+
+  const officialCompanySectionRosterConfig = {
+    1: null,
+    2: [
+      { key: 'senior', heading: 'SNR SECTION', members: officialCompanyMemberRosterConfig[2].slice(0, 15) },
+      { key: 'intermediate', heading: 'INTER SECTION', members: officialCompanyMemberRosterConfig[2].slice(15, 26) },
+      { key: 'junior', heading: 'JNR SECTION', members: officialCompanyMemberRosterConfig[2].slice(26, 36) },
+      { key: 'anchor', heading: 'ANCHOR SECTION', members: officialCompanyMemberRosterConfig[2].slice(36, 40) }
+    ],
+    3: [
+      { key: 'officer', heading: 'Officer Section', members: officialCompanyMemberRosterConfig[3].slice(0, 6) },
+      { key: 'senior', heading: 'Senior Section', members: officialCompanyMemberRosterConfig[3].slice(6, 25) },
+      { key: 'intermediate', heading: 'Intermediate Section', members: officialCompanyMemberRosterConfig[3].slice(25, 36) },
+      { key: 'junior', heading: 'Junior Section', members: officialCompanyMemberRosterConfig[3].slice(36, 49) },
+      { key: 'anchor', heading: 'Anchor Section', members: officialCompanyMemberRosterConfig[3].slice(49, 53) }
+    ],
+    4: [
+      { key: 'officer', heading: 'OFFICER SECTIONS', members: officialCompanyMemberRosterConfig[4].slice(0, 7) },
+      { key: 'senior', heading: 'SNR SECTIONS', members: officialCompanyMemberRosterConfig[4].slice(7, 29) },
+      { key: 'intermediate', heading: 'INTERMEDIATE SECTIONS', members: [
+        'Ajisegiri Eniola Samuel', 'Sobayo Anjola Marvelous', 'Osunyinka David', 'Sulaimon Emmanuel Ayomide',
+        'Olaleye Josiah Opeyemi', 'Ogunni Samuel Adeyemi', 'Osunyinka Peter', 'Otun Basit', 'Oluwagbemiga Deborah'
+      ] },
+      { key: 'anchor', heading: 'ANCHOR SECTION', members: [] }
+    ],
+    5: [
+      { key: 'officer', heading: 'OFFICER', members: officialCompanyMemberRosterConfig[5].slice(0, 4) },
+      { key: 'senior', heading: 'SNR SECTION', members: officialCompanyMemberRosterConfig[5].slice(4, 13) },
+      { key: 'intermediate', heading: 'INTER SECTION', members: officialCompanyMemberRosterConfig[5].slice(13, 31) },
+      { key: 'junior', heading: 'JNR SECTION', members: officialCompanyMemberRosterConfig[5].slice(31, 45) },
+      { key: 'anchor', heading: 'ANCHOR SECTION', members: officialCompanyMemberRosterConfig[5].slice(45, 50) }
+    ],
+    6: [
+      { key: 'senior', heading: 'SNR SECTION', members: officialCompanyMemberRosterConfig[6].slice(0, 2) },
+      { key: 'intermediate', heading: 'INTER SECTION', members: officialCompanyMemberRosterConfig[6].slice(2, 12) },
+      { key: 'junior', heading: 'JNR SECTION', members: officialCompanyMemberRosterConfig[6].slice(12, 21) },
+      { key: 'anchor', heading: 'ANCHOR SECTION', members: officialCompanyMemberRosterConfig[6].slice(21, 25) }
+    ],
+    7: [
+      { key: 'officer', heading: 'OFFICERS', members: officialCompanyMemberRosterConfig[7].slice(31, 36) },
+      { key: 'senior', heading: 'SNR SECTION', members: officialCompanyMemberRosterConfig[7].slice(22, 31) },
+      { key: 'intermediate', heading: 'INTER SECTION', members: officialCompanyMemberRosterConfig[7].slice(44, 61) },
+      { key: 'junior', heading: 'JNR SECTION', members: officialCompanyMemberRosterConfig[7].slice(0, 15) },
+      { key: 'anchor', heading: 'ANCHOR SECTION', members: officialCompanyMemberRosterConfig[7].slice(15, 22) },
+      { key: 'other', heading: 'NEW MEMBERS', members: officialCompanyMemberRosterConfig[7].slice(36, 44) }
+    ],
+    8: [
+      { key: 'officer', heading: 'OFFICER', members: officialCompanyMemberRosterConfig[8].slice(0, 2) },
+      { key: 'senior', heading: 'SNR SECTION', members: officialCompanyMemberRosterConfig[8].slice(2, 11) },
+      { key: 'intermediate', heading: 'INTER SECTION', members: officialCompanyMemberRosterConfig[8].slice(11, 22) },
+      { key: 'junior', heading: 'JNR SECTION', members: officialCompanyMemberRosterConfig[8].slice(22, 31) },
+      { key: 'anchor', heading: 'ANCHOR SECTION', members: officialCompanyMemberRosterConfig[8].slice(31, 34) }
+    ],
+    9: [
+      { key: 'officer', heading: 'OFFICER', members: officialCompanyMemberRosterConfig[9].slice(0, 1) },
+      { key: 'senior', heading: 'SNR SECTION', members: officialCompanyMemberRosterConfig[9].slice(1, 3) },
+      { key: 'intermediate', heading: 'INTER SECTION', members: officialCompanyMemberRosterConfig[9].slice(3, 11) },
+      { key: 'junior', heading: 'JNR SECTION', members: officialCompanyMemberRosterConfig[9].slice(11, 15) },
+      { key: 'anchor', heading: 'ANCHOR SECTION', members: officialCompanyMemberRosterConfig[9].slice(15, 16) }
+    ]
+  };
+
+  function normalizeMemberComparisonKey(name) {
+    return String(name || '')
+      .normalize('NFKD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/\s*\((?:sergeant|staff sergeant|corporal|lance corporal)\)\s*/gi, ' ')
+      .replace(/\s*\((?:mr|mrs)\)\s*$/gi, ' ')
+      .replace(/^(?:(?:\d+(?:st|nd|rd|th)\s*)?(?:captain|capt|officer|warrant\s+officer|warrant|lieutenant|provost|evang|evangelist|mr|mrs|rev|reverend)\.?\s*)+/gi, '')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, ' ')
+      .trim()
+      .replace(/\s+/g, ' ');
+  }
+
+  function dedupeMemberNamesByKey(entries) {
+    const seen = new Set();
+    return (Array.isArray(entries) ? entries : []).filter((entry) => {
+      const name = typeof entry === 'string' ? entry : (entry && typeof entry === 'object' ? entry.name : '');
+      const key = normalizeMemberComparisonKey(name);
+      if (!key || seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+  }
+
+  const officialMemberDivisionNameAliases = {
+    'abdulliah anjolajesu': 'Abdullahi Anjolajesu',
+    'adebeshin taiwo': 'Taiwo Adebeshin',
+    'adedayo bioluwatife': 'Adedayo Boluwatife',
+    'adepoju prescious': 'Adepoju Precious',
+    'segun lawal': 'Lawal Segun Q.',
+    'olalaye omobolawa': 'Olaleye Omobolawa',
+    'olawuyi israel': 'Olawuyi Isreal',
+    'idowu elizabeth': 'Idowu Elisabeth',
+    'kudaabo victor': 'Kudabo Victor',
+    'obasi chimeze': 'Obasi Chimaze',
+    'abioye oluwa kiisi': 'Abioye Oluwakisi'
+  };
+
+  const unwantedCompanyMemberPlaceholders = new Set(['ada', 'john doe']);
+  
+  function isUnwantedCompanyMemberPlaceholder(name, companyId) {
+    return String(companyId) === '1' && unwantedCompanyMemberPlaceholders.has(normalizeMemberComparisonKey(name));
+  }
+
+  function orderCompanyMembersByDivisionSerial(members) {
+    return (Array.isArray(members) ? members : [])
+      .map((name, index) => ({ name, index, generalSerial: getGeneralDivisionMemberSerial(name) }))
+      .sort((first, second) => {
+        const firstSerial = first.generalSerial || Number.MAX_SAFE_INTEGER;
+        const secondSerial = second.generalSerial || Number.MAX_SAFE_INTEGER;
+        return firstSerial - secondSerial || first.index - second.index;
+      })
+      .map(({ name }) => name);
+  }
+
+  function getOfficialCompanySections(companyId) {
+    const company = state.companyData[String(companyId)];
+    if (company?.memberRosterManaged === true) {
+      return companySectionDefinitions.map((section) => ({
+        key: section.key,
+        heading: section.label,
+        members: Array.isArray(company[section.key]) ? company[section.key].slice() : []
+      }));
+    }
+
+    const pdfMembership = window.RS_COY_MEMBERSHIP?.[companyId];
+    let sections = [];
+    if (pdfMembership) {
+      const rawSections = pdfMembership.layout === 'columns' ? pdfMembership.columns.flat() : pdfMembership.sections;
+      sections = (rawSections || []).map((section) => ({
+        key: getCompanySectionKey(section.heading),
+        heading: section.heading,
+        members: Array.isArray(section.members) ? section.members.slice() : []
+      })).filter((section) => !/\b255th\b/i.test(section.heading));
+    } else if (Array.isArray(officialCompanySectionRosterConfig[companyId])) {
+      sections = officialCompanySectionRosterConfig[companyId].map((section) => ({
+        ...section,
+        members: section.members.slice()
+      }));
+    }
+
+    const seenMemberNames = new Set();
+    return sections.map((section) => ({
+      ...section,
+      members: orderCompanyMembersByDivisionSerial(section.members)
+        .map(getDivisionRosterNameForMember)
+        .filter((name) => {
+        const key = normalizeMemberComparisonKey(name);
+        if (!key || seenMemberNames.has(key)) return false;
+        seenMemberNames.add(key);
+        return true;
+      })
+    }));
+  }
+
+  function getCompanySectionKey(heading) {
+    const normalizedHeading = String(heading || '').toLowerCase();
+    if (normalizedHeading.includes('officer')) return 'officer';
+    if (normalizedHeading.includes('senior')) return 'senior';
+    if (normalizedHeading.includes('inter')) return 'intermediate';
+    if (normalizedHeading.includes('junior')) return 'junior';
+    if (normalizedHeading.includes('anchor')) return 'anchor';
+    return 'other';
+  }
+
+  function getCompanySerialForMember(companyId, memberName) {
+    const targetKey = normalizeMemberComparisonKey(memberName);
+    if (!targetKey) return null;
+    return getCompanyMemberSerialMap(companyId).get(targetKey)?.companySerial || null;
+  }
+
+  let companyMemberSerialLookupByCompany = new Map();
+
+  function getCompanyMemberSerialMap(companyId) {
+    const key = String(companyId);
+    if (companyMemberSerialLookupByCompany.has(key)) return companyMemberSerialLookupByCompany.get(key);
+
+    const serialMap = new Map();
+    getRenderedCompanyMemberEntries(key, true).forEach((entry, index) => {
+      serialMap.set(normalizeMemberComparisonKey(entry.name), {
+        companySerial: index + 1,
+        generalSerial: entry.generalSerial
+      });
+    });
+    companyMemberSerialLookupByCompany.set(key, serialMap);
+    return serialMap;
+  }
+
+  function getOfficialCaptainForCompany(companyId) {
+    const companySerial = Number(companyId);
+    if (!Number.isInteger(companySerial) || !officialCompanySerialByRecordId[companySerial]) return '';
+    if ([6, 7, 9].includes(companySerial)) return '';
+    const explicitCaptain = String(officialCompanyCaptainProfiles[companySerial]?.name || '').trim();
+    if (explicitCaptain) return explicitCaptain;
+    const captainCard = document.querySelector(`.captains-grid .captain-card[data-company="${companySerial}"]`);
+    if (captainCard?.dataset.captainLocked === 'blank') return '';
+    if (captainDivisionNameAliases[companySerial]) return captainDivisionNameAliases[companySerial];
+    const companyCaptain = (state.companyData[companySerial]?.members || []).find((member) => {
+      return member && (String(member.section || '').toLowerCase() === 'captain'
+        || String(member.rank || '').toLowerCase() === 'captain'
+        || String(member.category || '').toUpperCase() === 'COMMISSIONED_OFFICER' && /captain/i.test(String(member.title || member.designation || '')));
+    });
+    if (companyCaptain?.name) return String(companyCaptain.name).trim();
+    const roster = getOfficialCompanySections(companySerial).flatMap((section) => section.members || []);
+    const captainFromRoster = roster.find((name) => /^\s*(?:capt(?:ain)?\.?\s+|capt\.?\s+)/i.test(String(name || '')));
+    return captainFromRoster ? String(captainFromRoster).trim() : '';
+  }
+
+  function getOfficialCaptainDivisionSerial(companyId, captainName = getOfficialCaptainForCompany(companyId)) {
+    const profile = officialCompanyCaptainProfiles[Number(companyId)];
+    const divisionName = String(profile?.divisionName || '').trim();
+    return getGeneralDivisionMemberSerial(divisionName || captainName);
+  }
+
+  function getOfficialCompanyLeader(companyId) {
+    const key = String(companyId);
+    if (isSuspendedCompany(key)) return null;
+
+    const captainName = getOfficialCaptainForCompany(key);
+    if (captainName) return { name: captainName, sectionKey: 'captain', heading: 'COMPANY CAPTAIN' };
+
+    const officerInCharge = String(
+      officialCompanyCaptainProfiles[Number(key)]?.officerInCharge
+      || officialCompanyOfficerInChargeNames[Number(key)]
+      || ''
+    ).trim();
+    return officerInCharge
+      ? { name: officerInCharge, sectionKey: 'leader', heading: 'OFFICER IN CHARGE' }
+      : null;
+  }
+
+  function syncCompanyCaptainReferences() {
+    const captainsGrid = document.querySelector('.captains-grid');
+    if (!captainsGrid) return;
+    const captainCards = new Map(Array.from(captainsGrid.querySelectorAll('.captain-card[data-company]'))
+      .map((card) => [String(card.dataset.company), card]));
+
+    companyCards.forEach((companyCard) => {
+      const companyId = String(companyCard.dataset.company || '').trim();
+      const companyReference = officialCompanySerialByRecordId[companyId];
+      if (!companyId || !companyReference) return;
+      companyCard.id = `company-${companyReference}`;
+      companyCard.dataset.companyReference = companyReference;
+
+      let captainCard = captainCards.get(companyId);
+      if (!captainCard) {
+        captainCard = document.createElement('article');
+        captainCard.className = 'captain-card glass-card';
+        captainCard.dataset.company = companyId;
+        captainCard.innerHTML = '<div class="captain-photo-wrap"></div><div class="captain-details"><h3></h3><p class="captain-role"></p><p class="captain-bio captain-name"></p></div>';
+        captainsGrid.appendChild(captainCard);
+        captainCards.set(companyId, captainCard);
+      }
+
+      const company = state.companyData[companyId] || defaultCompanyData[companyId] || {};
+      const displayName = getCompanyDisplayName(companyId, company);
+      const shortName = displayName.split(/\s+-\s+/)[0] || displayName;
+      const captainName = getOfficialCaptainForCompany(companyId);
+      const profile = officialCompanyCaptainProfiles[companyId] || {};
+      const heading = captainCard.querySelector('h3');
+      const role = captainCard.querySelector('.captain-role');
+      const nameLine = captainCard.querySelector('.captain-name') || Array.from(captainCard.querySelectorAll('.captain-bio'))
+        .find((item) => item.textContent.trim().startsWith('Captain:'));
+      const photoWrap = captainCard.querySelector('.captain-photo-wrap');
+
+      captainCard.dataset.companyReference = companyReference;
+      captainCard.dataset.captainReference = captainName
+        ? (getOfficialMemberDivisionId(companyId, captainName) || '')
+        : '';
+      if (heading) heading.textContent = `${companyReference} — ${shortName}`;
+      if (role) role.textContent = displayName;
+      if (nameLine) nameLine.textContent = `Captain: ${captainName || 'Not provided'}`;
+
+      if (photoWrap && profile.photo) {
+        let image = photoWrap.querySelector('img.captain-photo');
+        if (!image) {
+          image = document.createElement('img');
+          image.className = 'captain-photo';
+          image.loading = 'lazy';
+          photoWrap.replaceChildren(image);
+        }
+        image.src = profile.photo;
+        image.alt = `Captain ${captainName || 'photograph'}, ${displayName}`;
+      } else if (photoWrap && captainCard.dataset.captainLocked === 'blank') {
+        photoWrap.replaceChildren();
+      } else if (photoWrap) {
+        let placeholder = photoWrap.querySelector('.captain-photo-placeholder');
+        if (!placeholder) {
+          placeholder = document.createElement('div');
+          placeholder.className = 'captain-photo-placeholder';
+          photoWrap.replaceChildren(placeholder);
+        }
+        placeholder.setAttribute('role', 'img');
+        placeholder.setAttribute('aria-label', 'Captain photograph not provided');
+        placeholder.textContent = 'Captain photograph not provided';
+      }
+    });
+  }
+  function normalizePersonnelCategory(value) {
+    const normalized = String(value || '').trim().toLowerCase().replace(/[^a-z]+/g, ' ');
+    if (!normalized) return null;
+    if (/\b(nco|non commissioned officer)\b/.test(normalized) || /\bwarrant officer\b|\bsergeant\b|\bcorporal\b|\bprovost\b/.test(normalized)) return 'nco';
+    if (/\bcommissioned officer\b|\bcaptain\b|\bcapt\b|\blieutenant\b|\bcolonel\b|\bmajor\b|\bgeneral\b|\bcommander\b|\bbrigadier\b|\bensign\b/.test(normalized)) return 'commissioned';
+    if (/\bofficer\b/.test(normalized)) return 'officer';
+    if (/\bmember\b/.test(normalized)) return 'member';
+    return null;
+  }
+
+  function getPersonnelCategory(memberName, companyId = '', sectionKey = '', companyOverride = null) {
+    const company = companyOverride || (companyId ? state.companyData[String(companyId)] : null);
+    const targetKey = normalizeMemberComparisonKey(memberName);
+    const generalSerial = getGeneralDivisionMemberSerial(memberName);
+    if (generalSerial && generalSerial <= 11) return 'commissioned';
+    const memberRecord = (company?.members || []).find((entry) => entry && normalizeMemberComparisonKey(entry.name) === targetKey);
+    const explicitRank = normalizePersonnelCategory(memberRecord?.rank || memberRecord?.designation || memberRecord?.title);
+    if (explicitRank) return explicitRank;
+
+    const nameDesignation = normalizePersonnelCategory(memberName);
+    if (nameDesignation && nameDesignation !== 'member') return nameDesignation;
+
+    const explicitCategory = normalizePersonnelCategory(memberRecord?.category || memberRecord?.classification);
+    if (explicitCategory) return explicitCategory;
+
+    if (String(sectionKey || memberRecord?.section || '').toLowerCase() === 'officer') return 'officer';
+    return 'member';
+  }
+
+  function getCompanyPersonnelCounts(companyId, company) {
+    const counts = { member: 0, nco: 0, officer: 0, commissioned: 0 };
+    const sections = company?.memberRosterManaged === true
+      ? companySectionDefinitions.map((section) => ({
+        key: section.key,
+        members: Array.isArray(company[section.key]) ? company[section.key] : []
+      }))
+      : getOfficialCompanySections(companyId);
+    const useOfficialRoster = Boolean(companyId && sections.length);
+    const sourceEntries = useOfficialRoster
+      ? sections.flatMap((section) => section.members.map((name) => ({ name, sectionKey: section.key })))
+      : ['officer', 'senior', 'intermediate', 'junior', 'anchor', 'other'].flatMap((sectionKey) => (company?.[sectionKey] || []).map((name) => ({ name, sectionKey })));
+
+    const uniqueSourceEntries = dedupeMemberNamesByKey(sourceEntries).map((entry) => ({
+      name: entry.name,
+      sectionKey: entry.sectionKey
+    }));
+
+    uniqueSourceEntries.forEach(({ name, sectionKey }) => {
+      const category = getPersonnelCategory(name, companyId, sectionKey, company);
+      counts[category] += 1;
+    });
+    const leader = getOfficialCompanyLeader(companyId);
+    const leaderIsInRoster = leader && uniqueSourceEntries.some(({ name }) => (
+      normalizeMemberComparisonKey(name) === normalizeMemberComparisonKey(leader.name)
+    ));
+    if (leader && !leaderIsInRoster) {
+      counts[leader.sectionKey === 'captain' ? 'commissioned' : 'officer'] += 1;
+    }
+    if (useOfficialRoster) {
+      const uniqueWebsiteOnlyEntries = dedupeMemberNamesByKey(getWebsiteOnlyCompanyMembers(companyId).map((entry) => entry.name));
+      uniqueWebsiteOnlyEntries.forEach((name) => {
+        const sectionKey = getWebsiteOnlyCompanyMembers(companyId).find((entry) => normalizeMemberComparisonKey(entry.name) === normalizeMemberComparisonKey(name))?.sectionKey || 'members';
+        const category = getPersonnelCategory(name, companyId, sectionKey, company);
+        counts[category] += 1;
+      });
+    }
+    return counts;
+  }
+
+  function getPersonnelNameTokenCount(name) {
+    const personalName = String(name || '')
+      .normalize('NFKD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/^(?:(?:\d+(?:st|nd|rd|th)\s*)?(?:captain|capt|officer|warrant\s+officer|warrant|lieutenant|provost|evang|evangelist|mr|mrs|miss|rev|reverend)\.?\s*)+/i, '')
+      .replace(/\s*\((?:sergeant|staff sergeant|corporal|lance corporal|mr|mrs)\)\s*$/i, '')
+      .trim();
+    return personalName ? personalName.split(/\s+/).length : 0;
+  }
+
+  function getOfficialCompanyMemberRoster(companyId) {
+    return getOfficialCompanySections(companyId)
+      .flatMap((section) => section.members);
+  }
+
+  function getWebsiteOnlyCompanyMembers(companyId) {
+    const company = state.companyData[companyId] || {};
+    const officialNames = new Set(getOfficialCompanyMemberRoster(companyId).map(normalizeMemberComparisonKey));
+    const leader = getOfficialCompanyLeader(companyId);
+    if (leader) officialNames.add(normalizeMemberComparisonKey(leader.name));
+    const websiteOnly = ['officer', 'senior', 'intermediate', 'junior', 'anchor', 'other'].flatMap((sectionKey) => {
+      const members = Array.isArray(company[sectionKey]) ? company[sectionKey] : [];
+      return members
+        .filter((name) => !officialNames.has(normalizeMemberComparisonKey(name)) && !isUnwantedCompanyMemberPlaceholder(name, companyId))
+        .map((name) => ({ name, sectionKey }));
+    });
+    const displayedCounts = new Map();
+    websiteOnly.forEach(({ name }) => {
+      const key = normalizeMemberComparisonKey(name);
+      displayedCounts.set(key, (displayedCounts.get(key) || 0) + 1);
+    });
+
+    (Array.isArray(company.members) ? company.members : []).forEach((member) => {
+      const key = normalizeMemberComparisonKey(member?.name);
+      if (!key || officialNames.has(key) || isUnwantedCompanyMemberPlaceholder(member?.name, companyId)) return;
+      const alreadyDisplayed = displayedCounts.get(key) || 0;
+      if (alreadyDisplayed) {
+        displayedCounts.set(key, alreadyDisplayed - 1);
+        return;
+      }
+      websiteOnly.push({ name: member.name, sectionKey: member.section || 'members' });
+    });
+    return websiteOnly;
+  }
+
+  function getRenderedCompanyMemberEntries(companyId, includeUnassigned = false) {
+    const key = String(companyId);
+    const sections = getOfficialCompanySections(companyId);
+    const entries = sections.flatMap((section) => (section.members || []).map((name) => ({
+      name,
+      sectionKey: section.key || getCompanySectionKey(section.heading)
+    })));
+    const leader = getOfficialCompanyLeader(companyId);
+    const leaderKey = normalizeMemberComparisonKey(leader?.name);
+    if (leader) {
+      const leaderIndex = entries.findIndex((entry) => normalizeMemberComparisonKey(entry.name) === leaderKey);
+      const leaderEntry = leaderIndex >= 0
+        ? entries.splice(leaderIndex, 1)[0]
+        : { name: leader.name, sectionKey: leader.sectionKey };
+      entries.unshift({ ...leaderEntry, name: leader.name, sectionKey: leader.sectionKey });
+    }
+    getWebsiteOnlyCompanyMembers(companyId).forEach((entry) => entries.push(entry));
+
+    const orderedEntries = entries
+      .map((entry, index) => {
+        const entryKey = normalizeMemberComparisonKey(entry.name);
+        const generalSerial = entry.sectionKey === 'captain'
+          ? (getOfficialCaptainDivisionSerial(companyId, entry.name) || getGeneralDivisionMemberSerial(entry.name))
+          : getGeneralDivisionMemberSerial(entry.name);
+        return { ...entry, index, key: entryKey, generalSerial };
+      })
+      .filter((entry) => entry.key && (includeUnassigned || entry.generalSerial))
+      .sort((first, second) => {
+        const firstIsLeader = ['captain', 'leader'].includes(first.sectionKey);
+        const secondIsLeader = ['captain', 'leader'].includes(second.sectionKey);
+        if (firstIsLeader !== secondIsLeader) return firstIsLeader ? -1 : 1;
+        const firstSerial = first.generalSerial || Number.MAX_SAFE_INTEGER;
+        const secondSerial = second.generalSerial || Number.MAX_SAFE_INTEGER;
+        return firstSerial - secondSerial || first.index - second.index;
+      });
+
+    const uniqueNames = new Set();
+    const uniqueGeneralSerials = new Set();
+    return orderedEntries.filter((entry) => {
+        if (uniqueNames.has(entry.key)
+          || (!includeUnassigned && entry.generalSerial && uniqueGeneralSerials.has(entry.generalSerial))) return false;
+        uniqueNames.add(entry.key);
+        if (entry.generalSerial) uniqueGeneralSerials.add(entry.generalSerial);
+        return true;
+      });
+  }
+
+  let supplementalDivisionSerialLookup = null;
+
+  function getMasterDivisionMemberSerial(memberName) {
+    const lookupNames = getDivisionRosterNames();
+    const targetKey = normalizeMemberComparisonKey(memberName);
+    if (!targetKey || getPersonnelNameTokenCount(memberName) < 2) return null;
+    const lookupKey = normalizeMemberComparisonKey(officialMemberDivisionNameAliases[targetKey] || memberName);
+
+    const matchingIndexes = lookupNames
+      .map((candidate, index) => normalizeMemberComparisonKey(candidate) === lookupKey ? index + 1 : -1)
+      .filter((index) => index !== -1);
+    return matchingIndexes.length === 1 ? matchingIndexes[0] : null;
+  }
+
+  function getDivisionRosterNames() {
+    const names = Array.isArray(window.RS_TOTAL_MEMBERS) ? window.RS_TOTAL_MEMBERS : [];
+    const rosterNames = names.map((name, index) => {
+      const override = state.memberNameOverrides?.[String(index + 1)];
+      const overriddenName = typeof override === 'string' ? override : override?.name;
+      return typeof overriddenName === 'string' && overriddenName.trim() ? overriddenName.trim() : name;
+    });
+    const knownNames = new Set(rosterNames.map(normalizeMemberComparisonKey));
+    (Array.isArray(state.divisionRosterAdditions) ? state.divisionRosterAdditions : []).forEach((entry) => {
+      const name = String(entry?.name || '').trim();
+      const key = normalizeMemberComparisonKey(name);
+      if (key && !knownNames.has(key)) {
+        knownNames.add(key);
+        rosterNames.push(name);
+      }
+    });
+    return rosterNames;
+  }
+
+  function getDivisionRosterNameForMember(memberName) {
+    const names = Array.isArray(window.RS_TOTAL_MEMBERS) ? window.RS_TOTAL_MEMBERS : [];
+    const targetKey = normalizeMemberComparisonKey(officialMemberDivisionNameAliases[normalizeMemberComparisonKey(memberName)] || memberName);
+    const matchingIndexes = names
+      .map((name, index) => normalizeMemberComparisonKey(name) === targetKey ? index : -1)
+      .filter((index) => index !== -1);
+    if (matchingIndexes.length !== 1) return memberName;
+    const override = state.memberNameOverrides?.[String(matchingIndexes[0] + 1)];
+    const overriddenName = typeof override === 'string' ? override : override?.name;
+    return typeof overriddenName === 'string' && overriddenName.trim() ? overriddenName.trim() : memberName;
+  }
+
+  function applyCompanyMemberNameEdits(previousSections, nextSections) {
+    const overrides = { ...(state.memberNameOverrides || {}) };
+    let updatedCount = 0;
+    companySectionDefinitions.forEach(({ key }) => {
+      getCompanyRosterNameEdits(previousSections[key] || [], nextSections[key] || []).forEach(({ previousName, nextName }) => {
+        const serial = getMasterDivisionMemberSerial(previousName);
+        if (!serial || serial > (window.RS_TOTAL_MEMBERS || []).length) return;
+        const existingId = getTotalMembershipDivisionIds(getDivisionRosterNames())[serial - 1];
+        const existingIdParts = existingId?.match(/^AI\.D\d{3}\/(\d{2})\/(\d{3})$/);
+        const previousOverride = overrides[String(serial)];
+        overrides[String(serial)] = {
+          name: nextName,
+          previousName,
+          company: existingIdParts?.[1] || previousOverride?.company || '02',
+          member: existingIdParts?.[2] || previousOverride?.member || String(serial).padStart(3, '0')
+        };
+        updatedCount += 1;
+      });
+    });
+    state.memberNameOverrides = overrides;
+    return updatedCount;
+  }
+
+  function getCompanyRosterNameEdits(previousNames, nextNames) {
+    const rows = Array.from({ length: previousNames.length + 1 }, () => Array(nextNames.length + 1).fill(0));
+    for (let previousIndex = previousNames.length - 1; previousIndex >= 0; previousIndex -= 1) {
+      for (let nextIndex = nextNames.length - 1; nextIndex >= 0; nextIndex -= 1) {
+        rows[previousIndex][nextIndex] = normalizeMemberComparisonKey(previousNames[previousIndex]) === normalizeMemberComparisonKey(nextNames[nextIndex])
+          ? rows[previousIndex + 1][nextIndex + 1] + 1
+          : Math.max(rows[previousIndex + 1][nextIndex], rows[previousIndex][nextIndex + 1]);
+      }
+    }
+
+    const edits = [];
+    let previousIndex = 0;
+    let nextIndex = 0;
+    let removed = [];
+    let added = [];
+    const flush = () => {
+      if (removed.length === added.length) {
+        removed.forEach((previousName, index) => {
+          if (normalizeMemberComparisonKey(previousName) !== normalizeMemberComparisonKey(added[index])) {
+            edits.push({ previousName, nextName: added[index] });
+          }
+        });
+      }
+      removed = [];
+      added = [];
+    };
+
+    while (previousIndex < previousNames.length && nextIndex < nextNames.length) {
+      if (normalizeMemberComparisonKey(previousNames[previousIndex]) === normalizeMemberComparisonKey(nextNames[nextIndex])) {
+        flush();
+        previousIndex += 1;
+        nextIndex += 1;
+      } else if (rows[previousIndex + 1][nextIndex] >= rows[previousIndex][nextIndex + 1]) {
+        removed.push(previousNames[previousIndex]);
+        previousIndex += 1;
+      } else {
+        added.push(nextNames[nextIndex]);
+        nextIndex += 1;
+      }
+    }
+    removed.push(...previousNames.slice(previousIndex));
+    added.push(...nextNames.slice(nextIndex));
+    flush();
+    return edits;
+  }
+
+  function getSupplementalDivisionSerialLookup() {
+    if (supplementalDivisionSerialLookup) return supplementalDivisionSerialLookup;
+
+    const lookup = new Map();
+    const supplementalNames = [];
+    const knownMemberNames = new Set();
+    const addName = (name) => {
+      const key = normalizeMemberComparisonKey(name);
+      if (!key || knownMemberNames.has(key) || getMasterDivisionMemberSerial(name)) return;
+      knownMemberNames.add(key);
+      supplementalNames.push({ key, name });
+    };
+
+    Object.keys(officialCompanySerialByRecordId)
+      .sort((first, second) => Number(first) - Number(second))
+      .forEach((companyId) => {
+        const membership = window.RS_COY_MEMBERSHIP?.[companyId];
+        const configuredSections = membership
+          ? (membership.layout === 'columns' ? membership.columns.flat() : membership.sections || [])
+          : (officialCompanySectionRosterConfig[companyId]
+            || [{ members: officialCompanyMemberRosterConfig[companyId] || [] }]);
+        configuredSections.forEach((section) => (section.members || []).forEach(addName));
+        addName(getOfficialCompanyLeader(companyId)?.name);
+
+        const company = state.companyData[companyId] || {};
+        ['officer', 'senior', 'intermediate', 'junior', 'anchor', 'other'].forEach((sectionKey) => {
+          (Array.isArray(company[sectionKey]) ? company[sectionKey] : []).forEach(addName);
+        });
+        (Array.isArray(company.members) ? company.members : []).forEach((member) => addName(member?.name));
+      });
+
+    const firstSupplementalSerial = (window.RS_TOTAL_MEMBERS || []).length + 1;
+    supplementalNames.forEach(({ key }, index) => {
+      lookup.set(key, firstSupplementalSerial + index);
+    });
+    supplementalDivisionSerialLookup = lookup;
+    return lookup;
+  }
+
+  function ensureDivisionWideMemberNumbers() {
+    companyMemberSerialLookupByCompany = new Map();
+    supplementalDivisionSerialLookup = null;
+    let changed = false;
+    Object.keys(officialCompanySerialByRecordId)
+      .sort((first, second) => Number(first) - Number(second))
+      .forEach((companyId) => {
+        const company = state.companyData[companyId];
+        if (!company) return;
+        const previousRows = Array.isArray(company.companyMemberSerials) ? company.companyMemberSerials : [];
+        const previousRowsByName = new Map(previousRows.map((row) => [normalizeMemberComparisonKey(row.name), row]));
+        const rows = getRenderedCompanyMemberEntries(companyId).map((entry, index) => {
+          const companySerial = index + 1;
+          const previousRow = previousRowsByName.get(normalizeMemberComparisonKey(entry.name));
+          return {
+            ...(previousRow || {}),
+            name: entry.name,
+            section: entry.sectionKey,
+            companySerial: String(companySerial).padStart(3, '0'),
+            divisionNumber: entry.generalSerial,
+            divisionNumberSource: entry.generalSerial <= (window.RS_TOTAL_MEMBERS || []).length ? 'division' : 'supplemental'
+          };
+        });
+        if (JSON.stringify(company.companyMemberSerials || []) !== JSON.stringify(rows)) {
+          company.companyMemberSerials = rows;
+          changed = true;
+        }
+      });
+    return changed;
+  }
+
+  function syncOfficialCompanyMembersToState() {
+    let changed = false;
+    Object.keys(officialCompanySerialByRecordId).forEach((recordId) => {
+      const company = state.companyData[recordId];
+      if (!company) return;
+      const sections = getOfficialCompanySections(recordId);
+      const previousSerials = Array.isArray(company.companyMemberSerials) ? company.companyMemberSerials : [];
+      const companyMemberSerials = getRenderedCompanyMemberEntries(recordId).map((entry, index) => {
+        const previous = previousSerials[index];
+        const companySerial = index + 1;
+        const sameMemberRow = previous
+          && Number(previous.companySerial) === companySerial
+          && normalizeMemberComparisonKey(previous.name) === normalizeMemberComparisonKey(entry.name);
+        return {
+          ...(sameMemberRow ? previous : {}),
+          name: entry.name,
+          section: entry.sectionKey,
+          companySerial: String(companySerial).padStart(3, '0'),
+          divisionNumber: entry.generalSerial,
+          divisionNumberSource: entry.generalSerial <= (window.RS_TOTAL_MEMBERS || []).length ? 'division' : 'supplemental'
+        };
+      });
+      if (JSON.stringify(company.companyMemberSerials || []) !== JSON.stringify(companyMemberSerials)) {
+        company.companyMemberSerials = companyMemberSerials;
+        changed = true;
+      }
+      const officialNames = new Set(sections.flatMap((section) => section.members.map(normalizeMemberComparisonKey)));
+      const previousValues = new Map();
+          ['officer', 'senior', 'intermediate', 'junior', 'anchor', 'other'].forEach((key) => {
+        previousValues.set(key, Array.isArray(company[key]) ? company[key] : []);
+      });
+
+      sections.forEach((section) => {
+        if (!['officer', 'senior', 'intermediate', 'junior', 'anchor', 'other'].includes(section.key)) return;
+        const websiteOnly = previousValues.get(section.key)
+          .filter((name) => !officialNames.has(normalizeMemberComparisonKey(name)) && !isUnwantedCompanyMemberPlaceholder(name, recordId));
+        const nextMembers = [...section.members, ...websiteOnly];
+        if (JSON.stringify(company[section.key] || []) !== JSON.stringify(nextMembers)) changed = true;
+        company[section.key] = nextMembers;
+      });
+      company.active = company.anchor;
+      company.inactive = company.junior;
+      company.officers = company.officer;
+
+      const existingMembers = Array.isArray(company.members) ? company.members.slice() : [];
+      const replacedMemberKeys = new Set(
+        Object.values(state.memberNameOverrides || {})
+          .filter((override) => override && typeof override === 'object'
+            && String(override.company || '') === String(recordId).padStart(2, '0'))
+          .map((override) => normalizeMemberComparisonKey(override.previousName))
+          .filter(Boolean)
+      );
+      for (let index = existingMembers.length - 1; index >= 0; index -= 1) {
+        if (isUnwantedCompanyMemberPlaceholder(existingMembers[index]?.name, recordId)) {
+          existingMembers.splice(index, 1);
+          changed = true;
+        }
+      }
+      const assignedCaptainKey = normalizeMemberComparisonKey(getOfficialCaptainForCompany(recordId));
+      for (let index = existingMembers.length - 1; index >= 0; index -= 1) {
+        const member = existingMembers[index];
+        const memberKey = normalizeMemberComparisonKey(member?.name);
+        const isReplacedMember = replacedMemberKeys.has(memberKey)
+          && !sections.some((section) => section.members.some((name) => normalizeMemberComparisonKey(name) === memberKey));
+        if (isReplacedMember && member?.section !== 'captain') {
+          existingMembers.splice(index, 1);
+          changed = true;
+          continue;
+        }
+        if (member?.section === 'captain' && member?.rank === 'Captain' && member?.category === 'COMMISSIONED_OFFICER' && normalizeMemberComparisonKey(member.name) !== assignedCaptainKey) {
+          existingMembers.splice(index, 1);
+          changed = true;
+        }
+      }
+      sections.forEach((section) => {
+        section.members.forEach((memberName) => {
+          const memberKey = normalizeMemberComparisonKey(memberName);
+          const existingMember = existingMembers.find((member) => normalizeMemberComparisonKey(member?.name) === memberKey);
+          if (existingMember) {
+            if (existingMember.section !== section.key) {
+              existingMember.section = section.key;
+              changed = true;
+            }
+            return;
+          }
+          existingMembers.push({ name: memberName, section: section.key });
+          changed = true;
+        });
+      });
+      company.members = existingMembers;
+      const captainName = getOfficialCaptainForCompany(recordId);
+      if (captainName && !existingMembers.some((member) => normalizeMemberComparisonKey(member?.name) === normalizeMemberComparisonKey(captainName))) {
+        company.members.push({ name: captainName, section: 'captain', rank: 'Captain', category: 'COMMISSIONED_OFFICER' });
+        changed = true;
+      }
+    });
+    if (ensureDivisionWideMemberNumbers()) changed = true;
+    return changed;
+  }
+
+  function getGeneralDivisionMemberSerial(memberName) {
+    return getMasterDivisionMemberSerial(memberName)
+      || getSupplementalDivisionSerialLookup().get(normalizeMemberComparisonKey(memberName))
+      || null;
+  }
+
+  function getOfficialMemberDivisionId(companyId, memberName) {
+    const companyIdText = officialCompanySerialByRecordId[companyId];
+    const cleanedName = String(memberName || '').trim();
+    if (!companyIdText || !cleanedName) return '';
+
+    const assignment = getCompanyMemberSerialMap(companyId).get(normalizeMemberComparisonKey(cleanedName));
+    if (!assignment?.generalSerial) return '';
+    return `AI.D${String(companyIdText).padStart(2, '0')}/${String(assignment.generalSerial).padStart(3, '0')}/${String(assignment.companySerial).padStart(3, '0')}`;
+  }
+
+  function getOfficialDivisionIdForMember(memberName) {
+    const targetKey = normalizeMemberComparisonKey(memberName);
+    if (!targetKey) return '';
+
+    const candidates = [];
+    for (const companyId of Object.keys(officialCompanySerialByRecordId)) {
+      const leader = getOfficialCompanyLeader(companyId);
+      const companyNames = [...getOfficialCompanyMemberRoster(companyId), ...(leader ? [leader.name] : [])];
+      companyNames.forEach((candidate) => {
+        const key = normalizeMemberComparisonKey(candidate);
+        if (key) candidates.push({ companyId, name: candidate, key });
+      });
+    }
+
+    const exactMatches = candidates.filter((candidate) => candidate.key === targetKey);
+    const targetTokens = targetKey.split(' ');
+    const matches = exactMatches.length
+      ? exactMatches
+      : candidates.filter((candidate) => {
+        const candidateTokens = new Set(candidate.key.split(' '));
+        return targetTokens.length >= 2 && targetTokens.every((token) => candidateTokens.has(token));
+      });
+    const uniqueMatches = new Map(matches.map((candidate) => [
+      `${candidate.companyId}:${candidate.key}`,
+      candidate
+    ]));
+    if (uniqueMatches.size !== 1) return '';
+    const [{ companyId, name }] = uniqueMatches.values();
+    return getOfficialMemberDivisionId(companyId, name);
+  }
+
+  function buildOfficialMemberDivisionIdSnapshot() {
+    const recordsById = new Map();
+    for (const recordId of Object.keys(officialCompanySerialByRecordId)) {
+      getRenderedCompanyMemberEntries(recordId).forEach(({ name: memberName }) => {
+        const id = getOfficialMemberDivisionId(recordId, memberName);
+        if (!id) return;
+        const [, companySerial, generalSerial, memberSerial] = id.match(/^AI\.D(\d{2})\/(\d{3})\/(\d{3})$/) || [];
+        if (!companySerial || !generalSerial || !memberSerial) return;
+        recordsById.set(id, {
+          id,
+          name: memberName,
+          companyRecordId: String(Number(companySerial)),
+          companySerial,
+          generalSerial: Number(generalSerial),
+          memberSerial: Number(memberSerial)
+        });
+      });
+    }
+    return [...recordsById.values()];
+  }
+
+  async function persistOfficialMemberDivisionIds() {
+    const membersChanged = syncOfficialCompanyMembersToState();
+    const records = buildOfficialMemberDivisionIdSnapshot();
+    state.memberDivisionIds = records;
+    if (!isBackendAvailableSync()) return;
+
+    const currentRecords = __rsBackendCache?.memberDivisionIds;
+    if (!membersChanged && JSON.stringify(currentRecords) === JSON.stringify(records)) return;
+
+    try {
+      const response = await rsBackend.saveState({
+        companies: state.companyData,
+        memberDivisionIds: records
+      });
+      if (response && typeof response === 'object') __rsBackendCache = response;
+    } catch (error) {
+      console.warn('Official Division IDs could not be persisted.', error);
+    }
+  }
+
+  function renderMemberNameWithDivisionId(memberName, companyId, sectionKey = '', allowCompanyId = true) {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'member-division-name';
+    const companySerial = companyId && allowCompanyId ? getCompanySerialForMember(companyId, memberName) : null;
+    if (companySerial !== null && Number(companySerial) > 0) {
+      wrapper.dataset.companySerial = String(companySerial).padStart(3, '0');
+    }
+    const name = document.createElement('span');
+    name.textContent = memberName;
+    const id = document.createElement('span');
+    id.className = 'member-division-id';
+    const divisionId = companyId
+      ? (allowCompanyId ? getOfficialMemberDivisionId(companyId, memberName) : '')
+      : getOfficialDivisionIdForMember(memberName);
+    id.textContent = divisionId ? ` — ${divisionId}` : '';
+    wrapper.append(name, id);
+    return wrapper;
+  }
 
   // Backend-backed storage helpers
   let __rsBackendCache = null;
@@ -250,12 +1193,14 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
   function getAppStatePayload() {
     return {
       companies: state.companyData,
+      memberDivisionIds: state.memberDivisionIds || [],
+      memberNameOverrides: state.memberNameOverrides || {},
       captainAccounts: state.captainAccounts,
-      commanderAccounts: state.commanderAccounts,
       commanderVerificationCodes: state.commanderVerificationCodes,
       captainRequests: state.captainRequests,
       enlistmentApplications: state.enlistmentApplications,
       divisionMembers: state.divisionMembers,
+      divisionRosterAdditions: state.divisionRosterAdditions || [],
       commandStructure: state.commandStructure,
       founderStory: state.founderStory,
       excoProfiles: state.excoProfiles,
@@ -263,6 +1208,7 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
       examScores: state.examScores,
       activeExamYear: state.activeExamYear,
       galleryItems: state.galleryItems || [],
+      companyDocuments: state.companyDocuments || [],
       commanderSettings: state.commanderSettings,
       activeCaptainCompany: state.activeCaptainCompany,
       activeRole: getActiveRole(),
@@ -271,11 +1217,11 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
   }
 
   async function apiGetState() {
-    return requestJson('/api/state', { method: 'GET' });
+    return requestJson('/state', { method: 'GET' });
   }
 
   async function apiSaveState(payload) {
-    return requestJson('/api/state', { method: 'POST', body: JSON.stringify(payload) });
+    return requestJson('/state', { method: 'POST', body: JSON.stringify(payload) });
   }
 
   async function apiApproveApplication(applicationId) {
@@ -368,6 +1314,7 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
       'royalShepherdActiveExamYear': 'activeExamYear',
       'royalShepherdEnlistmentApplications': 'enlistmentApplications',
       'royalShepherdGalleryItems': 'galleryItems',
+      'royalShepherdCompanyDocuments': 'companyDocuments',
       'royalShepherdActiveRole': 'activeRole',
       'royalShepherdActiveCaptainCompany': 'activeCaptainCompany'
     };
@@ -460,6 +1407,7 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
       if (current === next) return;
       __rsBackendCache = payload;
       applySharedState(payload);
+      await persistOfficialMemberDivisionIds();
       populateCaptainCompanySelect();
       populateEnlistmentCompanySelect();
       renderCompanyLists();
@@ -476,9 +1424,12 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
       if (window.location.pathname.includes('captain-dashboard.html')) {
         const queryParams = new URLSearchParams(window.location.search);
         const companyId = queryParams.get('company') || state.activeCaptainCompany;
-        if (companyId && state.companyData[companyId]) {
+        if (companyId && !isSuspendedCompany(companyId) && state.companyData[companyId]) {
           state.activeCaptainCompany = companyId;
           buildCaptainDashboard(companyId);
+        } else if (isSuspendedCompany(companyId)) {
+          state.activeCaptainCompany = '';
+          setActiveRole('visitor');
         }
         renderCaptainWorkspaceAccess();
       }
@@ -491,25 +1442,43 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
   }
 
   const ACTIVE_COMMANDER_KEY = 'royalShepherdActiveCommander';
+  const ADMIN_SESSION_KEY = 'royalShepherdAdminSession';
+
+  function getAdminSessionToken() {
+    try {
+      return getSessionStorageSafely()?.getItem(ADMIN_SESSION_KEY) || '';
+    } catch {
+      return '';
+    }
+  }
+
+  function setAdminSessionToken(token) {
+    const storage = getSessionStorageSafely();
+    try {
+      if (token) storage?.setItem(ADMIN_SESSION_KEY, token);
+      else storage?.removeItem(ADMIN_SESSION_KEY);
+    } catch (error) {
+      console.warn('Admin session storage unavailable.', error);
+    }
+  }
 
   function getBackendBaseUrl() {
     return RS_BACKEND_BASE_URL;
   }
 
   async function requestJson(path, options = {}) {
-    let baseUrl = getBackendBaseUrl();
-    if (!baseUrl) {
-      // Try probing known backend candidates if no base URL is configured.
-      await probeBackends();
-      baseUrl = getBackendBaseUrl();
-    }
+    const baseUrl = getBackendBaseUrl();
     if (!baseUrl) {
       console.warn(`No backend URL configured. Skipping request to ${path}.`);
       return null;
     }
     const url = `${baseUrl}${path}`;
     const response = await fetch(url, {
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        ...(getAdminSessionToken() ? { Authorization: `Bearer ${getAdminSessionToken()}` } : {}),
+        ...(options.headers || {})
+      },
       ...options
     });
     if (!response.ok) {
@@ -563,6 +1532,12 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
   function applySharedState(payload) {
     if (!payload || typeof payload !== 'object') return;
     const companies = payload.companies || payload.companyData || {};
+    companyMemberSerialLookupByCompany = new Map();
+    supplementalDivisionSerialLookup = null;
+    state.memberDivisionIds = Array.isArray(payload.memberDivisionIds) ? payload.memberDivisionIds : [];
+    state.memberNameOverrides = payload.memberNameOverrides && typeof payload.memberNameOverrides === 'object'
+      ? payload.memberNameOverrides
+      : {};
     state.companyData = normalizeCompanyData(companies);
     state.captainAccounts = normalizeAccountMap(payload.captainAccounts || payload.captains || {});
     state.commanderAccounts = normalizeAccountMap(payload.commanderAccounts || payload.commanders || {});
@@ -572,12 +1547,14 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     state.commanderSettings = payload.commanderSettings || {};
     state.excoProfiles = { ...defaultExcoProfiles, ...(payload.excoProfiles || {}) };
     state.divisionMembers = payload.divisionMembers || { active: [] };
+    state.divisionRosterAdditions = Array.isArray(payload.divisionRosterAdditions) ? payload.divisionRosterAdditions : [];
     state.commandStructure = normalizeCommandStructure(payload.commandStructure || {});
     state.founderStory = payload.founderStory || defaultFounderStory;
     state.newsItems = Array.isArray(payload.newsItems) ? payload.newsItems : [];
     state.examScores = payload.examScores || {};
     state.activeExamYear = payload.activeExamYear || String(new Date().getFullYear());
     state.galleryItems = Array.isArray(payload.galleryItems) ? payload.galleryItems : [];
+    state.companyDocuments = normalizeCompanyDocuments(payload.companyDocuments || payload.companyDocs || []);
     state.activeCaptainCompany = payload.activeCaptainCompany || '';
     state.activeCommanderEmail = getActiveCommanderEmail();
   }
@@ -589,27 +1566,54 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
   const ACTIVE_ROLE_KEY = 'royalShepherdActiveRole';
   const ACTIVE_CAPTAIN_COMPANY_KEY = 'royalShepherdActiveCaptainCompany';
 
+  function getSessionStorageSafely() {
+    try {
+      return window.sessionStorage;
+    } catch (error) {
+      console.warn('Session storage unavailable; continuing as a visitor.', error);
+      return null;
+    }
+  }
+
   function getActiveCommanderEmail() {
-    return sessionStorage.getItem(ACTIVE_COMMANDER_KEY) || null;
+    const storage = getSessionStorageSafely();
+    if (!storage) return null;
+    try {
+      return storage.getItem(ACTIVE_COMMANDER_KEY) || null;
+    } catch (error) {
+      console.warn('Session storage read failed; continuing as a visitor.', error);
+      return null;
+    }
   }
 
   function setActiveCommanderEmail(email) {
+    const storage = getSessionStorageSafely();
     if (email) {
-      sessionStorage.setItem(ACTIVE_COMMANDER_KEY, email.toString().trim().toLowerCase());
-      state.activeCommanderEmail = email.toString().trim().toLowerCase();
+      const normalizedEmail = email.toString().trim().toLowerCase();
+      try {
+        storage?.setItem(ACTIVE_COMMANDER_KEY, normalizedEmail);
+      } catch (error) {
+        console.warn('Session storage write failed.', error);
+      }
+      state.activeCommanderEmail = normalizedEmail;
     } else {
-      sessionStorage.removeItem(ACTIVE_COMMANDER_KEY);
+      try {
+        storage?.removeItem(ACTIVE_COMMANDER_KEY);
+      } catch (error) {
+        console.warn('Session storage clear failed.', error);
+      }
       state.activeCommanderEmail = null;
     }
   }
 
   function isCommanderLoggedIn() {
-    return Boolean(state.activeCommanderEmail && state.commanderAccounts[state.activeCommanderEmail]?.verified);
+    return Boolean(getAdminSessionToken() && state.activeCommanderEmail && state.commanderAccounts[state.activeCommanderEmail]?.verified);
   }
 
   function isCaptainLoggedIn() {
     const companyId = getActiveCaptainCompany();
-    return getActiveRole() === 'captain' && Boolean(companyId && (state.companyData[companyId] || defaultCompanyData[companyId]));
+    return getActiveRole() === 'captain'
+      && Boolean(companyId && !isSuspendedCompany(companyId) && (state.companyData[companyId] || defaultCompanyData[companyId]));
   }
 
   function renderCaptainWorkspaceAccess() {
@@ -621,7 +1625,12 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
 
     const notice = document.getElementById('dashboardNotice');
     if (notice) {
-      notice.textContent = loggedIn ? '' : 'Captain login required to view your company dashboard. Please sign in or register.';
+      const requestedCompanyId = new URLSearchParams(window.location.search).get('company') || getActiveCaptainCompany();
+      notice.textContent = loggedIn
+        ? ''
+        : isSuspendedCompany(requestedCompanyId)
+          ? 'Ijaba - 44th Akiling Regional Coy is suspended. Company access is unavailable.'
+          : 'Captain login required to view your company dashboard. Please sign in or register.';
     }
 
     return loggedIn;
@@ -647,6 +1656,34 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
   function getActiveCaptainCompany() {
     const raw = getStoredItem(ACTIVE_CAPTAIN_COMPANY_KEY) || '';
     try { return (JSON.parse(raw) || '').toString().trim(); } catch { return (String(raw) || '').trim(); }
+  }
+
+  function normalizeCompanyDocument(documentEntry) {
+    if (!documentEntry || typeof documentEntry !== 'object') return null;
+    const companyId = String(documentEntry.companyId || documentEntry.company || '').trim();
+    const documentName = String(documentEntry.documentName || documentEntry.title || documentEntry.filename || 'Company document').trim();
+    const src = String(documentEntry.src || documentEntry.url || '').trim();
+    if (!src && !documentName) return null;
+    return {
+      id: documentEntry.id || `document-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+      companyId,
+      documentName,
+      filename: String(documentEntry.filename || documentEntry.name || 'document.pdf').trim(),
+      src,
+      stored_name: String(documentEntry.stored_name || ''),
+      uploadedAt: documentEntry.uploadedAt || new Date().toISOString(),
+      uploadedBy: String(documentEntry.uploadedBy || '').trim(),
+    };
+  }
+
+  function normalizeCompanyDocuments(rawData) {
+    if (!Array.isArray(rawData)) return [];
+    return rawData.map(normalizeCompanyDocument).filter(Boolean);
+  }
+
+  function listCompanyDocumentsForCompany(companyId) {
+    if (!companyId) return [];
+    return (Array.isArray(state.companyDocuments) ? state.companyDocuments : []).filter((documentEntry) => String(documentEntry.companyId || '') === String(companyId));
   }
 
   function normalizeAccountMap(rawData) {
@@ -698,6 +1735,7 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
 
   const state = {
     companyData: JSON.parse(JSON.stringify(defaultCompanyData)),
+    memberDivisionIds: [],
     captainAccounts: {},
     commanderAccounts: {},
     commanderVerificationCodes: {},
@@ -706,6 +1744,8 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     commanderSettings: {},
     excoProfiles: { ...defaultExcoProfiles },
     divisionMembers: { active: [] },
+    divisionRosterAdditions: [],
+    memberNameOverrides: {},
     commandStructure: normalizeCommandStructure({}),
     founderStory: defaultFounderStory,
     newsItems: [],
@@ -713,7 +1753,8 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     activeExamYear: String(new Date().getFullYear()),
     activeCaptainCompany: '',
     activeCommanderEmail: getActiveCommanderEmail(),
-    galleryItems: []
+    galleryItems: [],
+    companyDocuments: []
   };
 
   populateCaptainCompanySelect();
@@ -722,15 +1763,6 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
   const galleryData = window.galleryData || [];
   const newsGrid = document.getElementById('newsGrid');
   const defaultNewsItems = [
-    {
-      id: 're-handbook',
-      title: 'RE Handbook',
-      date: '2026-09-08',
-      description: 'Read the Royal Shepherd RE Handbook.',
-      image: '',
-      link: 'RS New Constitution Book.pdf',
-      downloadName: 'RE-Handbook.pdf'
-    },
     {
       id: 'rs-constitution',
       title: 'RS New Constitution',
@@ -742,17 +1774,9 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     }
   ];
   let pendingGalleryFiles = [];
-
-  function ensureDefaultCommanderAccount() {
-    const defaultEmail = 'commander@royalshepherd.com';
-    const defaultPassword = 'royalshepherd2026';
-
-    if (!state.commanderAccounts[defaultEmail]) {
-      state.commanderAccounts[defaultEmail] = { password: defaultPassword, verified: true, email: defaultEmail };
-      return true;
-    }
-    return false;
-  }
+  let galleryRenderItems = [];
+  let galleryRenderOffset = 0;
+  const GALLERY_RENDER_CHUNK_SIZE = 36;
 
   function ensureLegacyCaptainAccounts() {
     const legacyEmails = ['captain@royalshepherd.com', 'admin@royalshepherd.com'];
@@ -767,15 +1791,26 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
   }
 
   function getCompanyDisplayName(companyId, company = {}) {
+    if (String(companyId) === '3') return 'Iyana Iyesi - 17th Akiling Regional Coy';
     const name = String(company?.name || '').trim();
+    const canonicalName = defaultCompanyData[companyId]?.name || '';
+    if (officialCompanySerialByRecordId[companyId] && /^company\s+\d+$/i.test(name) && canonicalName) {
+      return canonicalName;
+    }
     return name || defaultCompanyData[companyId]?.name || `Company ${companyId}`;
+  }
+
+  function getOfficialCompanyEntries() {
+    return Object.entries(state.companyData || {})
+      .filter(([companyId]) => Object.prototype.hasOwnProperty.call(defaultCompanyData, companyId) && !isSuspendedCompany(companyId))
+      .sort(([leftId], [rightId]) => Number(leftId) - Number(rightId));
   }
 
   function populateCaptainCompanySelect() {
     if (!captainCompany) return;
 
     const currentValue = captainCompany.value || '';
-    const companyEntries = Object.entries(state.companyData || {}).sort(([a], [b]) => Number(a) - Number(b));
+    const companyEntries = getOfficialCompanyEntries();
 
     captainCompany.innerHTML = '<option value="">Select Company</option>' + companyEntries.map(([companyId, company]) => {
       const label = getCompanyDisplayName(companyId, company);
@@ -791,7 +1826,7 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     const enlistmentCompanySelect = document.getElementById('enlistmentCompany');
     if (!enlistmentCompanySelect) return;
 
-    const companyEntries = Object.entries(state.companyData || {}).sort(([a], [b]) => Number(a) - Number(b));
+    const companyEntries = getOfficialCompanyEntries();
     enlistmentCompanySelect.innerHTML = '<option value="">Select Company</option>' + companyEntries.map(([companyId, company]) => {
       const label = getCompanyDisplayName(companyId, company);
       return `<option value="${companyId}">${escapeHtml(label)}</option>`;
@@ -827,6 +1862,14 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
           intermediate: sectionMap.intermediate,
           senior: sectionMap.senior,
           officer,
+          other: Array.isArray(company.other) ? company.other : [],
+          members: Array.isArray(company.members) ? company.members : [],
+          memberRosterManaged: company.memberRosterManaged === true,
+          companyMemberSerials: Array.isArray(company.companyMemberSerials) ? company.companyMemberSerials : [],
+          totalMembers: Number(company.totalMembers || 0),
+          totalNcos: Number(company.totalNcos || 0),
+          totalOfficers: Number(company.totalOfficers || 0),
+          totalCommissionedOfficers: Number(company.totalCommissionedOfficers || 0),
           active: anchor,
           inactive: junior,
           officers: officer
@@ -841,6 +1884,9 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     if (backendState) {
       __rsBackendCache = backendState;
       applySharedState(backendState);
+      void persistOfficialMemberDivisionIds().catch((error) => {
+        console.warn('Official Division IDs could not be synchronized.', error);
+      });
       window.__royalShepherdState = state;
       return;
     }
@@ -861,12 +1907,15 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     state.commanderSettings = {};
     state.excoProfiles = { ...defaultExcoProfiles };
     state.divisionMembers = { active: [] };
+    state.divisionRosterAdditions = [];
     state.commandStructure = normalizeCommandStructure({});
     state.founderStory = defaultFounderStory;
     state.newsItems = [];
     state.examScores = {};
     state.activeExamYear = String(new Date().getFullYear());
     state.galleryItems = [];
+    state.companyDocuments = [];
+    state.memberDivisionIds = buildOfficialMemberDivisionIdSnapshot();
 
     if (configuredUrl) {
       setTimeout(() => {
@@ -876,6 +1925,10 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
   }
 
   async function saveCompanies() {
+    companyMemberSerialLookupByCompany = new Map();
+    supplementalDivisionSerialLookup = null;
+    syncOfficialCompanyMembersToState();
+    state.memberDivisionIds = buildOfficialMemberDivisionIdSnapshot();
     await saveAppState(true);
   }
 
@@ -897,6 +1950,65 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
 
   let excoAutoSaveTimer = null;
   const EXCO_AUTO_SAVE_DELAY_MS = 1200;
+
+  async function apiUploadGalleryImages(entries) {
+    const backendUrl = getBackendBaseUrl();
+    if (!backendUrl) {
+      throw new Error('Backend is not configured');
+    }
+    const formData = new FormData();
+    entries.forEach((entry) => {
+      const file = entry?.file;
+      if (!file) return;
+      formData.append('files', file);
+      formData.append('titles', String(entry.title || file.name || 'Gallery picture'));
+      formData.append('descriptions', String(galleryCategoryLabels?.[entry.category] || 'Royal Shepherd gallery picture'));
+      formData.append('categories', String(entry.category || 'parades'));
+    });
+    const response = await fetch(`${backendUrl}/api/gallery/upload`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${getAdminSessionToken()}` },
+      body: formData
+    });
+    const data = await response.json().catch(() => null);
+    if (!response.ok) {
+      throw new Error(data?.detail || 'Gallery upload failed');
+    }
+    return Array.isArray(data?.items) ? data.items : [];
+  }
+
+  async function apiUploadCompanyDocument(file, companyId, documentName, uploadedBy = '', replaceDocumentId = '') {
+    const backendUrl = getBackendBaseUrl();
+    if (!backendUrl) {
+      throw new Error('Backend is not configured');
+    }
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('companyId', String(companyId || ''));
+    formData.append('documentName', String(documentName || file.name || 'Company document'));
+    formData.append('uploadedBy', String(uploadedBy || ''));
+    if (replaceDocumentId) formData.append('replaceDocumentId', String(replaceDocumentId));
+    const response = await fetch(`${backendUrl}/api/company-documents`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${getAdminSessionToken()}` },
+      body: formData
+    });
+    const data = await response.json().catch(() => null);
+    if (!response.ok) {
+      throw new Error(data?.detail || 'PDF upload failed');
+    }
+    return data?.item || null;
+  }
+
+  async function apiDeleteManagedItem(path) {
+    const response = await fetch(`${getBackendBaseUrl()}${path}`, {
+      method: 'DELETE',
+      headers: { Authorization: `Bearer ${getAdminSessionToken()}` }
+    });
+    const data = await response.json().catch(() => null);
+    if (!response.ok) throw new Error(data?.detail || 'Delete failed');
+    return data;
+  }
 
   function saveExcoProfiles() {
     saveAppState(true).catch(() => {});
@@ -1119,6 +2231,7 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     closeModal('commanderDashboardModal');
     closeModal('excoDashboardModal');
     closeModal('galleryModal');
+    closeModal('totalMembershipModal');
   }
 
   function bindMobileMenu() {
@@ -1193,7 +2306,7 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     document.querySelectorAll('.exco-trigger').forEach((trigger) => {
       trigger.addEventListener('click', (event) => {
         event.preventDefault();
-        openExcoDashboard();
+        openExco
       });
     });
   }
@@ -1220,6 +2333,11 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
 
   function bindModalCloseButtons() {
     modalClose?.addEventListener('click', closeAllModals);
+    membershipStatTrigger?.addEventListener('click', () => {
+      openModal('totalMembershipModal');
+      window.setTimeout(renderTotalMembershipList, 0);
+    });
+    membershipClose?.addEventListener('click', () => closeModal('totalMembershipModal'));
     modalBackdrops.forEach((backdrop) => {
       backdrop.addEventListener('click', closeAllModals);
     });
@@ -1277,7 +2395,7 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
   }
 
   function getGalleryItems() {
-    const allowedCategories = new Set(['parades', 'band', 'rehearsals', 'moments-enjoyment', 'exams', 'trophies', 'member-catalogue']);
+    const allowedCategories = new Set(['parades', 'band', 'rehearsals', 'throwbacks', 'moments-enjoyment', 'exams', 'trophies', 'member-catalogue']);
     const mergedItems = new Map();
     [...galleryData, ...(Array.isArray(state.galleryItems) ? state.galleryItems : [])].forEach((item) => {
       if (!item?.src) return;
@@ -1289,16 +2407,25 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     return Array.from(mergedItems.values());
   }
 
-  function renderGallery() {
-    if (!galleryGrid) return;
-    galleryGrid.innerHTML = '';
+  function getGalleryRenderItems(filter = 'all') {
+    const query = (gallerySearch?.value || '').trim().toLowerCase();
+    return getGalleryItems().filter((item) => {
+      const matchesCategory = filter === 'all' || item.category === filter;
+      const searchable = `${item.title || ''} ${item.description || ''} ${item.category || ''}`.toLowerCase();
+      return matchesCategory && (!query || searchable.includes(query));
+    });
+  }
 
-    const itemsToRender = getGalleryItems();
-    itemsToRender.forEach((item, index) => {
+  function appendGalleryChunk() {
+    if (!galleryGrid || galleryRenderOffset >= galleryRenderItems.length) return;
+    const fragment = document.createDocumentFragment();
+    const end = Math.min(galleryRenderOffset + GALLERY_RENDER_CHUNK_SIZE, galleryRenderItems.length);
+    for (let index = galleryRenderOffset; index < end; index += 1) {
+      const item = galleryRenderItems[index];
       const article = document.createElement('article');
       article.className = 'gallery-item glass-card';
       article.dataset.category = item.category || 'parades';
-      article.dataset.index = index;
+      article.dataset.index = String(getGalleryItems().findIndex((candidate) => candidate.src === item.src));
       article.innerHTML = `
         <button type="button" class="gallery-thumb" aria-label="${escapeHtml(item.title || 'Gallery picture')}">
           <img src="${resolveImagePath(item.src)}" alt="${escapeHtml(item.title || 'Gallery picture')}" loading="lazy" decoding="async" fetchpriority="low" />
@@ -1307,17 +2434,26 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
             <p>${escapeHtml(item.description || '')}</p>
           </div>
         </button>
-        <a class="gallery-download btn btn-outline" href="${resolveImagePath(item.src)}" download aria-label="Download ${item.title}">Download</a>
+        <a class="gallery-download btn btn-outline" href="${resolveImagePath(item.src)}" download aria-label="Download ${escapeHtml(item.title || 'Gallery picture')}">Download</a>
       `;
-      galleryGrid.appendChild(article);
-    });
+      fragment.appendChild(article);
+    }
+    galleryRenderOffset = end;
+    galleryGrid.appendChild(fragment);
+  }
 
+  function renderGallery(filter = 'all') {
+    if (!galleryGrid) return;
+    galleryGrid.innerHTML = '';
+    galleryRenderItems = getGalleryRenderItems(filter);
+    galleryRenderOffset = 0;
+    appendGalleryChunk();
     const emptyState = document.createElement('p');
     emptyState.className = 'gallery-empty-state';
-    emptyState.hidden = true;
+    emptyState.hidden = galleryRenderItems.length > 0;
+    emptyState.textContent = 'No gallery pictures match this search.';
     galleryGrid.appendChild(emptyState);
-
-    applyGalleryFilter('all');
+    applyGalleryFilter(filter);
   }
 
   function renderNews() {
@@ -1325,10 +2461,11 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     const items = [...defaultNewsItems, ...(Array.isArray(state.newsItems) ? state.newsItems : [])]
       .filter((item, index, allItems) => allItems.findIndex((candidate) => candidate.id === item.id) === index)
       .filter((item) => item && item.title && item.description)
+      .filter((item) => item.id === 'rs-constitution' || !/constitution/i.test(String(item.title || '')))
       .sort((first, second) => new Date(second.date || 0) - new Date(first.date || 0));
     newsGrid.innerHTML = items.length ? items.map((item) => `
       <article class="news-card glass-card">
-        ${item.image ? `<img class="news-image" src="${resolveImagePath(item.image)}" alt="${escapeHtml(item.title)}" />` : ''}
+        ${item.image ? `<img class="news-image" src="${resolveImagePath(item.image)}" alt="${escapeHtml(item.title)}" loading="lazy" decoding="async" />` : ''}
         <div class="news-card-copy">
           <p class="news-date">${escapeHtml(item.date || '')}</p>
           <h3>${escapeHtml(item.title)}</h3>
@@ -1381,11 +2518,20 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
       emptyState.hidden = visibleCount > 0;
       emptyState.textContent = filter === 'trophies'
         ? 'No saved trophy or award pictures are currently available.'
-        : (filter === 'moments-enjoyment' ? 'No saved enjoyment pictures are currently available.' : 'No gallery pictures match this search.');
+        : (filter === 'moments-enjoyment'
+          ? 'No saved enjoyment pictures are currently available.'
+          : (filter === 'throwbacks' ? 'No throwback pictures are currently available.' : 'No gallery pictures match this search.'));
     }
   }
 
   function bindGallery() {
+    galleryPanel?.querySelector('.gallery-panel-inner')?.addEventListener('scroll', () => {
+      const scrollContainer = galleryPanel.querySelector('.gallery-panel-inner');
+      if (scrollContainer.scrollTop + scrollContainer.clientHeight >= scrollContainer.scrollHeight - 600) {
+        appendGalleryChunk();
+      }
+    }, { passive: true });
+
     galleryToggle?.addEventListener('click', () => {
       const hidden = galleryPanel?.classList.toggle('is-collapsed');
       galleryToggle.textContent = hidden ? 'Open Gallery' : 'Hide Gallery';
@@ -1425,11 +2571,11 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     });
 
     galleryFilters.forEach((button) => {
-      button.addEventListener('click', () => applyGalleryFilter(button.dataset.filter));
+      button.addEventListener('click', () => renderGallery(button.dataset.filter));
     });
     gallerySearch?.addEventListener('input', () => {
       const activeFilter = document.querySelector('.filter-btn.active')?.dataset.filter || 'all';
-      applyGalleryFilter(activeFilter);
+      renderGallery(activeFilter);
     });
   }
 
@@ -1505,53 +2651,214 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     }, {});
   }
 
-  function getCompanyMemberCount(company) {
-    return Number(company?.totalMembers || 0) || (
-      (company?.anchor || []).filter(Boolean).length +
-      (company?.junior || []).filter(Boolean).length +
-      (company?.intermediate || []).filter(Boolean).length +
-      (company?.senior || []).filter(Boolean).length +
-      (company?.officer || []).filter(Boolean).length
-    );
+  function getCompanyMemberCount(company, companyId = '') {
+    const counts = getCompanyPersonnelCounts(companyId, company);
+    return Object.values(counts).reduce((total, count) => total + count, 0);
   }
 
-  function getCompanyNcoCount(company) {
-    return Number(company?.totalNcos || 0) || ((company?.anchor || []).length + (company?.junior || []).length + (company?.intermediate || []).length + (company?.senior || []).length);
+  function getCompanyNcoCount(company, companyId = '') {
+    return getCompanyPersonnelCounts(companyId, company).nco;
   }
 
-  function getCompanyOfficerCount(company) {
-    return Number(company?.totalOfficers || 0) || (company?.officer || []).filter(Boolean).length;
+  function getCompanyOfficerCount(company, companyId = '') {
+    return getCompanyPersonnelCounts(companyId, company).officer;
+  }
+
+  function getCompanyCommissionedOfficerCount(company, companyId = '') {
+    return getCompanyPersonnelCounts(companyId, company).commissioned;
+  }
+
+  const officialRankedPersonnelRoster = {
+    commissioned: [
+      {
+        rank: 'Lieutenant',
+        names: ['Akinsinde Timileyin', 'Alabi Oluwakemi', 'Edward Oluwafemi', 'Ogundipe Bamidele', 'Oguntola Bernice Titilayo']
+      },
+      {
+        rank: 'Second Lieutenant',
+        names: ['Adejobi Ibukun Matthew', 'Adewole Samuel Ayodele', 'Adeniji Solomon Opeyemi', 'Owolabi Abigail Ololade']
+      }
+    ],
+    nco: [
+      { rank: 'Warrant Officer II (WO II)', names: ['Adebisi Alice', 'Adesanya Abisola', 'Michael Esther', 'Shodunke Michael'] },
+      { rank: 'Warrant Officer I (WO I)', names: ['Olawuyi Yetunde'] },
+      {
+        rank: 'Staff Sergeant',
+        names: ['Adedokun Adedamola', 'Adepoju Precious', 'Ajiboye Ololade', 'Alabi Lekan', 'Albert Ndidi', 'Olaniyi Samuel Oluwapelumi']
+      },
+      {
+        rank: 'Sergeant',
+        names: [
+          'Adeniyi Samuel', 'Adejobi Olawunmi Elizabeth', 'Adesanya Favour', 'Babafemi Favour Diekolaoluwa',
+          'Banmeke Victoria Ayomide', 'Ibikunle Olamide Emmanuel', 'Michael Samuel', 'Ogunwede Ezekiel',
+          'Omoleye Ayomide Joseph', 'Orelusi Gift', 'Oyedotun Boluwatife', 'Samson David',
+          'Shoyemi Damilola Abidemi', 'Sulaimon Praise'
+        ]
+      },
+      {
+        rank: 'Lance Corporal',
+        names: [
+          'Ademola Esther Omolade', 'Adeoye Oluwajomiloju David', 'Adeyemi Akorede David', 'Adesina Oreoluwa',
+          'Ajisegiri Eniola', 'Atofarati Ayomide Mary', 'Babayanju Opeyemi Precious', 'Bamgbose David',
+          'Durosimi Taiwo Damilola', 'Fagbuaro Esther Jesumolawa', 'Ilori Temitope', 'James Desmond',
+          'Makinde Joseph', 'Obadimeji Semilore Michael', 'Ojo Mercy Omolola', 'Olakitan Kehinde Faith',
+          'Olaleye Omobolawa', 'Ogumuyiwa Adesewa Rebecca', 'Ogunsina Elizabeth', 'Ogunsina Tofunmi',
+          'Olayinka Isreal Ayomide', 'Osunyinka David', 'Phillip Emmanuel', 'Sobayo Anjola', 'Solomon Emmanuel'
+        ]
+      },
+      {
+        rank: 'Corporal',
+        names: [
+          'Abiola Solomon', 'Adedokun Adebusayo', 'Adedokun Temiloluwa', 'Adebowale Oluwatoyin',
+          'Awoluyi Ayomide Joseph', 'Ayodele Victoria Anuoluwapo', 'Igbekele Michael Ayomide', 'Olorode Paul',
+          'Olosunde Oluwajuwon Francis', 'Olayera Mary Omobolanle', 'Olaleye Samuel Oluwabori', 'Peter Isaac Efue',
+          'Shobola Iyanuoluwa', 'Sobayo Olamilekan', 'Tanimowo Covenant'
+        ]
+      }
+    ]
+  };
+
+  function getOfficialRankedPersonnelCount(category) {
+    const names = (officialRankedPersonnelRoster[category] || []).flatMap(({ names: rankNames }) => rankNames);
+    return new Set(names.map(normalizeMemberComparisonKey).filter(Boolean)).size;
+  }
+
+  let pdfLibraryPromise;
+
+  function loadPdfLibrary() {
+    if (window.jspdf?.jsPDF || window.jsPDF || window.jspdf?.default || window.jspdf) {
+      return Promise.resolve();
+    }
+    if (pdfLibraryPromise) return pdfLibraryPromise;
+
+    pdfLibraryPromise = new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = 'assets/jspdf.umd.min.js?v=1';
+      script.onload = () => {
+        if (window.jspdf?.jsPDF || window.jsPDF || window.jspdf?.default || window.jspdf) {
+          resolve();
+        } else {
+          reject(new Error('The PDF export library loaded without exposing jsPDF.'));
+        }
+      };
+      script.onerror = () => reject(new Error('The PDF export library could not be loaded.'));
+      document.head.appendChild(script);
+    }).catch((error) => {
+      pdfLibraryPromise = null;
+      throw error;
+    });
+
+    return pdfLibraryPromise;
   }
 
   function renderDivisionSummary() {
-    let totalMembers = 0;
-    let totalOfficers = 0;
-    // Active members display should reflect the commissioned officers who have names
-    const allCommandOfficers = Array.isArray(state.commandStructure?.officers) ? state.commandStructure.officers : [];
-    const commissionedWithNames = allCommandOfficers.filter((o) => (o && String(o.name || '').trim()));
-    const divisionActiveMembers = Array.isArray(state.divisionMembers?.active) ? state.divisionMembers.active.filter(Boolean) : [];
-
-    Object.values(state.companyData).forEach((company) => {
-      totalMembers += getCompanyMemberCount(company);
-      totalOfficers += getCompanyOfficerCount(company);
-    });
-
-    totalMembers += commissionedWithNames.length;
-    totalMembers += divisionActiveMembers.length;
-    totalOfficers += commissionedWithNames.length;
+    const uniqueDivisionTotals = dedupeMemberNamesByKey(getDivisionRosterNames());
+    const totalNcos = getOfficialRankedPersonnelCount('nco');
+    const totalCommissionedOfficers = getOfficialRankedPersonnelCount('commissioned');
 
     if (divisionTotalMembers) {
-      divisionTotalMembers.textContent = totalMembers;
+      divisionTotalMembers.textContent = uniqueDivisionTotals.length || 473;
+    }
+    if (divisionTotalRankedOfficers) {
+      divisionTotalRankedOfficers.textContent = totalNcos + totalCommissionedOfficers;
+    }
+    if (divisionTotalNcos) {
+      divisionTotalNcos.textContent = totalNcos;
     }
     if (divisionTotalOfficers) {
-      divisionTotalOfficers.textContent = totalOfficers;
+      divisionTotalOfficers.textContent = totalCommissionedOfficers;
     }
     if (homeTotalMembers) {
-      homeTotalMembers.textContent = (typeof totalMembers === 'number') ? (totalMembers === 0 ? '0' : String(totalMembers)) : '150+';
+      homeTotalMembers.textContent = uniqueDivisionTotals.length || 473;
     }
-    if (homeTotalOfficers) {
-      homeTotalOfficers.textContent = (typeof totalOfficers === 'number') ? (totalOfficers === 0 ? '0' : String(totalOfficers)) : '15+';
+    if (homeTotalNcos) {
+      homeTotalNcos.textContent = String(totalNcos);
     }
+    if (homeTotalRankedOfficers) {
+      homeTotalRankedOfficers.textContent = String(totalNcos + totalCommissionedOfficers);
+    }
+  }
+
+  function renderRankedPersonnelRosters() {
+    const rosterSection = document.getElementById('ranked-personnel');
+    if (!rosterSection) return;
+
+    [
+      { category: 'nco', title: 'Non-Commissioned Officers', heading: 'NCO Roster' },
+      { category: 'commissioned', title: 'Commissioned Officers', heading: 'Commissioned Officer Roster' }
+    ].forEach(({ category, title, heading }) => {
+      const container = rosterSection.querySelector(`[data-ranked-roster="${category}"]`);
+      if (!container) return;
+      const rankGroups = officialRankedPersonnelRoster[category] || [];
+      const names = dedupeMemberNamesByKey(rankGroups.flatMap(({ names: rankNames }) => rankNames));
+      const card = document.createElement('article');
+      card.className = 'company-card glass-card ranked-personnel-card';
+      const count = document.createElement('span');
+      count.className = 'company-number';
+      count.textContent = String(names.length).padStart(2, '0');
+      const cardTitle = document.createElement('h3');
+      cardTitle.textContent = title;
+      const caption = document.createElement('p');
+      caption.className = 'company-caption';
+      caption.textContent = `${names.length} listed personnel`;
+      const details = document.createElement('div');
+      details.className = 'company-details company-pdf-details ranked-personnel-details';
+      details.hidden = false;
+      const rosterHeading = document.createElement('h4');
+      rosterHeading.textContent = heading;
+      const rankLists = rankGroups.map(({ rank, names: rankNames }) => {
+        const group = document.createElement('section');
+        group.className = 'ranked-personnel-rank-group';
+        const rankHeading = document.createElement('h5');
+        rankHeading.textContent = rank;
+        const list = document.createElement('ol');
+        list.className = 'company-pdf-members ranked-personnel-members';
+        dedupeMemberNamesByKey(rankNames).forEach((name) => {
+          const item = document.createElement('li');
+          const divisionId = getOfficialDivisionIdForMember(name);
+          const memberRow = document.createElement('div');
+          memberRow.className = 'member-division-name';
+          const companySerial = divisionId.match(/^AI\.D\d{2}\/\d{3}\/(\d{3})$/)?.[1];
+          if (companySerial) memberRow.dataset.companySerial = companySerial;
+          if (companySerial) {
+            const serial = document.createElement('span');
+            serial.className = 'personnel-list-serial';
+            serial.textContent = `${companySerial}. `;
+            memberRow.appendChild(serial);
+          }
+          const memberRank = document.createElement('span');
+          memberRank.className = 'ranked-personnel-rank';
+          memberRank.textContent = rank;
+          const memberName = document.createElement('span');
+          memberName.className = 'ranked-personnel-name';
+          memberName.textContent = name;
+          memberRow.append(memberRank, memberName);
+          if (divisionId) {
+            const membershipId = document.createElement('span');
+            membershipId.className = 'member-division-id';
+            membershipId.textContent = ` — ${divisionId}`;
+            memberRow.appendChild(membershipId);
+          }
+          item.appendChild(memberRow);
+          list.appendChild(item);
+        });
+        group.append(rankHeading, list);
+        return group;
+      });
+      details.append(rosterHeading, ...rankLists);
+      card.append(count, cardTitle, caption, details);
+      container.replaceChildren(card);
+    });
+  }
+
+  function bindRankedPersonnelToggle() {
+    if (!rankedPersonnelToggle || !rankedPersonnelRosters) return;
+    rankedPersonnelToggle.addEventListener('click', () => {
+      const expanded = rankedPersonnelToggle.getAttribute('aria-expanded') === 'true';
+      rankedPersonnelToggle.setAttribute('aria-expanded', String(!expanded));
+      rankedPersonnelRosters.hidden = expanded;
+      rankedPersonnelToggle.textContent = expanded ? 'Show all ranked officers' : 'Hide ranked officers';
+    });
   }
 
   function exportExamResultsPdf(companyId, year) {
@@ -1718,7 +3025,7 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
 
     founderCard.innerHTML = `
       <div class="founder-portrait">
-        <img src="image/pa%20sk%20abiara.jpeg?v=3" alt="Prophet Samuel Kayode Abiara" />
+        <img src="image/pa sk abiara.jpeg?v=3" alt="Prophet Samuel Kayode Abiara" loading="lazy" decoding="async" />
       </div>
       <div class="founder-copy">
         ${paragraphs.map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`).join('')}
@@ -1746,8 +3053,8 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
 
   function getExcoDisplayName(key, profile, roleDefinition, isExcoGroup) {
     const fixedNames = {
-      'national-organizing-secretary': 'RS Major General E. B. Adegbite',
-      'assistant-national-organizing-secretary': 'RS Brigadier General S. O. Oladahunsi',
+  'national-organizing-secretary': 'RS MAJOR GENERAL E. B. ADEGBITE',
+  'assistant-national-organizing-secretary': 'RS BRIGADIER GENERAL S. OLUDAHUNSI',
       'akiling-region-commander': 'Pastor J. P. Akinyemi'
     };
     const name = fixedNames[key] || (profile.name || roleDefinition?.label || 'Enter name here').trim();
@@ -1789,8 +3096,8 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
       card.className = 'leadership-card';
 
       const fixedPhotos = {
-        'national-organizing-secretary': 'RS Major General E. B. Adegbite.jpeg',
-        'assistant-national-organizing-secretary': 'pastor s.o oladahusi.jpeg',
+        'national-organizing-secretary': 'nos adegnite.jpeg',
+        'assistant-national-organizing-secretary': './RS Major General E. B. Adegbite.jpeg',
         'akiling-region-commander': 'akiling regional commander  akinyemi.jpeg'
       };
       const photo = fixedPhotos[key] || profile.photo || leadershipPhotoMap[key] || '';
@@ -1805,7 +3112,7 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
 
       card.innerHTML = `
         <div class="leadership-photo-wrap">
-          ${photo ? `<img class="leadership-photo" src="${imageSrc}" alt="${escapeHtml(name)}" />` : `<div class="leadership-photo avatar empty" aria-hidden="true">${escapeHtml(initials)}</div>`}
+          ${photo ? `<img class="leadership-photo" src="${imageSrc}" alt="${escapeHtml(name)}" loading="lazy" decoding="async" fetchpriority="low" />` : `<div class="leadership-photo avatar empty" aria-hidden="true">${escapeHtml(initials)}</div>`}
         </div>
         <div class="leadership-details">
           <h4>${escapeHtml(role)}</h4>
@@ -1819,15 +3126,181 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     container.appendChild(groupWrapper);
   }
 
+  let totalMembershipListRendered = false;
+
+  function getTotalMembershipDivisionIds(names) {
+    const divisionIdsByName = new Map();
+    const divisionIdsByCaptainName = new Map();
+    const divisionRosterAdditions = Array.isArray(state.divisionRosterAdditions) ? state.divisionRosterAdditions : [];
+    divisionRosterAdditions.forEach((entry) => {
+      if (!entry?.name || !entry.membershipNumber) return;
+      divisionIdsByName.set(normalizeMemberComparisonKey(entry.name), new Set([entry.membershipNumber]));
+    });
+    buildOfficialMemberDivisionIdSnapshot().forEach((record) => {
+      const key = normalizeMemberComparisonKey(record.name);
+      if (divisionIdsByName.has(key)) return;
+      if (!divisionIdsByName.has(key)) divisionIdsByName.set(key, new Set());
+      divisionIdsByName.get(key).add(record.id);
+    });
+    Object.keys(officialCompanySerialByRecordId).forEach((companyId) => {
+      const leader = getOfficialCompanyLeader(companyId);
+      if (!leader) return;
+      const id = getOfficialMemberDivisionId(companyId, leader.name);
+      if (id) divisionIdsByCaptainName.set(normalizeMemberComparisonKey(leader.name), id);
+    });
+    const uniqueDivisionIdsByName = new Map();
+    divisionIdsByName.forEach((ids, key) => {
+      if (ids.size === 1) uniqueDivisionIdsByName.set(key, ids.values().next().value);
+    });
+
+    const explicitMembershipIds = new Map([
+      [normalizeMemberComparisonKey('Olowe Olamide'), { company: '01', member: '001' }],
+      [normalizeMemberComparisonKey('Ilori Samuel A.'), { company: '01', member: '001' }]
+    ]);
+    let nextUnassignedMemberSerial = Array.from(divisionIdsByName.values())
+      .flatMap((ids) => Array.from(ids))
+      .reduce((maximum, id) => {
+        const match = id.match(/^AI\.D02\/\d{3}\/(\d{3})$/);
+        return match ? Math.max(maximum, Number(match[1])) : maximum;
+      }, 0);
+    return names.map((name, index) => {
+      const key = normalizeMemberComparisonKey(name);
+      const assignedDivisionId = divisionIdsByCaptainName.get(key) || uniqueDivisionIdsByName.get(key);
+      const divisionSerial = String(index + 1).padStart(3, '0');
+      const explicitAssignment = explicitMembershipIds.get(key);
+      const savedAssignment = state.memberNameOverrides?.[String(index + 1)];
+      const assignedIdParts = assignedDivisionId?.match(/^AI\.D(\d{2})\/\d{3}\/(\d{3})$/);
+      const company = savedAssignment?.company || explicitAssignment?.company || (assignedIdParts
+        ? String(Number(assignedIdParts[1])).padStart(2, '0')
+        : '02');
+      const companyMemberSerial = savedAssignment?.member || explicitAssignment?.member || (assignedIdParts
+        ? assignedIdParts[2]
+        : String(++nextUnassignedMemberSerial).padStart(3, '0'));
+      const rosterAddition = divisionRosterAdditions.find((entry) => normalizeMemberComparisonKey(entry.name) === key);
+      return rosterAddition?.membershipNumber || `AI.D${divisionSerial}/${company}/${companyMemberSerial}`;
+    });
+  }
+
+  function renderTotalMembershipList() {
+    const list = document.getElementById('totalMembershipList');
+    const count = document.getElementById('totalMembershipCount');
+    if (!list || totalMembershipListRendered) return;
+
+    const names = getDivisionRosterNames();
+    if (count) count.textContent = `${names.length} members`;
+    totalMembershipListRendered = true;
+    const membershipIds = getTotalMembershipDivisionIds(names);
+
+    let nextIndex = 0;
+    const appendChunk = () => {
+      const fragment = document.createDocumentFragment();
+      const end = Math.min(nextIndex + 50, names.length);
+      for (; nextIndex < end; nextIndex += 1) {
+        const item = document.createElement('li');
+        const memberName = document.createElement('div');
+        memberName.className = 'member-division-name';
+        const name = document.createElement('span');
+        name.textContent = names[nextIndex];
+        const id = document.createElement('span');
+        id.className = 'member-division-id';
+        id.textContent = `${membershipIds[nextIndex]} — `;
+        memberName.append(id, name);
+        item.appendChild(memberName);
+        fragment.appendChild(item);
+      }
+      list.appendChild(fragment);
+      if (nextIndex < names.length) window.setTimeout(appendChunk, 0);
+    };
+    appendChunk();
+  }
+
+  function bindMembershipLookup() {
+    membershipLookupForm?.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const query = membershipLookupInput?.value.trim().toLocaleLowerCase() || '';
+      if (!membershipLookupResults) return;
+      membershipLookupResults.replaceChildren();
+
+      if (!query) {
+        membershipLookupResults.textContent = 'Enter your full name.';
+        return;
+      }
+
+      const names = getDivisionRosterNames();
+      const membershipIds = getTotalMembershipDivisionIds(names);
+      const matches = names
+        .map((name, index) => ({
+          name,
+          membershipNumber: membershipIds[index]
+        }))
+        .filter((record) => record.name.toLocaleLowerCase().includes(query));
+      if (!matches.length) {
+        membershipLookupResults.textContent = 'No matching membership record found.';
+        return;
+      }
+
+      const status = document.createElement('p');
+      status.textContent = matches.length > 1
+        ? `${matches.length} matching records. Select your name.`
+        : '1 matching membership record.';
+      membershipLookupResults.appendChild(status);
+
+      const matchList = document.createElement('div');
+      matchList.className = 'membership-match-list';
+      matches.forEach(({ name, membershipNumber }) => {
+        const record = {
+          name,
+          division: 'Agbala-Itura Division',
+          membershipNumber
+        };
+        const result = document.createElement('button');
+        result.type = 'button';
+        result.className = 'membership-match';
+        result.setAttribute('aria-pressed', 'false');
+
+        const nameText = document.createElement('strong');
+        nameText.textContent = `Member Name: ${record.name}`;
+        const divisionText = document.createElement('span');
+        divisionText.textContent = `Division: ${record.division}`;
+        const numberText = document.createElement('span');
+        numberText.textContent = `Membership Number: ${record.membershipNumber || 'Not Assigned Yet'}`;
+        result.append(nameText, divisionText, numberText);
+        result.addEventListener('click', () => {
+          matchList.querySelectorAll('.membership-match').forEach((item) => {
+            item.setAttribute('aria-pressed', 'false');
+          });
+          result.setAttribute('aria-pressed', 'true');
+        });
+        matchList.appendChild(result);
+      });
+      membershipLookupResults.appendChild(matchList);
+    });
+  }
+
   function renderCompanyLists() {
+    syncCompanyCaptainReferences();
     companyCards.forEach((card) => {
       const companyId = card.dataset.company;
+      if (isSuspendedCompany(companyId)) {
+        card.classList.add('company-suspended');
+        card.setAttribute('aria-disabled', 'true');
+        card.querySelector('.company-details')?.replaceChildren();
+        const details = card.querySelector('.company-details');
+        if (details) details.hidden = true;
+        card.querySelector('.company-stats')?.remove();
+        card.querySelector('.company-public-documents')?.remove();
+        card.querySelectorAll('.company-toggle').forEach((toggle) => toggle.remove());
+        return;
+      }
       const company = state.companyData[companyId] || defaultCompanyData[companyId];
       const title = card.querySelector('h3');
       const caption = card.querySelector('.company-caption');
       const displayName = getCompanyDisplayName(companyId, company);
+      const officialCompanySerial = officialCompanySerialByRecordId[companyId];
       if (title) title.textContent = displayName;
-      if (caption) caption.textContent = `Company ${companyId}`;
+      if (caption) caption.textContent = officialCompanySerial ? `Company ${officialCompanySerial}` : 'Legacy Company';
+      const companyNumber = card.querySelector('.company-number');
+      if (companyNumber) companyNumber.textContent = officialCompanySerial || '';
 
       let stats = card.querySelector('.company-stats');
       if (!stats) {
@@ -1840,11 +3313,130 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
           card.appendChild(stats);
         }
       }
-      stats.innerHTML = `<span>${getCompanyMemberCount(company)} members</span><span>${getCompanyNcoCount(company)} NCOs</span><span>${getCompanyOfficerCount(company)} officers</span>`;
+      const pdfMembership = window.RS_COY_MEMBERSHIP?.[companyId];
+      const hasOfficialRoster = Boolean(pdfMembership || Array.isArray(officialCompanyMemberRosterConfig[companyId]));
+      const configuredSections = Array.isArray(officialCompanySectionRosterConfig[companyId])
+        ? getOfficialCompanySections(companyId)
+        : null;
+      const legacyPdfSections = pdfMembership ? getOfficialCompanySections(companyId) : [];
+      const pdfSections = configuredSections || (hasOfficialRoster
+        ? (legacyPdfSections.length ? legacyPdfSections : [{ heading: 'Official PDF Order', members: getOfficialCompanyMemberRoster(companyId) }])
+        : []);
+      const pdfMemberCount = pdfSections.reduce((total, section) => total + section.members.length, 0);
+      const personnelCounts = getCompanyPersonnelCounts(companyId, company);
+      const totalPersonnel = Object.values(personnelCounts).reduce((total, count) => total + count, 0);
+      const leader = getOfficialCompanyLeader(companyId);
+      stats.innerHTML = `
+        <div><h4>MEMBERS</h4><strong>${personnelCounts.member}</strong></div>
+        <div><h4>NCOs</h4><strong>${personnelCounts.nco}</strong></div>
+        <div><h4>OFFICERS</h4><strong>${personnelCounts.officer}</strong></div>
+        <div><h4>C.O — COMMISSIONED OFFICERS</h4><strong>${personnelCounts.commissioned}</strong></div>
+        <div><h4>TOTAL</h4><strong>${totalPersonnel}</strong></div>
+      `;
 
       const details = card.querySelector('.company-details');
       if (details) {
         details.hidden = true;
+        if (hasOfficialRoster) {
+          details.classList.add('company-pdf-details');
+          details.replaceChildren();
+          const columns = configuredSections
+            ? [configuredSections]
+            : (pdfMembership?.layout === 'columns' ? pdfMembership.columns : [pdfSections]);
+          const renderColumns = columns.map((sections) => sections.map((section) => ({
+            ...section,
+            key: section.key || getCompanySectionKey(section.heading),
+            members: orderCompanyMembersByDivisionSerial(section.members)
+          })));
+          const leaderKey = normalizeMemberComparisonKey(leader?.name);
+          if (leader) {
+            let sourceLeaderMoved = false;
+            renderColumns.forEach((sections) => {
+              sections.forEach((section) => {
+                if (sourceLeaderMoved) return;
+                const leaderIndex = section.members.findIndex((name) => normalizeMemberComparisonKey(name) === leaderKey);
+                if (leaderIndex >= 0) {
+                  section.members.splice(leaderIndex, 1);
+                  sourceLeaderMoved = true;
+                }
+              });
+            });
+            if (!renderColumns.length) renderColumns.push([]);
+            renderColumns[0].unshift({ key: leader.sectionKey, heading: leader.heading, members: [leader.name] });
+          }
+          const columnContainer = document.createElement('div');
+          columnContainer.className = pdfMembership?.layout === 'columns'
+            ? 'company-pdf-columns'
+            : 'company-pdf-columns company-pdf-columns-single';
+          renderColumns.forEach((sections) => {
+            const column = document.createElement('div');
+            column.className = 'company-pdf-column';
+            sections.forEach((section) => {
+              const sectionElement = document.createElement('section');
+              sectionElement.className = 'company-pdf-section';
+              const heading = document.createElement('h4');
+              heading.textContent = section.heading;
+              const members = document.createElement('ol');
+              members.className = 'company-pdf-members';
+              section.members.forEach((name) => {
+                const item = document.createElement('li');
+                const companySerial = getCompanySerialForMember(companyId, name);
+                const showCompanyNumber = Boolean(companySerial);
+                if (showCompanyNumber) {
+                  item.dataset.companySerial = String(companySerial).padStart(3, '0');
+                }
+                const display = renderMemberNameWithDivisionId(name, companyId, section.key || getCompanySectionKey(section.heading), Boolean(showCompanyNumber));
+                if (showCompanyNumber) {
+                  const serial = document.createElement('span');
+                  serial.className = 'personnel-list-serial';
+                  serial.textContent = `${String(companySerial).padStart(3, '0')}. `;
+                  display.insertBefore(serial, display.firstChild);
+                }
+                if (leader && normalizeMemberComparisonKey(name) === leaderKey) {
+                  const leaderLabel = leader.sectionKey === 'captain' ? 'Company Captain' : 'Officer in Charge';
+                  display.insertBefore(document.createTextNode(`${leaderLabel} — `), display.firstChild);
+                }
+                item.replaceChildren(display);
+                members.appendChild(item);
+              });
+              sectionElement.append(heading, members);
+              column.appendChild(sectionElement);
+            });
+            columnContainer.appendChild(column);
+          });
+          details.appendChild(columnContainer);
+          const websiteOnlyMembers = getWebsiteOnlyCompanyMembers(companyId);
+          if (websiteOnlyMembers.length) {
+            const websiteOnlySection = document.createElement('section');
+            websiteOnlySection.className = 'company-pdf-section website-only-members';
+            const heading = document.createElement('h4');
+            heading.textContent = 'Website-only records';
+            const members = document.createElement('ol');
+            members.className = 'company-pdf-members website-only-member-list';
+            websiteOnlyMembers.forEach(({ name, sectionKey }) => {
+              const item = document.createElement('li');
+              const companySerial = getCompanySerialForMember(companyId, name);
+              const showCompanyNumber = Boolean(companySerial);
+              if (showCompanyNumber) {
+                item.dataset.companySerial = String(companySerial).padStart(3, '0');
+              }
+              const display = renderMemberNameWithDivisionId(name, companyId, sectionKey, Boolean(showCompanyNumber));
+              if (showCompanyNumber) {
+                const serial = document.createElement('span');
+                serial.className = 'personnel-list-serial';
+                serial.textContent = `${String(companySerial).padStart(3, '0')}. `;
+                display.insertBefore(serial, display.firstChild);
+              }
+              const note = document.createElement('span');
+              note.textContent = `Website-only; ${sectionKey} section${showCompanyNumber ? '' : '; ID unassigned'}`;
+              display.appendChild(note);
+              item.appendChild(display);
+              members.appendChild(item);
+            });
+            websiteOnlySection.append(heading, members);
+            details.appendChild(websiteOnlySection);
+          }
+        }
         if (!card.querySelector('.company-toggle')) {
           const toggle = document.createElement('button');
           toggle.type = 'button';
@@ -1854,35 +3446,98 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
         }
       }
 
-      card.querySelectorAll('.company-list').forEach((list) => {
+      let publicDocuments = card.querySelector('.company-public-documents');
+      if (!publicDocuments) {
+        publicDocuments = document.createElement('section');
+        publicDocuments.className = 'company-public-documents';
+        card.appendChild(publicDocuments);
+      }
+      const publishedDocuments = listCompanyDocumentsForCompany(companyId);
+      publicDocuments.replaceChildren();
+      publicDocuments.hidden = !publishedDocuments.length;
+      if (publishedDocuments.length) {
+        const documentsHeading = document.createElement('h4');
+        documentsHeading.textContent = 'Published Company Documents';
+        publicDocuments.appendChild(documentsHeading);
+        publishedDocuments.forEach((documentEntry) => {
+          const documentRow = document.createElement('div');
+          documentRow.className = 'company-public-document';
+          const documentTitle = document.createElement('strong');
+          documentTitle.textContent = documentEntry.documentName || documentEntry.filename || 'Company PDF';
+          const actions = document.createElement('div');
+          actions.className = 'company-public-document-actions';
+          const openLink = document.createElement('a');
+          openLink.className = 'btn btn-outline';
+          openLink.href = documentEntry.src || '#';
+          openLink.target = '_blank';
+          openLink.rel = 'noopener';
+          openLink.textContent = 'Open PDF';
+          const downloadLink = document.createElement('a');
+          downloadLink.className = 'btn btn-secondary';
+          downloadLink.href = documentEntry.src || '#';
+          downloadLink.download = documentEntry.filename || documentEntry.documentName || 'company-document.pdf';
+          downloadLink.textContent = 'Download';
+          actions.append(openLink, downloadLink);
+          documentRow.append(documentTitle, actions);
+          publicDocuments.appendChild(documentRow);
+        });
+      }
+
+      card.querySelectorAll('.company-list').forEach((sourceList) => {
+        let list = sourceList;
+        if (list.tagName !== 'OL') {
+          const orderedList = document.createElement('ol');
+          orderedList.className = list.className;
+          orderedList.dataset.list = list.dataset.list;
+          list.replaceWith(orderedList);
+          list = orderedList;
+        }
         const type = list.dataset.list;
         const items = company[type] || [];
         list.innerHTML = '';
         items.forEach((item) => {
           const li = document.createElement('li');
-          li.textContent = item;
+          const companySerial = getCompanySerialForMember(companyId, item);
+          const showCompanyNumber = Boolean(companySerial);
+          if (showCompanyNumber) {
+            li.dataset.companySerial = String(companySerial).padStart(3, '0');
+          }
+          const content = renderMemberNameWithDivisionId(item, companyId, type, Boolean(showCompanyNumber));
+          if (showCompanyNumber) {
+            const serial = document.createElement('span');
+            serial.className = 'personnel-list-serial';
+            serial.textContent = `${String(companySerial).padStart(3, '0')}. `;
+            content.insertBefore(serial, content.firstChild);
+          }
+          li.replaceChildren(content);
           list.appendChild(li);
         });
       });
     });
 
     renderDivisionSummary();
+    renderRankedPersonnelRosters();
   }
 
   function buildCaptainDashboard(companyId) {
+    if (isSuspendedCompany(companyId)) return;
     if (!dashboardGrid) return;
     const company = state.companyData[companyId] || defaultCompanyData[companyId];
+    const displayName = getCompanyDisplayName(companyId, company);
     const examYear = getLatestExamYear();
     const examData = getExamDataForCompany(companyId, examYear);
+    const companyDocuments = listCompanyDocumentsForCompany(companyId);
     dashboardGrid.innerHTML = '';
 
     const companyCard = document.createElement('div');
     companyCard.className = 'dashboard-card';
+    const officialCompanySerial = officialCompanySerialByRecordId[companyId];
     companyCard.innerHTML = `
-      <h4>${company.name}</h4>
+      <h4>${officialCompanySerial ? `Company ${officialCompanySerial} - ` : ''}${displayName}</h4>
+      <p class="dashboard-intro">Use one name per line. Rename an existing member on their current line; saved changes update this company roster, the division-wide member list, and membership search.</p>
       <label>
         <span>Company Name</span>
-        <input type="text" name="company-name-${companyId}" value="${(company.name || '').replace(/"/g, '&quot;')}" readonly />
+        <input type="text" name="company-name-${companyId}" value="${displayName.replace(/"/g, '&quot;')}" readonly />
       </label>
       ${companySectionDefinitions.map((section) => `
         <label>
@@ -1891,7 +3546,106 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
         </label>
       `).join('')}
     `;
+
+    const memberIdSummary = document.createElement('div');
+    memberIdSummary.className = 'dashboard-card';
+    const summaryList = document.createElement('ul');
+    summaryList.className = 'member-division-summary';
+    const leader = getOfficialCompanyLeader(companyId);
+    const appendLeaderSummaryItem = () => {
+      if (!leader) return;
+      const captainItem = document.createElement('li');
+      const captainSerial = getCompanySerialForMember(companyId, leader.name);
+      const captainDisplay = renderMemberNameWithDivisionId(leader.name, companyId, leader.sectionKey, Boolean(captainSerial));
+      if (captainSerial) {
+        const serial = document.createElement('span');
+        serial.className = 'personnel-list-serial';
+        serial.textContent = `${String(captainSerial).padStart(3, '0')}. `;
+        captainDisplay.insertBefore(serial, captainDisplay.firstChild);
+      }
+      captainItem.appendChild(captainDisplay);
+      summaryList.appendChild(captainItem);
+    };
+    if (leader) {
+      const captainHeading = document.createElement('li');
+      captainHeading.className = 'member-division-section-heading';
+      captainHeading.textContent = leader.heading;
+      summaryList.appendChild(captainHeading);
+      appendLeaderSummaryItem();
+    }
+    let leaderSourceMoved = false;
+    getOfficialCompanySections(companyId).forEach((section) => {
+      const headingItem = document.createElement('li');
+      headingItem.className = 'member-division-section-heading';
+      headingItem.textContent = section.heading;
+      summaryList.appendChild(headingItem);
+      section.members.forEach((memberName) => {
+        if (leader && !leaderSourceMoved && normalizeMemberComparisonKey(memberName) === normalizeMemberComparisonKey(leader.name)) {
+          leaderSourceMoved = true;
+          return;
+        }
+        const companySerial = getCompanySerialForMember(companyId, memberName);
+        const divisionId = companySerial ? getOfficialMemberDivisionId(companyId, memberName) : '';
+        const item = document.createElement('li');
+        const name = document.createElement('span');
+        name.textContent = memberName;
+        const id = document.createElement('strong');
+        id.textContent = divisionId || 'ID unresolved';
+        if (companySerial) {
+          const serial = document.createElement('span');
+          serial.className = 'personnel-list-serial';
+          serial.textContent = `${String(companySerial).padStart(3, '0')}. `;
+          item.appendChild(serial);
+        }
+        item.append(name, id);
+        summaryList.appendChild(item);
+      });
+    });
+    const websiteOnlyMembers = getWebsiteOnlyCompanyMembers(companyId);
+    if (websiteOnlyMembers.length) {
+      const headingItem = document.createElement('li');
+      headingItem.className = 'member-division-section-heading';
+      headingItem.textContent = 'Website-only records';
+      summaryList.appendChild(headingItem);
+      websiteOnlyMembers.forEach(({ name, sectionKey }) => {
+        const item = document.createElement('li');
+        const companySerial = getCompanySerialForMember(companyId, name);
+        if (companySerial) {
+          const serial = document.createElement('span');
+          serial.className = 'personnel-list-serial';
+          serial.textContent = `${String(companySerial).padStart(3, '0')}. `;
+          item.appendChild(serial);
+        }
+        const nameText = document.createElement('span');
+        nameText.textContent = name;
+        const id = document.createElement('strong');
+        id.textContent = `Website-only; ${sectionKey}; ID unassigned`;
+        item.append(nameText, id);
+        summaryList.appendChild(item);
+      });
+    }
+    memberIdSummary.innerHTML = '<h4>Official Division IDs</h4>';
+    memberIdSummary.appendChild(summaryList);
     dashboardGrid.appendChild(companyCard);
+    dashboardGrid.appendChild(memberIdSummary);
+
+    const pdfCard = document.createElement('div');
+    pdfCard.className = 'dashboard-card';
+    pdfCard.innerHTML = `
+      <h4>Company PDFs</h4>
+      <p class="dashboard-intro">Official documents assigned to ${displayName}.</p>
+      ${companyId === '3' ? '<div class="company-document-item"><p><strong>Iyana Iyesi (17th) Company Membership List</strong></p><div class="dashboard-actions"><a class="btn btn-outline" href="new 17th iyana  list.pdf" target="_blank" rel="noopener">Open PDF</a><a class="btn btn-secondary" href="new 17th iyana  list.pdf" download="iyana-iyesi-17th-company-membership-list.pdf">Download</a></div></div>' : ''}
+      ${companyDocuments.length ? companyDocuments.map((documentEntry) => `
+        <div class="company-document-item">
+          <p><strong>${escapeHtml(documentEntry.documentName || documentEntry.filename || 'Company PDF')}</strong></p>
+          <div class="dashboard-actions">
+            <a class="btn btn-outline" href="${escapeHtml(documentEntry.src || '#')}" target="_blank" rel="noopener">Open PDF</a>
+            <a class="btn btn-secondary" href="${escapeHtml(documentEntry.src || '#')}" download="${escapeHtml(documentEntry.filename || documentEntry.documentName || 'company-document.pdf')}">Download</a>
+          </div>
+        </div>
+      `).join('') : '<p>No company PDFs have been uploaded for this company yet.</p>'}
+    `;
+    dashboardGrid.appendChild(pdfCard);
 
     const scoreCard = document.createElement('div');
     scoreCard.className = 'dashboard-card';
@@ -1916,6 +3670,10 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
   }
 
   function openCaptainDashboard(companyId) {
+    if (isSuspendedCompany(companyId)) {
+      showToast('Ijaba - 44th Akiling Regional Coy is suspended. Company access is unavailable.');
+      return;
+    }
     state.activeCaptainCompany = companyId;
     setActiveRole('captain', companyId);
     buildCaptainDashboard(companyId);
@@ -2021,8 +3779,8 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     galleryManagementCard.innerHTML = `
       <h4>Gallery Management</h4>
       <p class="dashboard-intro">Upload one or more public gallery pictures, choose a category, preview them, and publish them to every visitor.</p>
-      <label><span>Pictures</span><input type="file" class="gallery-upload-input" accept="image/png,image/jpeg,image/jpg,image/webp" multiple /></label>
-      <label><span>Category for selected pictures</span><select class="gallery-upload-category"><option value="parades">Parades Pics</option><option value="band">Band Pics</option><option value="rehearsals">Rehearsal Pics</option><option value="moments-enjoyment">Moments of Enjoyment</option><option value="exams">Exams Pics</option><option value="trophies">Trophies Cabinet</option><option value="member-catalogue">Member Catalogue</option></select></label>
+      <label><span>Add Pictures</span><input type="file" class="gallery-upload-input" accept="image/*" multiple /></label>
+      <label><span>Category for selected pictures</span><select class="gallery-upload-category"><option value="parades">Parades Pics</option><option value="band">Band Pics</option><option value="rehearsals">Rehearsal Pics</option><option value="throwbacks">Throwbacks</option><option value="moments-enjoyment">Moments of Enjoyment</option><option value="exams">Exams Pics</option><option value="trophies">Trophies Cabinet</option><option value="member-catalogue">Member Catalogue</option></select></label>
       <div class="gallery-upload-preview"></div>
       <div class="dashboard-actions"><button type="button" class="btn btn-gold" data-gallery-action="publish">Publish Pictures</button></div>
       <div class="gallery-admin-list"></div>
@@ -2033,6 +3791,24 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     galleryAdminList.innerHTML = managedItems.length ? managedItems.map((item) => `
       <div class="gallery-admin-item"><span>${escapeHtml(item.title || item.src)}</span><button type="button" class="btn btn-secondary" data-gallery-action="delete" data-gallery-id="${escapeHtml(item.id || item.src)}">Delete</button></div>
     `).join('') : '<p>No admin-uploaded pictures yet. Repository gallery pictures remain available to visitors.</p>';
+
+    const documentManagementCard = document.createElement('div');
+    documentManagementCard.className = 'dashboard-card pdf-management-card';
+    documentManagementCard.innerHTML = `
+      <h4>Company PDF Management</h4>
+      <p class="dashboard-intro">Upload a PDF for a company and give it a proper display name that visitors will see.</p>
+      <label><span>Company</span><select class="company-pdf-company">${getOfficialCompanyEntries().map(([companyId, company]) => `<option value="${companyId}">${escapeHtml(getCompanyDisplayName(companyId, company))}</option>`).join('')}</select></label>
+      <label><span>Document Name</span><input type="text" class="company-pdf-name" placeholder="8th Awori Lagos Company Training Handbook" /></label>
+      <label><span>PDF File</span><input type="file" class="company-pdf-input" accept="application/pdf" /></label>
+      <div class="dashboard-actions"><button type="button" class="btn btn-gold" data-company-pdf-action="upload">Upload PDF</button></div>
+      <div class="company-pdf-admin-list"></div>
+    `;
+    commanderDashboardGrid.appendChild(documentManagementCard);
+    const companyPdfAdminList = documentManagementCard.querySelector('.company-pdf-admin-list');
+    const companyPdfEntries = Array.isArray(state.companyDocuments) ? state.companyDocuments : [];
+    companyPdfAdminList.innerHTML = companyPdfEntries.length ? companyPdfEntries.map((documentEntry) => `
+      <div class="gallery-admin-item"><span>${escapeHtml(documentEntry.documentName || documentEntry.filename || 'Company PDF')} (${escapeHtml(getCompanyDisplayName(documentEntry.companyId, state.companyData[documentEntry.companyId]))})</span><div class="request-actions"><a class="btn btn-outline" href="${escapeHtml(documentEntry.src || '#')}" target="_blank" rel="noopener">Open</a><button type="button" class="btn btn-outline" data-company-pdf-action="replace" data-document-id="${escapeHtml(documentEntry.id || documentEntry.src)}">Replace</button><button type="button" class="btn btn-secondary" data-company-pdf-action="delete" data-document-id="${escapeHtml(documentEntry.id || documentEntry.src)}">Delete</button></div></div>
+    `).join('') : '<p>No company PDFs uploaded yet.</p>';
 
     const requestCard = document.createElement('div');
     requestCard.className = 'dashboard-card';
@@ -2093,7 +3869,11 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
           <h5>Enlistment: ${escapeHtml(app.fullName)}</h5>
           <p><strong>Email:</strong> ${escapeHtml(app.email)}</p>
           <p><strong>Phone:</strong> ${escapeHtml(app.phone)}</p>
-          <p><strong>Date of Birth:</strong> ${app.dob}</p>
+          <p><strong>Date of Birth:</strong> ${escapeHtml(app.dob)}</p>
+          <p><strong>Assigned section:</strong> ${(() => {
+            const assignment = getEnlistmentAgeAndSection(app.dob);
+            return assignment ? `${escapeHtml(assignment.sectionLabel)} (age ${assignment.age})` : 'Invalid date of birth';
+          })()}</p>
           <p><strong>Gender:</strong> ${escapeHtml(app.gender)}</p>
           <p><strong>Preferred Company:</strong> ${escapeHtml(companyName)}</p>
           <p><strong>Reason:</strong> ${escapeHtml(app.reason)}</p>
@@ -2107,7 +3887,7 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
       });
     }
 
-    Object.entries(state.companyData).forEach(([companyId, company]) => {
+    getOfficialCompanyEntries().forEach(([companyId, company]) => {
       const examData = getExamDataForCompany(companyId, state.activeExamYear || getLatestExamYear());
       const card = document.createElement('div');
       card.className = 'dashboard-card';
@@ -2118,16 +3898,20 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
           <input type="text" name="company-name-${companyId}" value="${(company.name || '').replace(/"/g, '&quot;')}" />
         </label>
         <label>
-          <span>Total Members</span>
-          <input type="number" name="total-members-${companyId}" value="${getCompanyMemberCount(company)}" />
+          <span>MEMBERS</span>
+          <input type="number" name="total-members-${companyId}" value="${getCompanyMemberCount(company, companyId)}" readonly />
         </label>
         <label>
-          <span>Total NCOs</span>
-          <input type="number" name="total-ncos-${companyId}" value="${getCompanyNcoCount(company)}" />
+          <span>NCOs</span>
+          <input type="number" name="total-ncos-${companyId}" value="${getCompanyNcoCount(company, companyId)}" readonly />
         </label>
         <label>
-          <span>Total Commissioned Officers</span>
-          <input type="number" name="total-officers-${companyId}" value="${getCompanyOfficerCount(company)}" />
+          <span>OFFICERS</span>
+          <input type="number" name="total-officers-${companyId}" value="${getCompanyOfficerCount(company, companyId)}" readonly />
+        </label>
+        <label>
+          <span>C.O — COMMISSIONED OFFICERS</span>
+          <input type="number" name="total-commissioned-officers-${companyId}" value="${getCompanyCommissionedOfficerCount(company, companyId)}" readonly />
         </label>
         ${companySectionDefinitions.map((section) => `
           <label>
@@ -2256,7 +4040,20 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
 
     excoRoleDefinitions.forEach((role) => {
       const profile = state.excoProfiles[role.key] || {};
-      const profilePhoto = profile.photo || '';
+      const fixedNames = {
+        'rs-major-general-e-b-adegbite': 'RS MAJOR GENERAL E. B. ADEGBITE',
+        'rs-brigadier-general-s-oludahunsi': 'RS BRIGADIER GENERAL S. OLUDAHUNSI',
+        'national-organizing-secretary': 'RS MAJOR GENERAL E. B. ADEGBITE',
+        'assistant-national-organizing-secretary': 'RS BRIGADIER GENERAL S. OLUDAHUNSI'
+      };
+      const fixedPhotos = {
+        'rs-major-general-e-b-adegbite': './RS Major General E. B. Adegbite.jpeg',
+        'rs-brigadier-general-s-oludahunsi': 'pastor s.o oladahusi.jpeg',
+        'national-organizing-secretary': './RS Major General E. B. Adegbite.jpeg',
+        'assistant-national-organizing-secretary': 'pastor s.o oladahusi.jpeg'
+      };
+      const profileName = fixedNames[role.key] || profile.name || '';
+      const profilePhoto = fixedPhotos[role.key] || profile.photo || '';
       const card = document.createElement('div');
       card.className = 'dashboard-card';
       card.dataset.role = role.key;
@@ -2282,7 +4079,7 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
         </div>
         <label>
           <span>Full Name</span>
-          <input type="text" name="${role.key}-name" value="${(profile.name || '').replace(/"/g, '&quot;')}" />
+          <input type="text" name="${role.key}-name" value="${profileName.replace(/"/g, '&quot;')}" />
         </label>
         <label>
           <span>Email Address</span>
@@ -2318,8 +4115,111 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     window.open(targetUrl, '_blank', 'noopener,noreferrer');
   }
 
+  function getEnlistmentAgeAndSection(dobValue) {
+    const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dobValue || '');
+    if (!match) return null;
+    const birthDate = new Date(Date.UTC(Number(match[1]), Number(match[2]) - 1, Number(match[3])));
+    if (birthDate.getUTCFullYear() !== Number(match[1])
+      || birthDate.getUTCMonth() !== Number(match[2]) - 1
+      || birthDate.getUTCDate() !== Number(match[3])) return null;
+
+    const today = new Date();
+    const todayUtc = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate()));
+    if (birthDate > todayUtc) return null;
+    let age = todayUtc.getUTCFullYear() - birthDate.getUTCFullYear();
+    if (
+      todayUtc.getUTCMonth() < birthDate.getUTCMonth()
+      || (todayUtc.getUTCMonth() === birthDate.getUTCMonth() && todayUtc.getUTCDate() < birthDate.getUTCDate())
+    ) age -= 1;
+    if (age < 1) return null;
+
+    const sectionLabel = age <= 7
+      ? 'Anchor'
+      : age <= 12
+        ? 'Junior'
+        : age <= 16
+          ? 'Intermediate'
+          : age <= 23
+            ? 'Senior'
+            : 'Officer';
+    return { age, sectionLabel };
+  }
+
+  function applyApprovedApplicationLocally(approval, appId) {
+    const companyId = String(approval.company || state.enlistmentApplications[appId]?.company || '');
+    const company = state.companyData[companyId];
+    const section = approval.section;
+    const memberName = String(approval.fullName || state.enlistmentApplications[appId]?.fullName || '').trim();
+    const idParts = String(approval.membershipNumber || '').match(/^AI\.D(\d{3})\/(\d{2})\/(\d{3})$/);
+    if (!company || !companySectionDefinitions.some((entry) => entry.key === section) || !memberName || !idParts) return;
+
+    company[section] = Array.isArray(company[section]) ? company[section] : [];
+    if (!company[section].includes(memberName)) company[section].push(memberName);
+    company.members = Array.isArray(company.members) ? company.members : [];
+    if (!company.members.some((member) => normalizeMemberComparisonKey(member?.name) === normalizeMemberComparisonKey(memberName))) {
+      company.members.push({
+        name: memberName,
+        section,
+        rank: approval.rank || null,
+        category: 'MEMBER',
+        email: approval.email,
+        phone: approval.phone,
+        dob: approval.dob,
+        membershipNumber: approval.membershipNumber
+      });
+    }
+
+    company.active = Array.isArray(company.active) ? company.active : [];
+    company.inactive = Array.isArray(company.inactive) ? company.inactive : [];
+    company.officers = Array.isArray(company.officers) ? company.officers : [];
+    const targetRoster = section === 'officer'
+      ? company.officers
+      : ['anchor', 'junior'].includes(section)
+        ? company.active
+        : company.inactive;
+    if (!targetRoster.includes(memberName)) targetRoster.push(memberName);
+    company.memberRosterManaged = true;
+    company.companyMemberSerials = Array.isArray(company.companyMemberSerials) ? company.companyMemberSerials : [];
+    if (!company.companyMemberSerials.some((entry) => Number(entry?.divisionNumber) === Number(idParts[1]))) {
+      company.companyMemberSerials.push({
+        name: memberName,
+        section,
+        companySerial: idParts[3],
+        divisionNumber: Number(idParts[1]),
+        divisionNumberSource: 'division'
+      });
+    }
+    company.totalMembers = company.members.length;
+
+    state.memberDivisionIds = Array.isArray(state.memberDivisionIds) ? state.memberDivisionIds : [];
+    if (!state.memberDivisionIds.some((entry) => entry?.id === approval.membershipNumber)) {
+      state.memberDivisionIds.push({
+        id: approval.membershipNumber,
+        name: memberName,
+        companyRecordId: companyId,
+        companySerial: idParts[2],
+        generalSerial: Number(idParts[1]),
+        memberSerial: Number(idParts[3])
+      });
+    }
+    state.divisionRosterAdditions = Array.isArray(state.divisionRosterAdditions) ? state.divisionRosterAdditions : [];
+    if (!state.divisionRosterAdditions.some((entry) => entry.applicationId === appId)) {
+      state.divisionRosterAdditions.push({
+        applicationId: appId,
+        name: memberName,
+        company: companyId,
+        section,
+        divisionNumber: Number(idParts[1]),
+        companyMemberSerial: Number(idParts[3]),
+        membershipNumber: approval.membershipNumber
+      });
+    }
+  }
+
   function bindForms() {
-    captainForm?.addEventListener('submit', (event) => {
+    const approvingApplications = new Set();
+
+    captainForm?.addEventListener('submit', async (event) => {
       event.preventDefault();
       const mode = captainForm.dataset.mode || 'login';
       const email = captainEmail.value.trim().toLowerCase();
@@ -2335,6 +4235,11 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
       if (mode === 'register') {
         if (!companyId) {
           captainNotice.textContent = 'Please select your company before registering.';
+          captainNotice.style.color = 'hsl(0, 70%, 60%)';
+          return;
+        }
+        if (isSuspendedCompany(companyId)) {
+          captainNotice.textContent = 'Ijaba - 44th Akiling Regional Coy is suspended and is not accepting captain registrations.';
           captainNotice.style.color = 'hsl(0, 70%, 60%)';
           return;
         }
@@ -2364,16 +4269,28 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
         return;
       }
 
-      const account = state.captainAccounts[email];
-      if (!account || account.password !== password) {
+      let authenticatedCaptain;
+      try {
+        authenticatedCaptain = await requestJson('/auth/captain/login', {
+          method: 'POST',
+          body: JSON.stringify({ email, password })
+        });
+      } catch {
         captainNotice.textContent = 'Invalid captain email or password.';
         captainNotice.style.color = 'hsl(0, 70%, 60%)';
         return;
       }
 
-      const accountCompanyId = String(account.companyId || companyId || '');
+      const accountCompanyId = String(authenticatedCaptain?.companyId || companyId || '');
       if (!accountCompanyId) {
         captainNotice.textContent = 'This captain account is missing a company assignment.';
+        captainNotice.style.color = 'hsl(0, 70%, 60%)';
+        return;
+      }
+      if (isSuspendedCompany(accountCompanyId)) {
+        state.activeCaptainCompany = '';
+        setActiveRole('visitor');
+        captainNotice.textContent = 'Ijaba - 44th Akiling Regional Coy is suspended. Company access is unavailable.';
         captainNotice.style.color = 'hsl(0, 70%, 60%)';
         return;
       }
@@ -2392,9 +4309,8 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
       }
     });
 
-    commanderForm?.addEventListener('submit', (event) => {
+    commanderForm?.addEventListener('submit', async (event) => {
       event.preventDefault();
-      const mode = commanderForm.dataset.mode || 'login';
       const email = commanderEmail.value.trim().toLowerCase();
       const password = commanderPassword.value.trim();
 
@@ -2404,49 +4320,30 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
         return;
       }
 
-      const account = state.commanderAccounts[email];
-
-      if (mode === 'register') {
-        if (account) {
-          commanderNotice.textContent = 'This email already has commander access.';
-          commanderNotice.style.color = 'hsl(0, 70%, 60%)';
-          return;
-        }
-
-        state.commanderAccounts[email] = { password, verified: true, email };
-        saveCommanderAccounts();
+      try {
+        const authenticated = await requestJson('/auth/commander/login', {
+          method: 'POST',
+          body: JSON.stringify({ email, password })
+        });
+        if (!authenticated?.token) throw new Error('Admin login failed');
+        setAdminSessionToken(authenticated.token);
+        state.commanderAccounts[email] = { email, verified: true };
         setActiveCommanderEmail(email);
         setActiveRole('admin');
-        commanderNotice.textContent = `Admin account created for ${email}. Opening the admin dashboard.`;
+        commanderNotice.textContent = 'Admin access granted. Opening the commander dashboard.';
         commanderNotice.style.color = 'var(--gold-400)';
         closeModal('commanderModal');
         openCommanderDashboard();
+      } catch (error) {
+        commanderNotice.textContent = error.message.includes('401') ? 'Invalid commander email or password.' : 'Admin sign-in failed. Please try again.';
         return;
       }
-
-      if (!account || account.password !== password) {
-        commanderNotice.textContent = 'Invalid commander email or password.';
-        commanderNotice.style.color = 'hsl(0, 70%, 60%)';
-        return;
-      }
-
-      if (!account.verified) {
-        commanderNotice.textContent = 'Your commander account is not verified yet.';
-        commanderNotice.style.color = 'hsl(0, 70%, 60%)';
-        return;
-      }
-
-      setActiveCommanderEmail(email);
-      setActiveRole('admin');
-      commanderNotice.textContent = 'Commander access granted. Opening the commander dashboard.';
-      commanderNotice.style.color = 'var(--gold-400)';
-      closeModal('commanderModal');
-      openCommanderDashboard();
     });
 
     const commanderLogoutBtn = document.getElementById('commanderLogoutBtn');
     commanderLogoutBtn?.addEventListener('click', (event) => {
       event.preventDefault();
+      setAdminSessionToken('');
       setActiveCommanderEmail(null);
       setActiveRole('visitor');
       showToast('Commander logged out');
@@ -2456,6 +4353,10 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     dashboardForm?.addEventListener('submit', (event) => {
       event.preventDefault();
       if (!state.activeCaptainCompany) return;
+      if (isSuspendedCompany(state.activeCaptainCompany)) {
+        renderCaptainWorkspaceAccess();
+        return;
+      }
 
       const dashboardNotice = document.getElementById('dashboardNotice');
       if (dashboardNotice) {
@@ -2465,13 +4366,18 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
       const formData = new FormData(dashboardForm);
       const companyId = String(state.activeCaptainCompany);
       const savedCompany = state.companyData[companyId] || defaultCompanyData[companyId];
+      const previousSections = getOfficialCompanySections(companyId).reduce((sections, section) => {
+        sections[section.key] = section.members;
+        return sections;
+      }, {});
       const sectionValues = companySectionDefinitions.reduce((accumulator, section) => {
         const rawValue = formData.get(`${section.key}-${companyId}`);
-        const parsedValue = parseTextareaLines(rawValue);
-        accumulator[section.key] = parsedValue.length ? parsedValue : (savedCompany[section.key] || []);
+        accumulator[section.key] = parseTextareaLines(rawValue);
         return accumulator;
       }, {});
       const companyCounts = {
+        ...savedCompany,
+        memberRosterManaged: true,
         anchor: sectionValues.anchor,
         junior: sectionValues.junior,
         intermediate: sectionValues.intermediate,
@@ -2481,12 +4387,17 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
       const totalMembers = getCompanyMemberCount(companyCounts);
       const totalNcos = getCompanyNcoCount(companyCounts);
       const totalOfficers = getCompanyOfficerCount(companyCounts);
+      const totalCommissionedOfficers = getCompanyCommissionedOfficerCount(companyCounts);
       const name = (formData.get(`company-name-${companyId}`) || '')
         .toString()
         .trim() || savedCompany?.name || `Company ${companyId}`;
 
       const noChanges =
         savedCompany?.name === name &&
+        Number(savedCompany?.totalMembers || 0) === totalMembers &&
+        Number(savedCompany?.totalNcos || 0) === totalNcos &&
+        Number(savedCompany?.totalOfficers || 0) === totalOfficers &&
+        Number(savedCompany?.totalCommissionedOfficers || 0) === totalCommissionedOfficers &&
         arraysEqual(savedCompany?.anchor || [], sectionValues.anchor) &&
         arraysEqual(savedCompany?.junior || [], sectionValues.junior) &&
         arraysEqual(savedCompany?.intermediate || [], sectionValues.intermediate) &&
@@ -2500,18 +4411,32 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
         return;
       }
 
+      const updatedNames = applyCompanyMemberNameEdits(previousSections, sectionValues);
       state.companyData[companyId] = {
+        ...savedCompany,
         name,
         ...sectionValues,
+        memberRosterManaged: true,
         active: sectionValues.anchor,
         inactive: sectionValues.junior,
         officers: sectionValues.officer,
         totalMembers,
         totalNcos,
-        totalOfficers
+        totalOfficers,
+        totalCommissionedOfficers
       };
       saveCompanies();
       renderCompanyLists();
+      renderDivisionSummary();
+      totalMembershipListRendered = false;
+      const totalMembershipList = document.getElementById('totalMembershipList');
+      totalMembershipList?.replaceChildren();
+      if (document.getElementById('totalMembershipModal')?.getAttribute('aria-hidden') === 'false') {
+        renderTotalMembershipList();
+      }
+      if (dashboardNotice && updatedNames) {
+        dashboardNotice.textContent = `${updatedNames} member name${updatedNames === 1 ? '' : 's'} updated across the company roster, division member list, and membership search.`;
+      }
       closeModal('dashboardModal');
     });
 
@@ -2545,20 +4470,28 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
       }));
       const founderStory = (formData.get('founder-story') || '').toString().trim() || defaultFounderStory;
       const examYear = (formData.get('exam-year') || '').toString().trim() || state.activeExamYear || String(new Date().getFullYear());
+      const previousCompanySections = Object.keys(state.companyData).reduce((accumulator, companyId) => {
+        accumulator[companyId] = getOfficialCompanySections(companyId).reduce((sections, section) => {
+          sections[section.key] = section.members;
+          return sections;
+        }, {});
+        return accumulator;
+      }, {});
 
       const companyDataValues = Object.keys(state.companyData).reduce((accumulator, companyId) => {
         const sectionValues = companySectionDefinitions.reduce((sectionAcc, section) => {
           const rawValue = formData.get(`${section.key}-${companyId}`);
-          const parsedValue = parseTextareaLines(rawValue);
-          sectionAcc[section.key] = parsedValue.length ? parsedValue : (state.companyData[companyId]?.[section.key] || []);
+          sectionAcc[section.key] = parseTextareaLines(rawValue);
           return sectionAcc;
         }, {});
         const name = (formData.get(`company-name-${companyId}`) || '')
           .toString()
           .trim() || state.companyData[companyId]?.name || `Company ${companyId}`;
-        const totalMembers = getCompanyMemberCount(sectionValues);
-        const totalNcos = getCompanyNcoCount(sectionValues);
-        const totalOfficers = getCompanyOfficerCount(sectionValues);
+        const companyCounts = { ...(state.companyData[companyId] || {}), ...sectionValues, memberRosterManaged: true };
+        const totalMembers = getCompanyMemberCount(companyCounts);
+        const totalNcos = getCompanyNcoCount(companyCounts);
+        const totalOfficers = getCompanyOfficerCount(companyCounts);
+        const totalCommissionedOfficers = getCompanyCommissionedOfficerCount(companyCounts);
 
         const scoreSections = examGradeSections.reduce((scoreAcc, section) => {
           scoreAcc[section.key] = parseScoreEntries(formData.get(`${section.key}-scores-${companyId}`));
@@ -2571,7 +4504,8 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
           scoreSections,
           totalMembers,
           totalNcos,
-          totalOfficers
+          totalOfficers,
+          totalCommissionedOfficers
         };
         return accumulator;
       }, {});
@@ -2590,6 +4524,7 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
             Number(expected.totalMembers || 0) === Number(current.totalMembers || 0) &&
             Number(expected.totalNcos || 0) === Number(current.totalNcos || 0) &&
             Number(expected.totalOfficers || 0) === Number(current.totalOfficers || 0) &&
+            Number(expected.totalCommissionedOfficers || 0) === Number(current.totalCommissionedOfficers || 0) &&
             arraysEqual(expected.anchor || [], current.sectionValues.anchor) &&
             arraysEqual(expected.junior || [], current.sectionValues.junior) &&
             arraysEqual(expected.intermediate || [], current.sectionValues.intermediate) &&
@@ -2618,20 +4553,25 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
       state.activeExamYear = examYear;
       state.examScores[examYear] = state.examScores[examYear] || {};
 
+      let updatedCompanyMemberNames = 0;
       renderFounderStory();
       renderOfficerLeadership();
 
       Object.keys(state.companyData).forEach((companyId) => {
         const current = companyDataValues[companyId];
+        updatedCompanyMemberNames += applyCompanyMemberNameEdits(previousCompanySections[companyId] || {}, current.sectionValues);
         state.companyData[companyId] = {
+          ...(state.companyData[companyId] || {}),
           name: current.name,
           ...current.sectionValues,
+          memberRosterManaged: true,
           active: current.sectionValues.anchor,
           inactive: current.sectionValues.junior,
           officers: current.sectionValues.officer,
           totalMembers: current.totalMembers,
           totalNcos: current.totalNcos,
-          totalOfficers: current.totalOfficers
+          totalOfficers: current.totalOfficers,
+          totalCommissionedOfficers: current.totalCommissionedOfficers
         };
         state.examScores[examYear][companyId] = current.scoreSections;
       });
@@ -2642,11 +4582,76 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
       renderCompanyLists();
       populateCaptainCompanySelect();
       populateEnlistmentCompanySelect();
+      renderDivisionSummary();
+      totalMembershipListRendered = false;
+      document.getElementById('totalMembershipList')?.replaceChildren();
+      if (updatedCompanyMemberNames && commanderDashboardNotice) {
+        commanderDashboardNotice.textContent = `${updatedCompanyMemberNames} member name${updatedCompanyMemberNames === 1 ? '' : 's'} updated across company rosters, the division member list, and membership search.`;
+      }
       closeModal('commanderDashboardModal');
       showToast('Commander dashboard saved', 3000);
     });
 
-    commanderDashboardGrid?.addEventListener('click', (event) => {
+    commanderDashboardGrid?.addEventListener('click', async (event) => {
+      const pdfActionButton = event.target.closest('[data-company-pdf-action]');
+      if (pdfActionButton) {
+        const action = pdfActionButton.dataset.companyPdfAction;
+        if (action === 'replace') {
+          const card = pdfActionButton.closest('.pdf-management-card');
+          const documentId = pdfActionButton.dataset.documentId;
+          const existingDocument = state.companyDocuments.find((item) => String(item.id || item.src) === String(documentId));
+          if (!card || !existingDocument) return;
+          card.dataset.replaceDocumentId = documentId;
+          card.querySelector('.company-pdf-company').value = existingDocument.companyId;
+          card.querySelector('.company-pdf-name').value = existingDocument.documentName || '';
+          card.querySelector('[data-company-pdf-action="upload"]').textContent = 'Replace PDF';
+          card.querySelector('.company-pdf-input')?.click();
+          return;
+        }
+        if (action === 'upload') {
+          const card = pdfActionButton.closest('.pdf-management-card');
+          const companyId = card?.querySelector('.company-pdf-company')?.value || '';
+          const fileInput = card?.querySelector('.company-pdf-input');
+          const documentName = card?.querySelector('.company-pdf-name')?.value || '';
+          const file = fileInput?.files?.[0];
+          if (!companyId || !file || !documentName.trim()) {
+            showToast('Select a company, document name, and PDF file before uploading.');
+            return;
+          }
+          try {
+            const replaceDocumentId = card?.dataset.replaceDocumentId || '';
+            const item = await apiUploadCompanyDocument(file, companyId, documentName.trim(), state.activeCommanderEmail || 'admin', replaceDocumentId);
+            if (!item) {
+              throw new Error('PDF upload returned no data');
+            }
+            state.companyDocuments = normalizeCompanyDocuments([
+              ...(Array.isArray(state.companyDocuments) ? state.companyDocuments.filter((entry) => !replaceDocumentId || String(entry.id || entry.src) !== String(replaceDocumentId)) : []),
+              item
+            ]);
+            if (card) delete card.dataset.replaceDocumentId;
+            buildCommanderDashboard();
+            showToast(replaceDocumentId ? 'Company PDF replaced successfully.' : 'Company PDF published successfully.');
+          } catch (error) {
+            console.error('PDF upload failed:', error);
+            showToast(error.message || 'PDF upload failed.');
+          }
+          return;
+        }
+        if (action === 'delete') {
+          const documentId = pdfActionButton.dataset.documentId;
+          if (!documentId) return;
+          try {
+            await apiDeleteManagedItem(`/api/company-documents/${encodeURIComponent(documentId)}`);
+            state.companyDocuments = (Array.isArray(state.companyDocuments) ? state.companyDocuments : []).filter((documentEntry) => String(documentEntry.id || documentEntry.src) !== String(documentId));
+            buildCommanderDashboard();
+            showToast('Company PDF deleted.');
+          } catch (error) {
+            showToast(error.message || 'Company PDF delete failed.');
+          }
+          return;
+        }
+      }
+
       const actionButton = event.target.closest('[data-news-action]');
       if (!actionButton) return;
       const action = actionButton.dataset.newsAction;
@@ -2689,7 +4694,7 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
         .map((file) => ({ file, category: defaultCategory }));
       const preview = input.closest('.gallery-management-card')?.querySelector('.gallery-upload-preview');
       if (preview) {
-        preview.innerHTML = pendingGalleryFiles.map((entry, index) => `<div class="gallery-upload-preview-item"><img src="${URL.createObjectURL(entry.file)}" alt="${escapeHtml(entry.file.name)}" /><span>${escapeHtml(entry.file.name)}</span><input class="gallery-upload-item-title" data-gallery-index="${index}" value="${escapeHtml(entry.file.name)}" aria-label="Picture name" /><select class="gallery-upload-item-category" data-gallery-index="${index}"><option value="parades" ${entry.category === 'parades' ? 'selected' : ''}>Parades Pics</option><option value="band" ${entry.category === 'band' ? 'selected' : ''}>Band Pics</option><option value="rehearsals" ${entry.category === 'rehearsals' ? 'selected' : ''}>Rehearsal Pics</option><option value="moments-enjoyment" ${entry.category === 'moments-enjoyment' ? 'selected' : ''}>Moments of Enjoyment</option><option value="exams" ${entry.category === 'exams' ? 'selected' : ''}>Exams Pics</option><option value="trophies" ${entry.category === 'trophies' ? 'selected' : ''}>Trophies Cabinet</option><option value="member-catalogue" ${entry.category === 'member-catalogue' ? 'selected' : ''}>Member Catalogue</option></select></div>`).join('');
+        preview.innerHTML = pendingGalleryFiles.map((entry, index) => `<div class="gallery-upload-preview-item"><img src="${URL.createObjectURL(entry.file)}" alt="${escapeHtml(entry.file.name)}" /><span>${escapeHtml(entry.file.name)}</span><input class="gallery-upload-item-title" data-gallery-index="${index}" value="${escapeHtml(entry.file.name)}" aria-label="Picture name" /><select class="gallery-upload-item-category" data-gallery-index="${index}"><option value="parades" ${entry.category === 'parades' ? 'selected' : ''}>Parades Pics</option><option value="band" ${entry.category === 'band' ? 'selected' : ''}>Band Pics</option><option value="rehearsals" ${entry.category === 'rehearsals' ? 'selected' : ''}>Rehearsal Pics</option><option value="throwbacks" ${entry.category === 'throwbacks' ? 'selected' : ''}>Throwbacks</option><option value="moments-enjoyment" ${entry.category === 'moments-enjoyment' ? 'selected' : ''}>Moments of Enjoyment</option><option value="exams" ${entry.category === 'exams' ? 'selected' : ''}>Exams Pics</option><option value="trophies" ${entry.category === 'trophies' ? 'selected' : ''}>Trophies Cabinet</option><option value="member-catalogue" ${entry.category === 'member-catalogue' ? 'selected' : ''}>Member Catalogue</option></select></div>`).join('');
       }
     });
 
@@ -2712,12 +4717,14 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
       const action = actionButton.dataset.galleryAction;
       if (action === 'delete') {
         const galleryId = actionButton.dataset.galleryId;
-        state.galleryItems = (state.galleryItems || []).filter((item) => (item.id || item.src) !== galleryId);
-        const saved = await saveAppState(true);
-        if (saved) {
+        try {
+          await apiDeleteManagedItem(`/api/gallery/${encodeURIComponent(galleryId)}`);
+          state.galleryItems = (state.galleryItems || []).filter((item) => String(item.id || item.src) !== String(galleryId));
           renderGallery();
           buildCommanderDashboard();
           showToast('Gallery picture deleted');
+        } catch (error) {
+          showToast(error.message || 'Gallery picture delete failed.');
         }
         return;
       }
@@ -2727,26 +4734,19 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
           showToast('Choose at least one picture first');
           return;
         }
-        const uploadedItems = await Promise.all(pendingGalleryFiles.map((entry) => new Promise((resolve, reject) => {
-          const file = entry.file;
-          const reader = new FileReader();
-          reader.onload = () => resolve({
-            id: `gallery-${Date.now()}-${Math.random().toString(36).slice(2)}`,
-            src: reader.result,
-            category: entry.category,
-            title: entry.title || file.name,
-            description: galleryCategoryLabels?.[entry.category] || 'Royal Shepherd gallery picture'
-          });
-          reader.onerror = reject;
-          reader.readAsDataURL(file);
-        })));
-        state.galleryItems = [...(state.galleryItems || []), ...uploadedItems];
-        const saved = await saveAppState(true);
-        if (saved) {
+        try {
+          const uploadedItems = await apiUploadGalleryImages(pendingGalleryFiles);
+          if (!uploadedItems.length) {
+            throw new Error('No gallery pictures were saved');
+          }
+          state.galleryItems = [...(state.galleryItems || []), ...uploadedItems];
           pendingGalleryFiles = [];
           renderGallery();
           buildCommanderDashboard();
           showToast(`${uploadedItems.length} gallery picture(s) published`);
+        } catch (error) {
+          console.error('Gallery publish failed:', error);
+          showToast(error.message || 'Gallery picture publish failed.');
         }
       }
     });
@@ -2862,6 +4862,8 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
               comp.totalMembers = getCompanyMemberCount(comp);
               comp.totalNcos = getCompanyNcoCount(comp);
               comp.totalOfficers = getCompanyOfficerCount(comp);
+              comp.totalCommissionedOfficers = getCompanyCommissionedOfficerCount(comp);
+              comp.totalCommissionedOfficers = getCompanyCommissionedOfficerCount(comp);
             });
             saveCompanies();
             renderCompanyLists();
@@ -2942,10 +4944,14 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
       const downloadButton = event.target.closest('[data-download-pdf="true"]');
       if (!downloadButton) return;
 
-      exportExamResultsPdf(
-        downloadButton.dataset.companyId,
-        downloadButton.dataset.year || getLatestExamYear()
-      );
+      const companyId = downloadButton.dataset.companyId;
+      const year = downloadButton.dataset.year || getLatestExamYear();
+      loadPdfLibrary()
+        .then(() => exportExamResultsPdf(companyId, year))
+        .catch((error) => {
+          console.warn('PDF export library unavailable; downloading exam results as text.', error);
+          exportExamResultsPdf(companyId, year);
+        });
     });
 
     commanderDashboardGrid?.addEventListener('click', (event) => {
@@ -2975,23 +4981,47 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
       } else if (requestType === 'application') {
         if (!appId) return;
         if (requestAction === 'approve') {
-          if (state.enlistmentApplications[appId]) {
-            state.enlistmentApplications[appId].status = 'Approved';
-            saveEnlistmentApplications();
-            (async () => {
-              try {
-                await requestJson(`/applications/${appId}/approve`, { method: 'POST' });
-                const backendState = await loadSharedStateFromBackend();
-                if (backendState) {
-                  applySharedState(backendState);
-                }
-                renderCompanyLists();
-                buildCommanderDashboard();
-              } catch (error) {
-                console.warn('Could not approve application in backend.', error);
+          if (!state.enlistmentApplications[appId] || approvingApplications.has(appId)) return;
+          approvingApplications.add(appId);
+          (async () => {
+            try {
+              const approval = await requestJson(`/applications/${encodeURIComponent(appId)}/approve`, {
+                method: 'POST',
+                body: JSON.stringify({ divisionNumber: getDivisionRosterNames().length + 1 })
+              });
+              if (!approval?.membershipNumber || approval.status !== 'Approved') {
+                throw new Error('The server did not confirm approval and assign a membership number.');
               }
-            })();
-          }
+
+              state.enlistmentApplications[appId] = {
+                ...state.enlistmentApplications[appId],
+                ...approval
+              };
+              const backendState = await loadSharedStateFromBackend();
+              if (backendState) {
+                applySharedState(backendState);
+              } else {
+                applyApprovedApplicationLocally(approval, appId);
+                console.warn('Approval succeeded, but the latest shared state could not be reloaded.');
+              }
+              renderCompanyLists();
+              renderDivisionSummary();
+              totalMembershipListRendered = false;
+              const totalMembershipList = document.getElementById('totalMembershipList');
+              totalMembershipList?.replaceChildren();
+              if (document.getElementById('totalMembershipModal')?.getAttribute('aria-hidden') === 'false') {
+                renderTotalMembershipList();
+              }
+              showToast(`Application approved. Membership ID: ${approval.membershipNumber}`);
+              buildCommanderDashboard();
+            } catch (error) {
+              console.error('Could not approve application in backend.', error);
+              alert(`Approval failed: ${error.message || 'The server could not confirm the approval.'}`);
+            } finally {
+              approvingApplications.delete(appId);
+              buildCommanderDashboard();
+            }
+          })();
         } else if (requestAction === 'deny') {
           if (state.enlistmentApplications[appId]) {
             state.enlistmentApplications[appId].status = 'Denied';
@@ -3003,6 +5033,22 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
 
       buildCommanderDashboard();
     });
+
+    const dateOfBirthField = form?.querySelector('input[name="dob"]');
+    const sectionPreview = document.getElementById('enlistmentSectionPreview');
+    const updateSectionPreview = () => {
+      if (!dateOfBirthField || !sectionPreview) return;
+      const assignment = getEnlistmentAgeAndSection(dateOfBirthField.value);
+      sectionPreview.textContent = assignment
+        ? `Age ${assignment.age}: ${assignment.sectionLabel} section.`
+        : dateOfBirthField.value
+          ? 'Enter a valid date of birth; applicants must be at least one year old.'
+          : 'Your age-based section will appear here.';
+      sectionPreview.setAttribute('data-valid', assignment ? 'true' : dateOfBirthField.value ? 'false' : 'pending');
+    };
+    dateOfBirthField?.addEventListener('input', updateSectionPreview);
+    dateOfBirthField?.addEventListener('change', updateSectionPreview);
+    updateSectionPreview();
 
     form?.addEventListener('submit', (event) => {
       event.preventDefault();
@@ -3024,6 +5070,15 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
       if (emailField && !emailValid) {
         valid = false;
         emailField.style.borderColor = 'hsl(0, 70%, 60%)';
+      }
+
+      const ageAssignment = getEnlistmentAgeAndSection(dateOfBirthField?.value || '');
+      if (!ageAssignment) {
+        valid = false;
+        if (dateOfBirthField) dateOfBirthField.style.borderColor = 'hsl(0, 70%, 60%)';
+        updateSectionPreview();
+      } else if (dateOfBirthField) {
+        dateOfBirthField.style.borderColor = '';
       }
 
       if (!valid) return;
@@ -3061,6 +5116,7 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
 
     fillAnother?.addEventListener('click', () => {
       form.reset();
+      updateSectionPreview();
       form.style.display = '';
       formSuccess?.classList.remove('active');
     });
@@ -3077,21 +5133,23 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     bindAuthTabs();
     updateCaptainCompanyMode(captainForm?.dataset.mode || 'login');
     bindModalCloseButtons();
+    bindRankedPersonnelToggle();
     bindEscapeKey();
     bindSymbolCards();
+    bindMembershipLookup();
     bindGallery();
     bindForms();
     document.addEventListener('click', (event) => {
       const toggle = event.target.closest('.company-toggle');
       if (!toggle) return;
       const card = toggle.closest('.company-card');
+      if (card?.classList.contains('company-suspended')) return;
       const details = card?.querySelector('.company-details');
       if (!details) return;
       const hidden = details.hidden;
       details.hidden = !hidden;
       toggle.textContent = hidden ? 'Hide Members' : 'View Members';
     });
-    ensureDefaultCommanderAccount();
     ensureLegacyCaptainAccounts();
     window.__royalShepherdState = state;
     window.__royalShepherdRenderCommanderWorkspaceAccess = renderCommanderWorkspaceAccess;
@@ -3149,4 +5207,3 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     init();
   }
 })();
-

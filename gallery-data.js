@@ -2,6 +2,7 @@ const galleryCategoryLabels = {
   parades: 'PARADES PICS',
   band: 'BAND PICS',
   rehearsals: 'REHEARSAL PICS',
+  throwbacks: 'THROWBACKS',
   'moments-enjoyment': 'MOMENTS OF ENJOYMENT',
   exams: 'EXAMS PICS',
   trophies: 'TROPHIES CABINET',
@@ -32,6 +33,7 @@ window.galleryData = [
   ...createGalleryItems('band', 95, 'band', 'Band'),
   ...createGalleryItems('rehearsal', 30, 'rehearsals', 'Rehearsal'),
   ...createGalleryItems('rehersal', 16, 'rehearsals', 'Rehearsal'),
+  { src: 'image/throw back.jpeg', category: 'throwbacks', title: 'Throwback', description: galleryCategoryLabels.throwbacks },
   { src: 'image/exam.jpeg', category: 'exams', title: 'Exam 0', description: galleryCategoryLabels.exams },
   ...createGalleryItems('exam', 11, 'exams', 'Exam'),
   ...createGalleryItems('members cat', 242, 'member-catalogue', 'Unmatched member photo')

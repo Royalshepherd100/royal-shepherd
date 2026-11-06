@@ -10,7 +10,7 @@
     <meta name="author" content="Royal Shepherd Nigeria" />
     <meta name="robots" content="index,follow" />
     <meta name="theme-color" content="#0B4EA2" />
-    <link rel="canonical" href="https://royalshepherd100.github.io/royal-shepherd-/" />
+    <link rel="canonical" href="https://royalshepherd100.github.io/royal-shepherd/" />
     <meta property="og:title" content="Royal Shepherd Nigeria" />
     <meta property="og:description" content="Official Royal Shepherd Nigeria Website" />
     <meta property="og:type" content="website" />
@@ -21,8 +21,10 @@
     <meta name="twitter:title" content="Royal Shepherd Nigeria" />
     <meta name="twitter:description" content="Official Royal Shepherd Nigeria Website" />
     <meta name="twitter:image" content="https://royalshepherd100.github.io/royal-shepherd/image/logo.png" />
+    <link rel="preload" as="image" href="image/new%20division%20image.jpeg?v=2" fetchpriority="high" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
     <meta name="rs-backend-url" content="https://royal-shepherd-bacl.onrender.com" />
     <script>
       // Force canonical backend URL for all deployments
@@ -31,15 +33,30 @@
     <link
       href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap"
       rel="stylesheet"
+      media="print"
+      onload="this.media='all'"
     />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
+      media="print"
+      onload="this.media='all'"
     />
-    <link rel="stylesheet" href="index.css?v=7" />
-    <script defer src="assets/jspdf.umd.min.js?v=1"></script>
+    <noscript>
+      <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap"
+        rel="stylesheet"
+      />
+      <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+        crossorigin="anonymous"
+        referrerpolicy="no-referrer"
+      />
+    </noscript>
+    <link rel="stylesheet" href="index.css?v=13" />
   </head>
   <body>
     <header class="site-header" id="top">
@@ -67,6 +84,7 @@
           <a href="#about" class="nav-link">About Us</a>
           <a href="#symbolism" class="nav-link">Values &amp; Pledge</a>
           <a href="#wings" class="nav-link">Our Wings</a>
+          <a href="#ranked-personnel" class="nav-link">Ranked Personnel</a>
           <a href="#latest-news" class="nav-link">Latest News &amp; Updates</a>
           <a href="#gallery" class="nav-link">Gallery</a>
           <a href="#enlistment" class="nav-link cta-link">Join Division</a>
@@ -93,7 +111,7 @@
           <div class="hero-visual">
             <div class="ring"></div>
             <div class="hero-image-card">
-              <img src="image/new%20division%20image.jpeg?v=2" alt="New division logo" />
+              <img src="image/new%20division%20image.jpeg?v=2" alt="New division logo" fetchpriority="high" decoding="async" />
             </div>
           </div>
         </div>
@@ -106,12 +124,27 @@
             <span>Years of Service</span>
           </article>
           <article>
-            <strong id="homeTotalMembers">150+</strong>
-            <span>Active Members</span>
+            <button class="membership-stat-trigger" id="membershipStatTrigger" type="button" aria-haspopup="dialog" aria-controls="totalMembershipModal">
+              <strong id="homeTotalMembers">473</strong>
+              <span>Total Division Members</span>
+            </button>
+            <div class="modal" id="totalMembershipModal" aria-hidden="true">
+              <div class="modal-backdrop" data-close="true"></div>
+              <div class="modal-content glass-card membership-list-modal" role="dialog" aria-modal="true" aria-labelledby="totalMembershipTitle">
+                <button class="modal-close" id="totalMembershipClose" aria-label="Close Total Membership List">&times;</button>
+                <h2 class="text-gradient" id="totalMembershipTitle">Total Membership List</h2>
+                <p id="totalMembershipCount" aria-live="polite">473 members</p>
+                <ul class="total-membership-grid" id="totalMembershipList" aria-label="Total Membership List"></ul>
+              </div>
+            </div>
           </article>
           <article>
-            <strong id="homeTotalOfficers">15+</strong>
-            <span>Commissioned Officers</span>
+            <strong id="homeTotalRankedOfficers">74</strong>
+            <span>Total Ranked Officers</span>
+          </article>
+          <article>
+            <strong id="homeTotalNcos">65</strong>
+            <h3 class="summary-label">N.C.O — Non-Commissioned Officers</h3>
           </article>
           <article>
             <strong>9</strong>
@@ -131,7 +164,6 @@
             <p>
               Our mission extends beyond ceremonial roles. We build character through responsibility, self-control, and teamwork while serving the church, the community, and the nation with humility.
             </p>
-            <a href="RS%20New%20Constitution%20Book.pdf" target="_blank" rel="noopener" class="btn btn-outline">Open RS New Constitution Handbook</a>
           </div>
           <div class="glass-card about-card">
             <h3>Our Calling</h3>
@@ -222,6 +254,136 @@
         </div>
       </section>
 
+      <section class="section captains-section" id="captains">
+        <div class="container">
+          <div class="section-heading">
+            <p class="eyebrow">Leadership</p>
+            <h2 class="text-gradient">Our Captains</h2>
+            <p>Meet the captains guiding our members with discipline, service, and spiritual leadership.</p>
+          </div>
+
+          <div class="captains-grid">
+            <article class="captain-card glass-card" data-company="1">
+              <div class="captain-photo-wrap">
+                <img class="captain-photo" src="image/captain%20samuel%20ilori%2012th%20captain.jpeg" alt="Captain Samuel Ilori, 12th Akilling Regional Coy" loading="lazy" />
+              </div>
+              <div class="captain-details">
+                <h3>01 — Oke Odo</h3>
+                <p class="captain-role">12th Akilling Regional Coy</p>
+                <p class="captain-bio"><strong>Captain:</strong> Samuel Ilori</p>
+                <p class="captain-bio"><strong>Rank/Title:</strong> Captain</p>
+                <p class="captain-bio">Leadership description: Not provided.</p>
+              </div>
+            </article>
+
+            <article class="captain-card glass-card" data-company="2">
+              <div class="captain-photo-wrap">
+                <img class="captain-photo" src="images/captain%20adebayo%20joseph%2015th%20akiling%20captain.jpeg" alt="Captain Adebayo Joseph, 15th Akiling Regional Coy" loading="lazy" decoding="async" />
+              </div>
+              <div class="captain-details">
+                <h3>02 — Ikorodu</h3>
+                <p class="captain-role">15th Akilling Regional Coy</p>
+                <p class="captain-bio"><strong>Captain:</strong> Adebayo Joseph</p>
+                <p class="captain-bio"><strong>Rank/Title:</strong> Captain</p>
+                <p class="captain-bio">Leadership description: Not provided.</p>
+              </div>
+            </article>
+
+            <article class="captain-card glass-card" data-company="3">
+              <div class="captain-photo-wrap">
+                <img class="captain-photo" src="images/captain%20abdullahi%20olayiwola%20john.jpeg" alt="Captain photograph for 17th Akilling Regional Coy" loading="lazy" />
+              </div>
+              <div class="captain-details">
+                <h3>03 — Iyana Iyesi</h3>
+                <p class="captain-role">17th Akilling Regional Coy</p>
+                <p class="captain-bio"><strong>Captain:</strong> Abdullahi Olayiwola John</p>
+                <p class="captain-bio"><strong>Rank/Title:</strong> Captain</p>
+                <p class="captain-bio">Leadership description: Not provided.</p>
+              </div>
+            </article>
+
+            <article class="captain-card glass-card" data-company="4">
+              <div class="captain-photo-wrap">
+                <img class="captain-photo" src="image/captain%20segun%20lawal%2028th%20captain.jpeg" alt="Captain Segun Lawal, 28th Akilling Regional Coy" loading="lazy" />
+              </div>
+              <div class="captain-details">
+                <h3>04 — Sango</h3>
+                <p class="captain-role">28th Akilling Regional Coy</p>
+                <p class="captain-bio"><strong>Captain:</strong> Segun Lawal</p>
+                <p class="captain-bio"><strong>Rank/Title:</strong> Captain</p>
+                <p class="captain-bio">Leadership description: Not provided.</p>
+              </div>
+            </article>
+
+            <article class="captain-card glass-card" data-company="5">
+              <div class="captain-photo-wrap">
+                <img class="captain-photo" src="image/31st%20Akiling%20Regional%20Company%20%E2%80%94%20Captain%20Olaitan%20Ayodele%20Awoniyi.jpeg" alt="Captain Olaitan Ayodele Awoniyi, 31st Akilling Regional Coy" loading="lazy" />
+              </div>
+              <div class="captain-details">
+                <h3>05 — Command</h3>
+                <p class="captain-role">31st Akilling Regional Coy</p>
+                <p class="captain-bio"><strong>Captain:</strong> Olaitan Ayodele Awoniyi</p>
+                <p class="captain-bio"><strong>Rank/Title:</strong> Captain</p>
+                <p class="captain-bio">Leadership description: Not provided.</p>
+              </div>
+            </article>
+
+            <article class="captain-card glass-card" data-company="6">
+              <div class="captain-photo-wrap">
+                <img class="captain-photo" src="images/ipaja%20ioc.jpeg" alt="Ipaja IOC photograph" loading="lazy" />
+              </div>
+              <div class="captain-details">
+                <h3>06 — Ipaja</h3>
+                <p class="captain-role">38th Akilling Regional Coy</p>
+                <p class="captain-bio"><strong>Officer in Charge:</strong> EVANG. Oyeniran Ayinke Adedoja (Mrs)</p>
+                <p class="captain-bio"><strong>Rank/Title:</strong> Officer in Charge</p>
+                <p class="captain-bio">Leadership description: Not provided.</p>
+              </div>
+            </article>
+
+            <article class="captain-card glass-card" data-company="7" data-company-status="suspended" aria-disabled="true">
+              <div class="captain-photo-wrap">
+                <img class="captain-photo" src="images/ijaba%20ioc.jpeg" alt="Adepoju Emmanuel, Officer in Charge of Ijaba" loading="lazy" />
+              </div>
+              <div class="captain-details">
+                <h3>07 — Ijaba</h3>
+                <span class="company-suspended-stamp" role="status">SUSPENDED</span>
+                <p class="captain-role">44th Akilling Regional Coy</p>
+                <p class="captain-bio captain-officer-in-charge"><strong>Officer in Charge:</strong> Adepoju Emmanuel</p>
+                <p class="captain-bio"><strong>Rank/Title:</strong> Officer in Charge</p>
+                <p class="captain-bio">Leadership description: Not provided.</p>
+              </div>
+            </article>
+
+            <article class="captain-card glass-card" data-company="8">
+              <div class="captain-photo-wrap">
+                <img class="captain-photo" src="image/48th%20Akiling%20Regional%20Company%20%E2%80%94%20Captain%20Olamilekan%20Oluwadamilare%20Aina.jpeg" alt="Captain Olamilekan Oluwadamilare Aina, 48th Akilling Regional Coy" loading="lazy" />
+              </div>
+              <div class="captain-details">
+                <h3>08 — Ijoko</h3>
+                <p class="captain-role">48th Akilling Regional Coy</p>
+                <p class="captain-bio"><strong>Captain:</strong> Olamilekan Oluwadamilare Aina</p>
+                <p class="captain-bio"><strong>Rank/Title:</strong> Captain</p>
+                <p class="captain-bio">Leadership description: Not provided.</p>
+              </div>
+            </article>
+
+            <article class="captain-card glass-card" data-company="9" data-captain-locked="blank">
+              <div class="captain-photo-wrap">
+                <img class="captain-photo" src="images/Jacob%20Bolanle%20Tomiwa%2049th%20Akiling%20Region%20acting%20officer%20in%20charge.jpeg" alt="Jacob Tomiwa B., 49th Akiling Regional Coy Officer in Charge" loading="lazy" />
+              </div>
+              <div class="captain-details">
+                <h3>09 — Ikeja</h3>
+                <p class="captain-role">49th Akilling Regional Coy</p>
+                <p class="captain-bio"><strong>Officer in Charge:</strong> Jacob Tomiwa B.</p>
+                <p class="captain-bio"><strong>Rank/Title:</strong> Officer in Charge</p>
+                <p class="captain-bio">Leadership description: Not provided.</p>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
       <section class="section symbolism-section" id="symbolism">
         <div class="container">
           <div class="section-heading">
@@ -270,52 +432,53 @@
           <div class="division-summary glass-card">
             <div class="summary-stat">
               <span class="summary-label">Total Division Members</span>
-              <strong id="divisionTotalMembers">0</strong>
+              <strong id="divisionTotalMembers">473</strong>
             </div>
             <div class="summary-stat">
               <span class="summary-label">Total Ranked Officers</span>
-              <strong id="divisionTotalOfficers">0</strong>
+              <strong id="divisionTotalRankedOfficers">74</strong>
+            </div>
+            <div class="summary-stat">
+              <h3 class="summary-label">N.C.O — NON-COMMISSIONED OFFICERS</h3>
+              <strong id="divisionTotalNcos">65</strong>
+            </div>
+            <div class="summary-stat">
+              <h3 class="summary-label">C.O — COMMISSIONED OFFICERS</h3>
+              <strong id="divisionTotalOfficers">9</strong>
             </div>
           </div>
+
+          <section class="membership-lookup glass-card" aria-labelledby="membershipLookupTitle">
+            <div class="section-heading">
+              <p class="eyebrow">Membership</p>
+              <h2 class="text-gradient" id="membershipLookupTitle">Find My Membership</h2>
+            </div>
+            <form class="membership-lookup-form" id="membershipLookupForm">
+              <label for="membershipLookupInput">Search your name</label>
+              <div class="membership-lookup-controls">
+                <input id="membershipLookupInput" name="memberName" type="search" placeholder="Enter your full name" autocomplete="off" required />
+                <button class="btn btn-gold" type="submit">Search</button>
+              </div>
+            </form>
+            <div class="membership-lookup-results" id="membershipLookupResults" aria-live="polite"></div>
+          </section>
 
           <div class="company-grid">
             <article class="company-card glass-card" data-company="1">
               <span class="company-number">01</span>
               <h3>Oke Odo - 12th Akiling Regional Coy</h3>
               <p class="company-caption">Company 1</p>
-              <div class="company-details">
-                <h4>Anchor Section</h4>
-                <ul class="company-list" data-list="anchor"></ul>
-                <h4>Junior Section</h4>
-                <ul class="company-list" data-list="junior"></ul>
-                <h4>Intermediate Section</h4>
-                <ul class="company-list" data-list="intermediate"></ul>
-                <h4>Senior Section</h4>
-                <ul class="company-list" data-list="senior"></ul>
-                <h4>Officer Section</h4>
-                <ul class="company-list" data-list="officer"></ul>
-              </div>
+              <div class="company-details"></div>
             </article>
             <article class="company-card glass-card" data-company="2">
               <span class="company-number">02</span>
               <h3>Ikorodu - 15th Akiling Regional Coy</h3>
               <p class="company-caption">Company 2</p>
-              <div class="company-details">
-                <h4>Anchor Section</h4>
-                <ul class="company-list" data-list="anchor"></ul>
-                <h4>Junior Section</h4>
-                <ul class="company-list" data-list="junior"></ul>
-                <h4>Intermediate Section</h4>
-                <ul class="company-list" data-list="intermediate"></ul>
-                <h4>Senior Section</h4>
-                <ul class="company-list" data-list="senior"></ul>
-                <h4>Officer Section</h4>
-                <ul class="company-list" data-list="officer"></ul>
-              </div>
+              <div class="company-details"></div>
             </article>
             <article class="company-card glass-card" data-company="3">
               <span class="company-number">03</span>
-              <h3>Iyesi - 17th Akiling Regional Coy</h3>
+              <h3>Iyana Iyesi - 17th Akiling Regional Coy</h3>
               <p class="company-caption">Company 3</p>
               <div class="company-details">
                 <h4>Anchor Section</h4>
@@ -381,9 +544,10 @@
                 <ul class="company-list" data-list="officer"></ul>
               </div>
             </article>
-            <article class="company-card glass-card" data-company="7">
+            <article class="company-card glass-card" data-company="7" data-company-status="suspended" aria-disabled="true">
               <span class="company-number">07</span>
               <h3>Ijaba - 44th Akiling Regional Coy</h3>
+              <span class="company-suspended-stamp" role="status">SUSPENDED</span>
               <p class="company-caption">Company 7</p>
               <div class="company-details">
                 <h4>Anchor Section</h4>
@@ -432,6 +596,25 @@
                 <ul class="company-list" data-list="officer"></ul>
               </div>
             </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section ranked-personnel-section" id="ranked-personnel">
+        <div class="container">
+          <div class="section-heading">
+            <p class="eyebrow">Official Personnel</p>
+            <h2 class="text-gradient">Ranked Personnel</h2>
+            <p>Browse the official Agbala Itura Division personnel register, organised by rank.</p>
+          </div>
+          <div class="ranked-personnel-actions">
+            <button class="btn btn-gold" id="rankedPersonnelToggle" type="button" aria-expanded="false" aria-controls="rankedPersonnelRosters">
+              Show all ranked officers
+            </button>
+          </div>
+          <div class="company-grid ranked-personnel-grid" id="rankedPersonnelRosters" hidden>
+            <div data-ranked-roster="nco"></div>
+            <div data-ranked-roster="commissioned"></div>
           </div>
         </div>
       </section>
@@ -492,6 +675,7 @@
                   <button class="filter-btn" data-filter="parades">PARADES PICS</button>
                   <button class="filter-btn" data-filter="band">BAND PICS</button>
                   <button class="filter-btn" data-filter="rehearsals">REHEARSAL PICS</button>
+                  <button class="filter-btn" data-filter="throwbacks">THROWBACKS</button>
                   <button class="filter-btn" data-filter="moments-enjoyment">Moments of Enjoyment</button>
                   <button class="filter-btn" data-filter="exams">EXAMS PICS</button>
                   <button class="filter-btn" data-filter="trophies">TROPHIES CABINET</button>
@@ -528,6 +712,7 @@
                 <label>
                   <span>Date of Birth</span>
                   <input type="date" name="dob" id="dob" required />
+                  <small id="enlistmentSectionPreview" aria-live="polite">Your age-based section will appear here.</small>
                 </label>
                 <label>
                   <span>Phone</span>
@@ -619,11 +804,10 @@
               <option value="">Select Company</option>
               <option value="1">Oke Odo - 12th Akiling Regional Coy</option>
               <option value="2">Ikorodu - 15th Akiling Regional Coy</option>
-              <option value="3">Iyesi - 17th Akiling Regional Coy</option>
+              <option value="3">Iyana Iyesi - 17th Akiling Regional Coy</option>
               <option value="4">Sango - 28th Akiling Regional Coy</option>
               <option value="5">Command - 31st Akiling Regional Coy</option>
               <option value="6">Ipaja - 38th Akiling Regional Coy</option>
-              <option value="7">Ijaba - 44th Akiling Regional Coy</option>
               <option value="8">Ijoko - 48th Akiling Regional Coy</option>
               <option value="9">Ikeja - 49th Akiling Regional Coy</option>
             </select>
@@ -642,11 +826,7 @@
       <div class="modal-content glass-card dashboard-modal" role="dialog" aria-modal="true" aria-labelledby="commanderTitle">
         <button class="modal-close" id="commanderClose" aria-label="Close commander access">&times;</button>
         <h3 id="commanderTitle">Divisional Commander Access</h3>
-        <p class="dashboard-intro">Register your own commander account, then verify it by email before using the dashboard.</p>
-        <div class="auth-toggle" role="tablist">
-          <button type="button" class="auth-tab commander-auth-tab active" data-mode="login">Login</button>
-          <button type="button" class="auth-tab commander-auth-tab" data-mode="register">Register</button>
-        </div>
+        <p class="dashboard-intro">Sign in with an authorized admin account to manage website content.</p>
         <form id="commanderForm" data-mode="login">
           <label>
             <span>Email Address</span>
@@ -735,8 +915,11 @@
       </div>
     </div>
 
-    <script defer src="gallery-data.js?v=10"></script>
-    <script defer src="app.js?v=19"></script>
+    <script defer src="gallery-data.js?v=11"></script>
+    <script defer src="membership-data.js?v=1"></script>
+    <script defer src="official-division-serials.js?v=3"></script>
+    <script defer src="coy-membership-data.js?v=2"></script>
+    <script defer src="app.js?v=72"></script>
     <script type="application/ld+json">
       
       {

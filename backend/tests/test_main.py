@@ -1,6 +1,7 @@
 import importlib
 import os
 import tempfile
+from datetime import datetime
 from pathlib import Path
 
 from fastapi.testclient import TestClient
@@ -8,13 +9,90 @@ from fastapi.testclient import TestClient
 # Use an isolated temporary data store for tests so the app's production state is not modified.
 temp_dir = tempfile.TemporaryDirectory()
 os.environ["RS_DATA_FILE"] = str(Path(temp_dir.name) / "data_store.json")
+os.environ["RS_UPLOAD_DIR"] = str(Path(temp_dir.name) / "uploads")
 
 
 def new_client():
     import backend.main as main
 
     main = importlib.reload(main)
+    main.store.clear()
+    main.store.update(main.build_default_state())
+    main.store["commanderAccounts"] = {
+        "admin@example.com": {"email": "admin@example.com", "password": "test-admin-password", "verified": True}
+    }
+    main.save_state()
     return TestClient(main.app)
+
+
+def admin_headers(client):
+    response = client.post("/auth/commander/login", json={"email": "admin@example.com", "password": "test-admin-password"})
+    assert response.status_code == 200
+    return {"Authorization": f"Bearer {response.json()['token']}"}
+
+
+def test_public_state_does_not_expose_private_request_records():
+    client = new_client()
+    import backend.main as main
+
+    private_record = {
+        "email": "private@example.com",
+        "phone": "555-0100",
+        "message": "Private submission message",
+    }
+    for key in main.REQUEST_COLLECTION_KEYS:
+        main.store[key] = {"request-1": private_record}
+    main.store["enlistmentApplications"] = {
+        "application-1": {
+            "fullName": "Private Applicant",
+            "email": "applicant@example.com",
+            "phone": "555-0101",
+        }
+    }
+
+    for response in (client.get("/state"), client.get("/api/state")):
+        assert response.status_code == 200
+        public_state = response.json()
+        for key in main.REQUEST_COLLECTION_KEYS:
+            assert public_state[key] == {}
+        assert public_state["enlistmentApplications"] == {}
+        assert "private@example.com" not in str(public_state)
+        assert "Private submission message" not in str(public_state)
+        assert "Private Applicant" not in str(public_state)
+
+    main.store["commanderAccounts"] = {
+        "admin@example.com": {"password": "admin-test-password", "verified": True}
+    }
+    login = client.post(
+        "/auth/commander/login",
+        json={"email": "admin@example.com", "password": "admin-test-password"},
+    )
+    assert login.status_code == 200
+    admin_state = client.get(
+        "/state",
+        headers={"Authorization": f"Bearer {login.json()['token']}"},
+    ).json()
+    assert admin_state["enlistmentApplications"]["application-1"]["fullName"] == "Private Applicant"
+
+    save_response = client.post("/state", json={"founderStory": "Public story"})
+    assert save_response.status_code == 200
+    assert save_response.json()["enlistmentApplications"] == {}
+    assert "Private Applicant" not in save_response.text
+
+
+def test_static_allowlist_blocks_internal_files_and_keeps_public_assets():
+    client = new_client()
+
+    for path in ("/static/index.css", "/static/app.js", "/static/image/pa%20sk%20abiara.jpeg"):
+        assert client.get(path).status_code == 200
+    for path in (
+        "/static/backend/data_store.json",
+        "/static/backend_state.json",
+        "/static/after_post.json",
+        "/static/backend/main.py",
+        "/static/backend/tests/test_main.py",
+    ):
+        assert client.get(path).status_code == 404
 
 
 def test_get_company_by_id_returns_company():
@@ -23,6 +101,13 @@ def test_get_company_by_id_returns_company():
 
     assert response.status_code == 200
     assert response.json()["name"] == "Oke Odo - 12th Akiling Regional Coy"
+
+
+def test_default_companies_do_not_include_stale_company_10_duplicate():
+    import backend.main as main
+
+    main = importlib.reload(main)
+    assert "10" not in main.build_default_companies()
 
 
 def test_approve_application_assigns_member_to_company_and_section():
@@ -71,17 +156,144 @@ def test_approve_application_assigns_member_to_company_and_section():
             "activeExamYear": "2026",
             "galleryItems": [],
         },
+        headers=admin_headers(client),
     )
 
-    response = client.post("/applications/app_test/approve")
+    response = client.post(
+        "/applications/app_test/approve",
+        headers=admin_headers(client),
+        json={"divisionNumber": 562},
+    )
 
     assert response.status_code == 200
+    assert response.json()["membershipNumber"] == "AI.D562/01/001"
+    assert response.json()["section"] == "junior"
     company = client.get("/companies/1").json()
     assert company["totalMembers"] == 1
-    assert company["totalNcos"] == 1
+    assert company["totalNcos"] == 0
     assert company["totalOfficers"] == 0
-    assert company["members"][0]["section"] == "junior"
-    assert company["members"][0]["rank"] == "NCO"
+    assert company["totalCommissionedOfficers"] == 0
+    assert company["members"][0]["rank"] is None
+    assert company["members"][0]["category"] == "MEMBER"
+    assert company["members"][0]["membershipNumber"] == "AI.D562/01/001"
+    state = client.get("/state", headers=admin_headers(client)).json()
+    assert state["divisionRosterAdditions"] == [{
+        "applicationId": "app_test",
+        "name": "John Doe",
+        "company": "1",
+        "section": "junior",
+        "divisionNumber": 562,
+        "companyMemberSerial": 1,
+        "membershipNumber": "AI.D562/01/001",
+    }]
+    retry = client.post("/applications/app_test/approve", headers=admin_headers(client), json={"divisionNumber": 562})
+    assert retry.status_code == 200
+    assert retry.json()["membershipNumber"] == "AI.D562/01/001"
+    retry_state = client.get("/state", headers=admin_headers(client)).json()
+    assert len(retry_state["divisionRosterAdditions"]) == 1
+    assert len(retry_state["memberDivisionIds"]) == 1
+
+
+def test_enlistment_section_boundaries_follow_birthdays():
+    import backend.main as main
+
+    main = importlib.reload(main)
+    today = datetime.utcnow().date()
+
+    def dob_for_age(age):
+        birth_year = today.year - age
+        try:
+            return today.replace(year=birth_year).strftime("%Y-%m-%d")
+        except ValueError:
+            return today.replace(year=birth_year, day=28).strftime("%Y-%m-%d")
+
+    for age, expected_section in (
+        (1, "anchor"),
+        (7, "anchor"),
+        (8, "junior"),
+        (12, "junior"),
+        (13, "intermediate"),
+        (16, "intermediate"),
+        (17, "senior"),
+        (23, "senior"),
+        (24, "officer"),
+    ):
+        assert main.get_section_and_rank(dob_for_age(age))["section"] == expected_section
+
+    assert main.calculate_age(today.replace(year=today.year + 1).strftime("%Y-%m-%d")) < 1
+    assert main.calculate_age("not-a-date") == 0
+
+
+def test_approval_uses_company_roster_when_serial_rows_are_incomplete():
+    client = new_client()
+    headers = admin_headers(client)
+    state = client.get("/state", headers=headers).json()
+    company = state["companies"]["1"]
+    company.update({
+        "anchor": ["Anchor One"],
+        "junior": ["Junior One", "Junior Two", "Junior Three"],
+        "active": ["Anchor One", "Junior One", "Junior Two", "Junior Three"],
+        "members": [{"name": "Anchor One"}, {"name": "Junior One"}],
+        "companyMemberSerials": [{"name": "Anchor One", "companySerial": "002", "divisionNumber": 1}],
+    })
+    state["enlistmentApplications"] = {
+        "next_member": {
+            "id": "next_member",
+            "fullName": "New Applicant",
+            "dob": "2016-05-14",
+            "company": "1",
+            "status": "Pending",
+        }
+    }
+    assert client.post("/state", json=state, headers=headers).status_code == 200
+
+    response = client.post(
+        "/applications/next_member/approve",
+        headers=headers,
+        json={"divisionNumber": 562},
+    )
+
+    assert response.status_code == 200
+    assert response.json()["membershipNumber"] == "AI.D562/01/005"
+
+
+def test_approve_application_rejects_invalid_date_of_birth():
+    client = new_client()
+    headers = admin_headers(client)
+    state = client.get("/state", headers=headers).json()
+    state["enlistmentApplications"] = {
+        "invalid_dob": {
+            "id": "invalid_dob",
+            "fullName": "Future Applicant",
+            "dob": "not-a-date",
+            "company": "1",
+            "status": "Pending",
+        }
+    }
+    assert client.post("/state", json=state, headers=headers).status_code == 200
+
+    response = client.post("/applications/invalid_dob/approve", headers=headers, json={"divisionNumber": 562})
+
+    assert response.status_code == 400
+    updated_state = client.get("/state", headers=headers).json()
+    assert updated_state["enlistmentApplications"]["invalid_dob"]["status"] == "Pending"
+    assert updated_state["divisionRosterAdditions"] == []
+
+
+def test_personnel_classification_uses_rank_or_designation_not_senior_section():
+    import backend.main as main
+
+    main = importlib.reload(main)
+    assert main.classify_personnel({"name": "Senior Member", "section": "senior"}) == "MEMBER"
+    assert main.classify_personnel({"name": "Member", "rank": "NCO", "section": "senior"}) == "NCO"
+    assert main.classify_personnel({"name": "Warrant Officer Adebisi"}) == "NCO"
+    assert main.classify_personnel({"name": "Provost Owolabi Abigael"}) == "NCO"
+    assert main.classify_personnel({"name": "Officer Goodluck Adebiyi"}) == "OFFICER"
+    assert main.classify_personnel({"name": "Captain Samuel Ilori", "category": "MEMBER"}) == "COMMISSIONED_OFFICER"
+    assert main.classify_personnel({"name": "Rankless PDF officer", "section": "officer"}) == "OFFICER"
+    assert main.classify_personnel({"name": "Senior member", "section": "senior", "category": "MEMBER"}) == "MEMBER"
+    assert main.classify_personnel({"name": "Captain Samuel Ilori"}) == "COMMISSIONED_OFFICER"
+    assert main.classify_personnel({"name": "Member", "rank": "Commissioned Officer"}) == "COMMISSIONED_OFFICER"
 
 
 def test_post_state_merges_pending_requests_instead_of_overwriting_them():
@@ -114,7 +326,7 @@ def test_post_state_merges_pending_requests_instead_of_overwriting_them():
     )
     assert second_response.status_code == 200
 
-    state = client.get("/state").json()
+    state = client.get("/state", headers=admin_headers(client)).json()
     requests = state.get("companyDashboardRequests") or state.get("captainRequests") or {}
     assert set(requests.keys()) == {"first@example.com", "second@example.com"}
 
@@ -174,6 +386,7 @@ def test_post_state_preserves_existing_members_when_partial_company_payload_arri
 
 def test_post_state_preserves_gallery_items_across_partial_updates():
     client = new_client()
+    headers = admin_headers(client)
 
     first_response = client.post(
         "/state",
@@ -182,6 +395,7 @@ def test_post_state_preserves_gallery_items_across_partial_updates():
                 {"src": "uploaded-image.png", "title": "Uploaded", "description": "Shared gallery image", "category": "parades"}
             ]
         },
+        headers=headers,
     )
     assert first_response.status_code == 200
 
@@ -218,8 +432,9 @@ def test_post_state_preserves_gallery_items_across_partial_updates():
 def test_full_state_save_can_intentionally_clear_a_collection():
     client = new_client()
     item = {"src": "saved.png", "title": "Saved", "description": "Saved", "category": "parades"}
-    assert client.post("/state", json={"galleryItems": [item]}).status_code == 200
-    assert client.post("/state", json={"_fullState": True, "galleryItems": []}).status_code == 200
+    headers = admin_headers(client)
+    assert client.post("/state", json={"galleryItems": [item]}, headers=headers).status_code == 200
+    assert client.post("/state", json={"_fullState": True, "galleryItems": []}, headers=headers).status_code == 200
     assert client.get("/state").json()["galleryItems"] == []
 
 
@@ -239,6 +454,24 @@ def test_post_state_preserves_news_items_across_partial_updates():
     assert client.get("/state").json()["newsItems"] == [news_item]
 
 
+def test_member_division_id_snapshot_persists_across_partial_state_updates():
+    client = new_client()
+    member_ids = [
+        {
+            "id": "AI.D/03/070/009",
+            "name": "Example Member",
+            "companyRecordId": "4",
+            "companySerial": "03",
+            "generalSerial": 70,
+            "memberSerial": 9,
+        }
+    ]
+
+    assert client.post("/state", json={"memberDivisionIds": member_ids}).status_code == 200
+    assert client.post("/state", json={"founderStory": "Updated"}).status_code == 200
+    assert client.get("/state").json()["memberDivisionIds"] == member_ids
+
+
 def test_gallery_items_survive_refresh_and_later_partial_state_save():
     client = new_client()
     gallery_item = {
@@ -248,7 +481,244 @@ def test_gallery_items_survive_refresh_and_later_partial_state_save():
         "category": "training",
     }
 
-    assert client.post("/state", json={"galleryItems": [gallery_item]}).status_code == 200
+    headers = admin_headers(client)
+    assert client.post("/state", json={"galleryItems": [gallery_item]}, headers=headers).status_code == 200
     assert client.get("/state").json()["galleryItems"] == [gallery_item]
     assert client.post("/state", json={"founderStory": "Updated"}).status_code == 200
     assert client.get("/state").json()["galleryItems"] == [gallery_item]
+
+
+def test_gallery_upload_persists_uploaded_images_in_backend_state():
+    client = new_client()
+    headers = admin_headers(client)
+    response = client.post(
+        "/api/gallery/upload",
+        files=[
+            ("files", ("sample.png", b"\x89PNG\r\n\x1a\n", "image/png")),
+            ("files", ("band.png", b"\x89PNG\r\n\x1a\n", "image/png")),
+            ("files", ("throwback.png", b"\x89PNG\r\n\x1a\n", "image/png")),
+        ],
+        data={"titles": ["Sample", "Band", "Throwback"], "descriptions": ["Parade", "Band", "Throwbacks"], "categories": ["parades", "band", "throwbacks"]},
+        headers=headers,
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["items"]
+    assert [item["category"] for item in payload["items"]] == ["parades", "band", "throwbacks"]
+    assert payload["items"][0]["src"].startswith("http") or payload["items"][0]["src"].startswith("/")
+    saved_items = client.get("/state").json()["galleryItems"]
+    assert [item["category"] for item in saved_items] == ["parades", "band", "throwbacks"]
+    assert client.get(payload["items"][0]["src"]).status_code == 200
+
+
+def test_media_mutations_require_admin_and_public_state_hides_private_records():
+    client = new_client()
+    import backend.main as main
+
+    main.store["captainAccounts"] = {
+        "captain@example.com": {"email": "captain@example.com", "password": "test-captain-password", "companyId": "1", "verified": True}
+    }
+    main.store["captainRequests"] = {
+        "pending@example.com": {"email": "pending@example.com", "password": "pending-secret", "companyId": "1"}
+    }
+    main.store["enlistmentApplications"] = {
+        "application-1": {
+            "fullName": "Private Applicant",
+            "email": "applicant@example.com",
+            "phone": "555-0100",
+            "reason": "Private request",
+            "status": "Pending",
+        }
+    }
+    main.store["companyDashboardRequests"] = {
+        "company@example.com": {"email": "company@example.com", "message": "Private company request"}
+    }
+    for key in main.REQUEST_COLLECTION_KEYS:
+        main.store.setdefault(key, {"private@example.com": {"email": "private@example.com"}})
+    main.store["commanderVerificationCodes"] = {"admin@example.com": "123456"}
+    main.store["galleryItems"] = [
+        {
+            "id": "gallery-1",
+            "src": "/uploads/gallery/published.png",
+            "title": "Published image",
+            "category": "parades",
+            "filename": "published.png",
+            "stored_name": "published.png",
+            "uploadedBy": "admin@example.com",
+        }
+    ]
+    main.store["companyDocuments"] = [
+        {
+            "id": "document-1",
+            "companyId": "1",
+            "documentName": "Published handbook",
+            "src": "/uploads/company-documents/handbook.pdf",
+            "filename": "handbook.pdf",
+            "stored_name": "handbook.pdf",
+            "uploadedBy": "admin@example.com",
+        }
+    ]
+    main.save_state()
+    image_upload = client.post(
+        "/api/gallery/upload",
+        files=[("files", ("sample.png", b"\x89PNG\r\n\x1a\n", "image/png"))],
+    )
+    pdf_upload = client.post(
+        "/api/company-documents",
+        files=[("file", ("handbook.pdf", b"%PDF-1.4", "application/pdf"))],
+    )
+
+    assert image_upload.status_code == 401
+    assert pdf_upload.status_code == 401
+    assert client.post("/state", json={"galleryItems": [{"src": "injected.png", "category": "parades"}]}).status_code == 401
+    public_accounts = client.get("/state").json()["commanderAccounts"]
+    assert public_accounts == {}
+    public_state = client.get("/state").json()
+    assert public_state["captainAccounts"] == {}
+    for key in main.REQUEST_COLLECTION_KEYS:
+        assert public_state[key] == {}
+    assert public_state["enlistmentApplications"] == {}
+    assert public_state["commanderVerificationCodes"] == {}
+    assert "password" not in str(public_state)
+    assert "Private Applicant" not in str(public_state)
+    assert "applicant@example.com" not in str(public_state)
+    assert "Private request" not in str(public_state)
+    assert "uploadedBy" not in public_state["galleryItems"][0]
+    assert "stored_name" not in public_state["galleryItems"][0]
+    assert "filename" not in public_state["galleryItems"][0]
+    assert "uploadedBy" not in public_state["companyDocuments"][0]
+    assert "stored_name" not in public_state["companyDocuments"][0]
+    assert "filename" not in public_state["companyDocuments"][0]
+    save_response = client.post("/state", json={"founderStory": "Public update"}).json()
+    assert save_response["captainRequests"] == {}
+    assert save_response["enlistmentApplications"] == {}
+    assert "Private Applicant" not in str(save_response)
+    captain_login = client.post("/auth/captain/login", json={"email": "captain@example.com", "password": "test-captain-password"})
+    assert captain_login.status_code == 200
+    assert captain_login.json()["companyId"] == "1"
+
+    private_state = client.get("/state", headers=admin_headers(client)).json()
+    assert private_state["captainAccounts"]["captain@example.com"]["password"] == "test-captain-password"
+    assert private_state["captainRequests"]["pending@example.com"]["password"] == "pending-secret"
+    assert private_state["enlistmentApplications"]["application-1"]["fullName"] == "Private Applicant"
+    assert private_state["companyDashboardRequests"]["company@example.com"]["message"] == "Private company request"
+    assert private_state["commanderVerificationCodes"]["admin@example.com"] == "123456"
+
+
+def test_public_static_files_are_allowlisted_and_uploads_require_published_metadata():
+    client = new_client()
+
+    assert client.get("/static/index.css").status_code == 200
+    assert client.get("/static/app.js").status_code == 200
+    assert client.get("/static/image/pa%20sk%20abiara.jpeg").status_code == 200
+    assert client.get("/static/backend/data_store.json").status_code == 404
+    assert client.get("/static/backend_state.json").status_code == 404
+    assert client.get("/static/after_post.json").status_code == 404
+    assert client.get("/static/response_bacl.json").status_code == 404
+    assert client.get("/static/backend/tests/test_main.py").status_code == 404
+    assert client.get("/static/.gitignore").status_code == 404
+    assert client.get("/static/backend\\data_store.json").status_code == 404
+    assert client.get("/static/backend\\private.png").status_code == 404
+    assert client.get("/uploads/gallery/unpublished.png").status_code == 404
+    assert client.get("/uploads/company-documents/unpublished.pdf").status_code == 404
+
+
+def test_application_approval_and_denial_require_admin():
+    client = new_client()
+    import backend.main as main
+
+    main.store["enlistmentApplications"] = {
+        "application-1": {"fullName": "Private Applicant", "company": "1", "status": "Pending"}
+    }
+    main.save_state()
+
+    assert client.post("/applications/application-1/approve").status_code == 401
+    assert client.post("/applications/application-1/deny").status_code == 401
+    assert client.post("/applications/application-1/deny", headers=admin_headers(client)).status_code == 200
+
+
+def test_gallery_delete_removes_record_and_public_file():
+    client = new_client()
+    headers = admin_headers(client)
+    upload = client.post(
+        "/api/gallery/upload",
+        files=[("files", ("sample.png", b"\x89PNG\r\n\x1a\n", "image/png"))],
+        headers=headers,
+    ).json()["items"][0]
+
+    assert client.delete(f"/api/gallery/{upload['id']}").status_code == 401
+    assert client.delete(f"/api/gallery/{upload['id']}", headers=headers).status_code == 200
+    assert client.get(upload["src"]).status_code == 404
+    assert client.get("/state").json()["galleryItems"] == []
+
+
+def test_company_document_upload_persists_pdf_and_metadata():
+    client = new_client()
+    response = client.post(
+        "/api/company-documents",
+        files=[("file", ("company-handbook.pdf", b"%PDF-1.4\n1 0 obj\n<<>>\nendobj\ntrailer\n<<>>\n%%EOF", "application/pdf"))],
+        data={"companyId": "1", "documentName": "8th Awori Lagos Company Handbook", "uploadedBy": "commander@royalshepherd.com"},
+        headers=admin_headers(client),
+    )
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["item"]["companyId"] == "1"
+    assert payload["item"]["documentName"] == "8th Awori Lagos Company Handbook"
+    assert payload["item"]["src"].startswith("http") or payload["item"]["src"].startswith("/")
+    assert client.get("/state").json()["companyDocuments"][-1]["documentName"] == "8th Awori Lagos Company Handbook"
+
+
+def test_company_document_replacement_keeps_one_published_pdf():
+    client = new_client()
+    headers = admin_headers(client)
+    first = client.post(
+        "/api/company-documents",
+        files=[("file", ("old.pdf", b"%PDF-1.4\nold", "application/pdf"))],
+        data={"companyId": "1", "documentName": "Company Handbook"},
+        headers=headers,
+    ).json()["item"]
+    replacement = client.post(
+        "/api/company-documents",
+        files=[("file", ("new.pdf", b"%PDF-1.4\nnew", "application/pdf"))],
+        data={"companyId": "1", "documentName": "Updated Handbook", "replaceDocumentId": first["id"]},
+        headers=headers,
+    )
+
+    assert replacement.status_code == 200
+    current = client.get("/state").json()["companyDocuments"]
+    assert len(current) == 1
+    assert current[0]["documentName"] == "Updated Handbook"
+    assert current[0]["id"] == first["id"]
+    assert client.get(first["src"]).status_code == 404
+    assert client.get(replacement.json()["item"]["src"]).status_code == 200
+
+
+def test_published_media_survives_fresh_backend_instance():
+    client = new_client()
+    headers = admin_headers(client)
+    gallery = client.post(
+        "/api/gallery/upload",
+        files=[("files", ("fresh.png", b"\x89PNG\r\n\x1a\n", "image/png"))],
+        data={"category": "band", "title": "Fresh session photo"},
+        headers=headers,
+    ).json()["items"][0]
+    document = client.post(
+        "/api/company-documents",
+        files=[("file", ("fresh.pdf", b"%PDF-1.4\ncontent", "application/pdf"))],
+        data={"companyId": "1", "documentName": "Fresh session handbook"},
+        headers=headers,
+    ).json()["item"]
+
+    import backend.main as main
+
+    main = importlib.reload(main)
+    fresh_visitor = TestClient(main.app)
+    public_state = fresh_visitor.get("/state").json()
+
+    assert public_state["galleryItems"][0]["category"] == "band"
+    assert public_state["galleryItems"][0]["title"] == "Fresh session photo"
+    assert public_state["companyDocuments"][0]["documentName"] == "Fresh session handbook"
+    assert fresh_visitor.get(gallery["src"]).status_code == 200
+    assert fresh_visitor.get(document["src"]).status_code == 200

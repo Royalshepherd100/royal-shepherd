@@ -55,12 +55,6 @@ jobs:
               rules = marker + '''\n.gallery-thumb {\n  width: 100%;\n  display: block;\n  touch-action: manipulation;\n  -webkit-tap-highlight-color: transparent;\n}\n\n.gallery-thumb img {\n  width: 100%;\n  height: auto;\n  object-fit: cover;\n}\n\n.gallery-download {\n  touch-action: manipulation;\n}\n'''
               css.write_text(css_text.replace(marker, rules, 1), encoding='utf-8')
 
-          html = Path('index.html')
-          html_text = html.read_text(encoding='utf-8')
-          old_handbook = '<a href="RS%20New%20Constitution%20Book.pdf" target="_blank" rel="noopener" class="btn btn-outline">Open RS New Constitution Handbook</a>'
-          if old_handbook in html_text and 'Download RS Handbook' not in html_text:
-              new_handbook = '''<div class="hero-actions section-actions">\n              <a href="RS%20New%20Constitution%20Book.pdf" target="_blank" rel="noopener" class="btn btn-outline">Open RS New Constitution Handbook</a>\n              <a href="RS%20New%20Constitution%20Book.pdf" download="RS-New-Constitution-Book.pdf" class="btn btn-secondary">Download RS Handbook</a>\n            </div>'''
-              html.write_text(html_text.replace(old_handbook, new_handbook, 1), encoding='utf-8')
           PY
 
       - name: Validate JavaScript
