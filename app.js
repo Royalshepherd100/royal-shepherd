@@ -1216,8 +1216,8 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     };
   }
 
-  async function apiGetState() {
-    return requestJson('/state', { method: 'GET' });
+  async function apiGetState(options = {}) {
+    return requestJson('/state', { method: 'GET', ...options });
   }
 
   async function apiSaveState(payload) {
@@ -1240,9 +1240,9 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
   };
   window.RoyalShepherdAPI = window.RoyalShepherdAPI || rsBackend;
 
-  async function loadState() {
+  async function loadState(signal) {
     try {
-      const payload = await rsBackend.getState();
+      const payload = await rsBackend.getState({ signal });
       if (payload) {
         __rsBackendCache = payload;
         return payload;
@@ -1254,16 +1254,23 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
   }
 
   async function loadStateWithRetry(attempts = 3, delayMs = 500) {
+    const controller = new AbortController();
+    const timeoutId = window.setTimeout(() => controller.abort(), 3000);
     let lastError = null;
-    for (let attempt = 1; attempt <= attempts; attempt += 1) {
-      const payload = await loadState();
-      if (payload) {
-        return payload;
+    try {
+      for (let attempt = 1; attempt <= attempts; attempt += 1) {
+        const payload = await loadState(controller.signal);
+        if (payload) {
+          return payload;
+        }
+        lastError = `loadState attempt ${attempt} failed`;
+        if (controller.signal.aborted) break;
+        if (attempt < attempts) {
+          await new Promise((resolve) => setTimeout(resolve, delayMs));
+        }
       }
-      lastError = `loadState attempt ${attempt} failed`;
-      if (attempt < attempts) {
-        await new Promise((resolve) => setTimeout(resolve, delayMs));
-      }
+    } finally {
+      window.clearTimeout(timeoutId);
     }
     console.warn('loadStateWithRetry: backend state unavailable after retries', lastError);
     return null;
