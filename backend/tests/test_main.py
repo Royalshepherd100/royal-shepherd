@@ -1,6 +1,7 @@
 import importlib
 import os
 import tempfile
+from datetime import datetime
 from pathlib import Path
 
 from fastapi.testclient import TestClient
@@ -158,9 +159,15 @@ def test_approve_application_assigns_member_to_company_and_section():
         headers=admin_headers(client),
     )
 
-    response = client.post("/applications/app_test/approve", headers=admin_headers(client))
+    response = client.post(
+        "/applications/app_test/approve",
+        headers=admin_headers(client),
+        json={"divisionNumber": 562},
+    )
 
     assert response.status_code == 200
+    assert response.json()["membershipNumber"] == "AI.D562/01/001"
+    assert response.json()["section"] == "junior"
     company = client.get("/companies/1").json()
     assert company["totalMembers"] == 1
     assert company["totalNcos"] == 0
@@ -168,6 +175,109 @@ def test_approve_application_assigns_member_to_company_and_section():
     assert company["totalCommissionedOfficers"] == 0
     assert company["members"][0]["rank"] is None
     assert company["members"][0]["category"] == "MEMBER"
+    assert company["members"][0]["membershipNumber"] == "AI.D562/01/001"
+    state = client.get("/state", headers=admin_headers(client)).json()
+    assert state["divisionRosterAdditions"] == [{
+        "applicationId": "app_test",
+        "name": "John Doe",
+        "company": "1",
+        "section": "junior",
+        "divisionNumber": 562,
+        "companyMemberSerial": 1,
+        "membershipNumber": "AI.D562/01/001",
+    }]
+    retry = client.post("/applications/app_test/approve", headers=admin_headers(client), json={"divisionNumber": 562})
+    assert retry.status_code == 200
+    assert retry.json()["membershipNumber"] == "AI.D562/01/001"
+    retry_state = client.get("/state", headers=admin_headers(client)).json()
+    assert len(retry_state["divisionRosterAdditions"]) == 1
+    assert len(retry_state["memberDivisionIds"]) == 1
+
+
+def test_enlistment_section_boundaries_follow_birthdays():
+    import backend.main as main
+
+    main = importlib.reload(main)
+    today = datetime.utcnow().date()
+
+    def dob_for_age(age):
+        birth_year = today.year - age
+        try:
+            return today.replace(year=birth_year).strftime("%Y-%m-%d")
+        except ValueError:
+            return today.replace(year=birth_year, day=28).strftime("%Y-%m-%d")
+
+    for age, expected_section in (
+        (1, "anchor"),
+        (7, "anchor"),
+        (8, "junior"),
+        (12, "junior"),
+        (13, "intermediate"),
+        (16, "intermediate"),
+        (17, "senior"),
+        (23, "senior"),
+        (24, "officer"),
+    ):
+        assert main.get_section_and_rank(dob_for_age(age))["section"] == expected_section
+
+    assert main.calculate_age(today.replace(year=today.year + 1).strftime("%Y-%m-%d")) < 1
+    assert main.calculate_age("not-a-date") == 0
+
+
+def test_approval_uses_company_roster_when_serial_rows_are_incomplete():
+    client = new_client()
+    headers = admin_headers(client)
+    state = client.get("/state", headers=headers).json()
+    company = state["companies"]["1"]
+    company.update({
+        "anchor": ["Anchor One"],
+        "junior": ["Junior One", "Junior Two", "Junior Three"],
+        "active": ["Anchor One", "Junior One", "Junior Two", "Junior Three"],
+        "members": [{"name": "Anchor One"}, {"name": "Junior One"}],
+        "companyMemberSerials": [{"name": "Anchor One", "companySerial": "002", "divisionNumber": 1}],
+    })
+    state["enlistmentApplications"] = {
+        "next_member": {
+            "id": "next_member",
+            "fullName": "New Applicant",
+            "dob": "2016-05-14",
+            "company": "1",
+            "status": "Pending",
+        }
+    }
+    assert client.post("/state", json=state, headers=headers).status_code == 200
+
+    response = client.post(
+        "/applications/next_member/approve",
+        headers=headers,
+        json={"divisionNumber": 562},
+    )
+
+    assert response.status_code == 200
+    assert response.json()["membershipNumber"] == "AI.D562/01/005"
+
+
+def test_approve_application_rejects_invalid_date_of_birth():
+    client = new_client()
+    headers = admin_headers(client)
+    state = client.get("/state", headers=headers).json()
+    state["enlistmentApplications"] = {
+        "invalid_dob": {
+            "id": "invalid_dob",
+            "fullName": "Future Applicant",
+            "dob": "not-a-date",
+            "company": "1",
+            "status": "Pending",
+        }
+    }
+    assert client.post("/state", json=state, headers=headers).status_code == 200
+
+    response = client.post("/applications/invalid_dob/approve", headers=headers, json={"divisionNumber": 562})
+
+    assert response.status_code == 400
+    updated_state = client.get("/state", headers=headers).json()
+    assert updated_state["enlistmentApplications"]["invalid_dob"]["status"] == "Pending"
+    assert updated_state["divisionRosterAdditions"] == []
 
 
 def test_personnel_classification_uses_rank_or_designation_not_senior_section():
@@ -386,18 +496,19 @@ def test_gallery_upload_persists_uploaded_images_in_backend_state():
         files=[
             ("files", ("sample.png", b"\x89PNG\r\n\x1a\n", "image/png")),
             ("files", ("band.png", b"\x89PNG\r\n\x1a\n", "image/png")),
+            ("files", ("throwback.png", b"\x89PNG\r\n\x1a\n", "image/png")),
         ],
-        data={"titles": ["Sample", "Band"], "descriptions": ["Parade", "Band"], "categories": ["parades", "band"]},
+        data={"titles": ["Sample", "Band", "Throwback"], "descriptions": ["Parade", "Band", "Throwbacks"], "categories": ["parades", "band", "throwbacks"]},
         headers=headers,
     )
 
     assert response.status_code == 200
     payload = response.json()
     assert payload["items"]
-    assert [item["category"] for item in payload["items"]] == ["parades", "band"]
+    assert [item["category"] for item in payload["items"]] == ["parades", "band", "throwbacks"]
     assert payload["items"][0]["src"].startswith("http") or payload["items"][0]["src"].startswith("/")
     saved_items = client.get("/state").json()["galleryItems"]
-    assert [item["category"] for item in saved_items] == ["parades", "band"]
+    assert [item["category"] for item in saved_items] == ["parades", "band", "throwbacks"]
     assert client.get(payload["items"][0]["src"]).status_code == 200
 
 

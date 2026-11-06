@@ -52,6 +52,7 @@ GALLERY_CATEGORIES = {
     "parades",
     "band",
     "rehearsals",
+    "throwbacks",
     "moments-enjoyment",
     "exams",
     "trophies",
@@ -195,6 +196,7 @@ def build_default_state() -> Dict[str, Any]:
         "galleryItems": [],
         "companyDocuments": [],
         "memberDivisionIds": [],
+        "divisionRosterAdditions": [],
     }
 
 
@@ -239,13 +241,15 @@ def calculate_age(dob_value: str) -> int:
 
 def get_section_and_rank(dob_value: str) -> Dict[str, str]:
     age = calculate_age(dob_value)
+    if age < 1:
+        raise HTTPException(status_code=400, detail="Applicants must be at least one year old.")
     if age <= 7:
         return {"section": "anchor", "rank": None}
     if age <= 12:
         return {"section": "junior", "rank": None}
     if age <= 16:
         return {"section": "intermediate", "rank": None}
-    if age <= 24:
+    if age <= 23:
         return {"section": "senior", "rank": None}
     return {"section": "officer", "rank": None}
 
@@ -739,45 +743,148 @@ def commander_login(payload: Dict[str, Any]):
 
 
 @app.post("/applications/{application_id}/approve")
-def approve_application(application_id: str, request: Request):
+def approve_application(application_id: str, request: Request, payload: Dict[str, Any] | None = None):
     require_admin(request)
-    applications = store.setdefault("enlistmentApplications", {})
-    application = applications.get(application_id)
-    if application is None:
-        raise HTTPException(status_code=404, detail="Application not found")
+    with store_lock:
+        applications = store.setdefault("enlistmentApplications", {})
+        application = applications.get(application_id)
+        if application is None:
+            raise HTTPException(status_code=404, detail="Application not found")
+        if application.get("status") == "Approved":
+            return application
+        if application.get("status") != "Pending":
+            raise HTTPException(status_code=409, detail="Only pending applications can be approved.")
 
-    application["status"] = "Approved"
-    application["approvedAt"] = datetime.utcnow().isoformat()
+        full_name = str(application.get("fullName") or "").strip()
+        company_id = str(application.get("company") or "").strip()
+        company = store.setdefault("companies", {}).get(company_id)
+        if not full_name or not company:
+            raise HTTPException(status_code=400, detail="The application must have a name and a valid preferred company.")
 
-    company_id = application.get("company")
-    if company_id and company_id in store.setdefault("companies", {}):
-        company = store["companies"][company_id]
-        full_name = application.get("fullName", "")
-        if not any((member.get("name") == full_name for member in company.setdefault("members", []))):
-            assignment = get_section_and_rank(application.get("dob", ""))
-            section = assignment["section"]
-            rank = assignment.get("rank")
-            category = classify_personnel({"name": full_name, "rank": rank, "section": section})
-            company.setdefault(section, [])
+        assignment = get_section_and_rank(str(application.get("dob") or ""))
+        section = assignment["section"]
+        rank = assignment.get("rank")
+        category = classify_personnel({"name": full_name, "rank": rank, "section": section})
+        additions = store.setdefault("divisionRosterAdditions", [])
+        existing_addition = next((entry for entry in additions if entry.get("applicationId") == application_id), None)
+        if existing_addition:
+            member_number = existing_addition["membershipNumber"]
+            division_number = int(existing_addition["divisionNumber"])
+            company_member_serial = int(existing_addition["companyMemberSerial"])
+        else:
+            division_numbers = [
+                int(row.get("divisionNumber") or 0)
+                for existing_company in store.get("companies", {}).values()
+                for row in existing_company.get("companyMemberSerials", [])
+                if isinstance(row, dict)
+            ]
+            division_numbers.extend(
+                int(entry.get("divisionNumber") or 0)
+                for entry in additions
+                if isinstance(entry, dict)
+            )
+            member_ids = store.setdefault("memberDivisionIds", [])
+            division_numbers.extend(
+                int(row.get("generalSerial") or 0)
+                for row in member_ids
+                if isinstance(row, dict)
+            )
+            if payload and payload.get("divisionNumber") is not None:
+                try:
+                    requested_division_number = int(payload["divisionNumber"])
+                except (TypeError, ValueError):
+                    raise HTTPException(status_code=400, detail="Invalid division membership number.")
+                if requested_division_number < 1:
+                    raise HTTPException(status_code=400, detail="Invalid division membership number.")
+                division_numbers.append(requested_division_number - 1)
+            division_number = max(division_numbers, default=0) + 1
+
+            company_rows = company.setdefault("companyMemberSerials", [])
+            existing_company_names = set()
+            for roster_key in ("members", "anchor", "junior", "intermediate", "senior", "officer", "active", "inactive", "officers"):
+                roster = company.get(roster_key, [])
+                if not isinstance(roster, list):
+                    continue
+                for roster_entry in roster:
+                    roster_name = roster_entry.get("name") if isinstance(roster_entry, dict) else roster_entry
+                    normalized_name = " ".join(str(roster_name or "").casefold().split())
+                    if normalized_name:
+                        existing_company_names.add(normalized_name)
+            company_member_serials = [
+                int(row.get("companySerial") or 0)
+                for row in company_rows
+                if isinstance(row, dict)
+            ]
+            company_member_serial = max([len(existing_company_names), *company_member_serials]) + 1
+            member_number = f"AI.D{division_number:03d}/{int(company_id):02d}/{company_member_serial:03d}"
+            additions.append({
+                "applicationId": application_id,
+                "name": full_name,
+                "company": company_id,
+                "section": section,
+                "divisionNumber": division_number,
+                "companyMemberSerial": company_member_serial,
+                "membershipNumber": member_number,
+            })
+
+        company.setdefault(section, [])
+        if full_name not in company[section]:
             company[section].append(full_name)
-            company.setdefault("members", []).append({"name": full_name, "section": section, "rank": rank, "category": category, "email": application.get("email"), "phone": application.get("phone")})
-            company.setdefault("active", company.get("active", []))
-            company.setdefault("inactive", company.get("inactive", []))
-            company.setdefault("officers", company.get("officers", []))
-            if section == "officer":
-                company["officer"].append(full_name)
+        company.setdefault("members", [])
+        if not any(str(member.get("name") or "").strip().casefold() == full_name.casefold() for member in company["members"]):
+            company["members"].append({
+                "name": full_name,
+                "section": section,
+                "rank": rank,
+                "category": category,
+                "email": application.get("email"),
+                "phone": application.get("phone"),
+                "dob": application.get("dob"),
+                "membershipNumber": member_number,
+            })
+        company.setdefault("active", [])
+        company.setdefault("inactive", [])
+        company.setdefault("officers", [])
+        if section == "officer":
+            if full_name not in company["officers"]:
                 company["officers"].append(full_name)
-            else:
-                if section in {"anchor", "junior", "intermediate", "senior"}:
-                    company["active" if section in {"anchor", "junior"} else "inactive"].append(full_name)
+        elif section in {"anchor", "junior"}:
+            if full_name not in company["active"]:
+                company["active"].append(full_name)
+        elif section in {"intermediate", "senior"} and full_name not in company["inactive"]:
+            company["inactive"].append(full_name)
+        company["memberRosterManaged"] = True
+        if not any(
+            isinstance(row, dict) and int(row.get("divisionNumber") or 0) == division_number
+            for row in company["companyMemberSerials"]
+        ):
+            company["companyMemberSerials"].append({
+                "name": full_name,
+                "section": section,
+                "companySerial": f"{company_member_serial:03d}",
+                "divisionNumber": division_number,
+                "divisionNumberSource": "division",
+            })
+        company["totalMembers"] = len(company["members"])
+        company["totalNcos"] = sum(1 for member in company["members"] if classify_personnel(member) == "NCO")
+        company["totalOfficers"] = sum(1 for member in company["members"] if classify_personnel(member) == "OFFICER")
+        company["totalCommissionedOfficers"] = sum(1 for member in company["members"] if classify_personnel(member) == "COMMISSIONED_OFFICER")
 
-        company["totalMembers"] = len(company.get("members", []))
-        company["totalNcos"] = sum(1 for member in company.get("members", []) if classify_personnel(member) == "NCO")
-        company["totalOfficers"] = sum(1 for member in company.get("members", []) if classify_personnel(member) == "OFFICER")
-        company["totalCommissionedOfficers"] = sum(1 for member in company.get("members", []) if classify_personnel(member) == "COMMISSIONED_OFFICER")
-
-    save_state()
-    return application
+        if not any(row.get("id") == member_number for row in store["memberDivisionIds"] if isinstance(row, dict)):
+            store["memberDivisionIds"].append({
+                "id": member_number,
+                "name": full_name,
+                "companyRecordId": company_id,
+                "companySerial": f"{int(company_id):02d}",
+                "generalSerial": division_number,
+                "memberSerial": company_member_serial,
+            })
+        application["status"] = "Approved"
+        application["section"] = section
+        application["membershipNumber"] = member_number
+        application["approvedAt"] = datetime.utcnow().isoformat()
+        save_state()
+        return application
 
 
 @app.post("/applications/{application_id}/deny")

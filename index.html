@@ -56,7 +56,7 @@
         referrerpolicy="no-referrer"
       />
     </noscript>
-    <link rel="stylesheet" href="index.css?v=8" />
+    <link rel="stylesheet" href="index.css?v=13" />
   </head>
   <body>
     <header class="site-header" id="top">
@@ -84,6 +84,7 @@
           <a href="#about" class="nav-link">About Us</a>
           <a href="#symbolism" class="nav-link">Values &amp; Pledge</a>
           <a href="#wings" class="nav-link">Our Wings</a>
+          <a href="#ranked-personnel" class="nav-link">Ranked Personnel</a>
           <a href="#latest-news" class="nav-link">Latest News &amp; Updates</a>
           <a href="#gallery" class="nav-link">Gallery</a>
           <a href="#enlistment" class="nav-link cta-link">Join Division</a>
@@ -138,8 +139,12 @@
             </div>
           </article>
           <article>
-            <strong id="homeTotalOfficers">15+</strong>
-            <h3 class="summary-label">C.O — Commissioned Officers</h3>
+            <strong id="homeTotalRankedOfficers">74</strong>
+            <span>Total Ranked Officers</span>
+          </article>
+          <article>
+            <strong id="homeTotalNcos">65</strong>
+            <h3 class="summary-label">N.C.O — Non-Commissioned Officers</h3>
           </article>
           <article>
             <strong>9</strong>
@@ -289,7 +294,7 @@
                 <img class="captain-photo" src="images/captain%20abdullahi%20olayiwola%20john.jpeg" alt="Captain photograph for 17th Akilling Regional Coy" loading="lazy" />
               </div>
               <div class="captain-details">
-                <h3>03 — Iyesi</h3>
+                <h3>03 — Iyana Iyesi</h3>
                 <p class="captain-role">17th Akilling Regional Coy</p>
                 <p class="captain-bio"><strong>Captain:</strong> Abdullahi Olayiwola John</p>
                 <p class="captain-bio"><strong>Rank/Title:</strong> Captain</p>
@@ -336,14 +341,15 @@
               </div>
             </article>
 
-            <article class="captain-card glass-card" data-company="7">
+            <article class="captain-card glass-card" data-company="7" data-company-status="suspended" aria-disabled="true">
               <div class="captain-photo-wrap">
-                <img class="captain-photo" src="images/ijaba%20ioc.jpeg" alt="Ijaba IOC photograph" loading="lazy" />
+                <img class="captain-photo" src="images/ijaba%20ioc.jpeg" alt="Adepoju Emmanuel, Officer in Charge of Ijaba" loading="lazy" />
               </div>
               <div class="captain-details">
                 <h3>07 — Ijaba</h3>
+                <span class="company-suspended-stamp" role="status">SUSPENDED</span>
                 <p class="captain-role">44th Akilling Regional Coy</p>
-                <p class="captain-bio"><strong>Officer in Charge:</strong> Adepoju Emmanuel</p>
+                <p class="captain-bio captain-officer-in-charge"><strong>Officer in Charge:</strong> Adepoju Emmanuel</p>
                 <p class="captain-bio"><strong>Rank/Title:</strong> Officer in Charge</p>
                 <p class="captain-bio">Leadership description: Not provided.</p>
               </div>
@@ -429,8 +435,16 @@
               <strong id="divisionTotalMembers">473</strong>
             </div>
             <div class="summary-stat">
+              <span class="summary-label">Total Ranked Officers</span>
+              <strong id="divisionTotalRankedOfficers">74</strong>
+            </div>
+            <div class="summary-stat">
+              <h3 class="summary-label">N.C.O — NON-COMMISSIONED OFFICERS</h3>
+              <strong id="divisionTotalNcos">65</strong>
+            </div>
+            <div class="summary-stat">
               <h3 class="summary-label">C.O — COMMISSIONED OFFICERS</h3>
-              <strong id="divisionTotalOfficers">0</strong>
+              <strong id="divisionTotalOfficers">9</strong>
             </div>
           </div>
 
@@ -464,7 +478,7 @@
             </article>
             <article class="company-card glass-card" data-company="3">
               <span class="company-number">03</span>
-              <h3>Iyesi - 17th Akiling Regional Coy</h3>
+              <h3>Iyana Iyesi - 17th Akiling Regional Coy</h3>
               <p class="company-caption">Company 3</p>
               <div class="company-details">
                 <h4>Anchor Section</h4>
@@ -530,9 +544,10 @@
                 <ul class="company-list" data-list="officer"></ul>
               </div>
             </article>
-            <article class="company-card glass-card" data-company="7">
+            <article class="company-card glass-card" data-company="7" data-company-status="suspended" aria-disabled="true">
               <span class="company-number">07</span>
               <h3>Ijaba - 44th Akiling Regional Coy</h3>
+              <span class="company-suspended-stamp" role="status">SUSPENDED</span>
               <p class="company-caption">Company 7</p>
               <div class="company-details">
                 <h4>Anchor Section</h4>
@@ -581,6 +596,25 @@
                 <ul class="company-list" data-list="officer"></ul>
               </div>
             </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section ranked-personnel-section" id="ranked-personnel">
+        <div class="container">
+          <div class="section-heading">
+            <p class="eyebrow">Official Personnel</p>
+            <h2 class="text-gradient">Ranked Personnel</h2>
+            <p>Browse the official Agbala Itura Division personnel register, organised by rank.</p>
+          </div>
+          <div class="ranked-personnel-actions">
+            <button class="btn btn-gold" id="rankedPersonnelToggle" type="button" aria-expanded="false" aria-controls="rankedPersonnelRosters">
+              Show all ranked officers
+            </button>
+          </div>
+          <div class="company-grid ranked-personnel-grid" id="rankedPersonnelRosters" hidden>
+            <div data-ranked-roster="nco"></div>
+            <div data-ranked-roster="commissioned"></div>
           </div>
         </div>
       </section>
@@ -641,6 +675,7 @@
                   <button class="filter-btn" data-filter="parades">PARADES PICS</button>
                   <button class="filter-btn" data-filter="band">BAND PICS</button>
                   <button class="filter-btn" data-filter="rehearsals">REHEARSAL PICS</button>
+                  <button class="filter-btn" data-filter="throwbacks">THROWBACKS</button>
                   <button class="filter-btn" data-filter="moments-enjoyment">Moments of Enjoyment</button>
                   <button class="filter-btn" data-filter="exams">EXAMS PICS</button>
                   <button class="filter-btn" data-filter="trophies">TROPHIES CABINET</button>
@@ -677,6 +712,7 @@
                 <label>
                   <span>Date of Birth</span>
                   <input type="date" name="dob" id="dob" required />
+                  <small id="enlistmentSectionPreview" aria-live="polite">Your age-based section will appear here.</small>
                 </label>
                 <label>
                   <span>Phone</span>
@@ -768,11 +804,10 @@
               <option value="">Select Company</option>
               <option value="1">Oke Odo - 12th Akiling Regional Coy</option>
               <option value="2">Ikorodu - 15th Akiling Regional Coy</option>
-              <option value="3">Iyesi - 17th Akiling Regional Coy</option>
+              <option value="3">Iyana Iyesi - 17th Akiling Regional Coy</option>
               <option value="4">Sango - 28th Akiling Regional Coy</option>
               <option value="5">Command - 31st Akiling Regional Coy</option>
               <option value="6">Ipaja - 38th Akiling Regional Coy</option>
-              <option value="7">Ijaba - 44th Akiling Regional Coy</option>
               <option value="8">Ijoko - 48th Akiling Regional Coy</option>
               <option value="9">Ikeja - 49th Akiling Regional Coy</option>
             </select>
@@ -880,11 +915,11 @@
       </div>
     </div>
 
-    <script defer src="gallery-data.js?v=10"></script>
+    <script defer src="gallery-data.js?v=11"></script>
     <script defer src="membership-data.js?v=1"></script>
     <script defer src="official-division-serials.js?v=3"></script>
     <script defer src="coy-membership-data.js?v=2"></script>
-    <script defer src="app.js?v=59"></script>
+    <script defer src="app.js?v=71"></script>
     <script type="application/ld+json">
       
       {

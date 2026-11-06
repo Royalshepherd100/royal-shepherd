@@ -28,10 +28,15 @@
   const dashboardGrid = document.querySelector('#dashboardModal .dashboard-grid, #captainDashboardGrid');
   const commanderDashboardGrid = document.querySelector('#commanderDashboardModal .dashboard-grid, #commanderDashboardGrid');
   const divisionTotalMembers = document.getElementById('divisionTotalMembers');
+  const divisionTotalRankedOfficers = document.getElementById('divisionTotalRankedOfficers');
+  const divisionTotalNcos = document.getElementById('divisionTotalNcos');
   const divisionTotalOfficers = document.getElementById('divisionTotalOfficers');
   const homeTotalMembers = document.getElementById('homeTotalMembers');
-  const homeTotalOfficers = document.getElementById('homeTotalOfficers');
+  const homeTotalNcos = document.getElementById('homeTotalNcos');
+  const homeTotalRankedOfficers = document.getElementById('homeTotalRankedOfficers');
   const membershipStatTrigger = document.getElementById('membershipStatTrigger');
+  const rankedPersonnelToggle = document.getElementById('rankedPersonnelToggle');
+  const rankedPersonnelRosters = document.getElementById('rankedPersonnelRosters');
   const membershipClose = document.getElementById('totalMembershipClose');
   const membershipLookupForm = document.getElementById('membershipLookupForm');
   const membershipLookupInput = document.getElementById('membershipLookupInput');
@@ -226,7 +231,7 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
   const defaultCompanyData = {
     1: { name: 'Oke Odo - 12th Akiling Regional Coy', anchor: [], junior: [], intermediate: [], senior: [], officer: [], active: [], inactive: [], officers: [] },
     2: { name: 'Ikorodu - 15th Akiling Regional Coy', anchor: [], junior: [], intermediate: [], senior: [], officer: [], active: [], inactive: [], officers: [] },
-    3: { name: 'Iyesi - 17th Akiling Regional Coy', anchor: [], junior: [], intermediate: [], senior: [], officer: [], active: [], inactive: [], officers: [] },
+    3: { name: 'Iyana Iyesi - 17th Akiling Regional Coy', anchor: [], junior: [], intermediate: [], senior: [], officer: [], active: [], inactive: [], officers: [] },
     4: { name: 'Sango - 28th Akiling Regional Coy', anchor: [], junior: [], intermediate: [], senior: [], officer: [], active: [], inactive: [], officers: [] },
     5: { name: 'Command - 31st Akiling Regional Coy', anchor: [], junior: [], intermediate: [], senior: [], officer: [], active: [], inactive: [], officers: [] },
     6: { name: 'Ipaja - 38th Akiling Regional Coy', anchor: [], junior: [], intermediate: [], senior: [], officer: [], active: [], inactive: [], officers: [] },
@@ -234,6 +239,11 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     8: { name: 'Ijoko - 48th Akiling Regional Coy', anchor: [], junior: [], intermediate: [], senior: [], officer: [], active: [], inactive: [], officers: [] },
     9: { name: 'Ikeja - 49th Akiling Regional Coy', anchor: [], junior: [], intermediate: [], senior: [], officer: [], active: [], inactive: [], officers: [] }
   };
+  const suspendedCompanyIds = new Set(['7']);
+
+  function isSuspendedCompany(companyId) {
+    return suspendedCompanyIds.has(String(companyId));
+  }
 
   const officialCompanyMemberRosterConfig = {
     2: [
@@ -274,22 +284,21 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
   };
 
   const officialCompanySerialByRecordId = Object.fromEntries(
-    Array.from(companyCards)
-      .map((card) => {
-        const recordId = String(card.dataset.company || '').trim();
-        const companyNumber = Number(recordId);
-        return [recordId, Number.isInteger(companyNumber) && companyNumber > 0 ? String(companyNumber).padStart(2, '0') : ''];
-      })
-      .filter(([recordId, serial]) => recordId && serial)
+    Object.keys(defaultCompanyData)
+      .map((recordId) => [recordId, String(Number(recordId)).padStart(2, '0')])
   );
 
   const captainDivisionNameAliases = {
     1: 'Ilori Samuel A.',
     2: 'Adebayo Joseph',
-    3: 'Abdullahi John Olayiwala',
+    3: 'Abdullahi John O.',
     4: 'Lawal Segun Q.',
     5: 'Awoniyi Olaitan',
     8: 'Aina Olamilekan O.'
+  };
+  const officialCompanyOfficerInChargeNames = {
+    6: 'Oyeniran Ayinke Adedoja',
+    9: 'Jacob Tomiwa B.'
   };
   const officialCompanyCaptainProfiles = Object.fromEntries(
     Array.from(document.querySelectorAll('.captains-grid .captain-card[data-company]'))
@@ -300,9 +309,15 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
         const captainName = String(captainLine?.textContent || '')
           .replace(/^\s*Captain:\s*/i, '')
           .trim();
+        const officerInChargeLine = Array.from(card.querySelectorAll('.captain-bio'))
+          .find((line) => line.textContent.trim().startsWith('Officer in Charge:'));
+        const officerInCharge = String(officerInChargeLine?.textContent || '')
+          .replace(/^\s*Officer in Charge:\s*/i, '')
+          .trim();
         return [companyId, {
           name: /^(?:not provided|not available)$/i.test(captainName) ? '' : captainName,
           divisionName: captainDivisionNameAliases[companyId] || captainName,
+          officerInCharge,
           photo: card.querySelector('img.captain-photo')?.getAttribute('src') || ''
         }];
       })
@@ -326,7 +341,12 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     ],
     4: [
       { key: 'officer', heading: 'OFFICER SECTIONS', members: officialCompanyMemberRosterConfig[4].slice(0, 7) },
-      { key: 'senior', heading: 'SNR SECTIONS', members: officialCompanyMemberRosterConfig[4].slice(7, 29) }
+      { key: 'senior', heading: 'SNR SECTIONS', members: officialCompanyMemberRosterConfig[4].slice(7, 29) },
+      { key: 'intermediate', heading: 'INTERMEDIATE SECTIONS', members: [
+        'Ajisegiri Eniola Samuel', 'Sobayo Anjola Marvelous', 'Osunyinka David', 'Sulaimon Emmanuel Ayomide',
+        'Olaleye Josiah Opeyemi', 'Ogunni Samuel Adeyemi', 'Osunyinka Peter', 'Otun Basit', 'Oluwagbemiga Deborah'
+      ] },
+      { key: 'anchor', heading: 'ANCHOR SECTION', members: [] }
     ],
     5: [
       { key: 'officer', heading: 'OFFICER', members: officialCompanyMemberRosterConfig[5].slice(0, 4) },
@@ -370,7 +390,8 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
       .normalize('NFKD')
       .replace(/[\u0300-\u036f]/g, '')
       .replace(/\s*\((?:sergeant|staff sergeant|corporal|lance corporal)\)\s*/gi, ' ')
-      .replace(/^(?:(?:\d+(?:st|nd|rd|th)\s*)?(?:captain|capt|officer|warrant\s+officer|warrant|lieutenant|provost)\.?\s*)+/gi, '')
+      .replace(/\s*\((?:mr|mrs)\)\s*$/gi, ' ')
+      .replace(/^(?:(?:\d+(?:st|nd|rd|th)\s*)?(?:captain|capt|officer|warrant\s+officer|warrant|lieutenant|provost|evang|evangelist|mr|mrs|rev|reverend)\.?\s*)+/gi, '')
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, ' ')
       .trim()
@@ -393,6 +414,7 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     'adebeshin taiwo': 'Taiwo Adebeshin',
     'adedayo bioluwatife': 'Adedayo Boluwatife',
     'adepoju prescious': 'Adepoju Precious',
+    'segun lawal': 'Lawal Segun Q.',
     'olalaye omobolawa': 'Olaleye Omobolawa',
     'olawuyi israel': 'Olawuyi Isreal',
     'idowu elizabeth': 'Idowu Elisabeth',
@@ -419,6 +441,15 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
   }
 
   function getOfficialCompanySections(companyId) {
+    const company = state.companyData[String(companyId)];
+    if (company?.memberRosterManaged === true) {
+      return companySectionDefinitions.map((section) => ({
+        key: section.key,
+        heading: section.label,
+        members: Array.isArray(company[section.key]) ? company[section.key].slice() : []
+      }));
+    }
+
     const pdfMembership = window.RS_COY_MEMBERSHIP?.[companyId];
     let sections = [];
     if (pdfMembership) {
@@ -435,9 +466,17 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
       }));
     }
 
+    const seenMemberNames = new Set();
     return sections.map((section) => ({
       ...section,
       members: orderCompanyMembersByDivisionSerial(section.members)
+        .map(getDivisionRosterNameForMember)
+        .filter((name) => {
+        const key = normalizeMemberComparisonKey(name);
+        if (!key || seenMemberNames.has(key)) return false;
+        seenMemberNames.add(key);
+        return true;
+      })
     }));
   }
 
@@ -464,7 +503,7 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     if (companyMemberSerialLookupByCompany.has(key)) return companyMemberSerialLookupByCompany.get(key);
 
     const serialMap = new Map();
-    getRenderedCompanyMemberEntries(key).forEach((entry, index) => {
+    getRenderedCompanyMemberEntries(key, true).forEach((entry, index) => {
       serialMap.set(normalizeMemberComparisonKey(entry.name), {
         companySerial: index + 1,
         generalSerial: entry.generalSerial
@@ -482,6 +521,7 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     if (explicitCaptain) return explicitCaptain;
     const captainCard = document.querySelector(`.captains-grid .captain-card[data-company="${companySerial}"]`);
     if (captainCard?.dataset.captainLocked === 'blank') return '';
+    if (captainDivisionNameAliases[companySerial]) return captainDivisionNameAliases[companySerial];
     const companyCaptain = (state.companyData[companySerial]?.members || []).find((member) => {
       return member && (String(member.section || '').toLowerCase() === 'captain'
         || String(member.rank || '').toLowerCase() === 'captain'
@@ -497,6 +537,23 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     const profile = officialCompanyCaptainProfiles[Number(companyId)];
     const divisionName = String(profile?.divisionName || '').trim();
     return getGeneralDivisionMemberSerial(divisionName || captainName);
+  }
+
+  function getOfficialCompanyLeader(companyId) {
+    const key = String(companyId);
+    if (isSuspendedCompany(key)) return null;
+
+    const captainName = getOfficialCaptainForCompany(key);
+    if (captainName) return { name: captainName, sectionKey: 'captain', heading: 'COMPANY CAPTAIN' };
+
+    const officerInCharge = String(
+      officialCompanyCaptainProfiles[Number(key)]?.officerInCharge
+      || officialCompanyOfficerInChargeNames[Number(key)]
+      || ''
+    ).trim();
+    return officerInCharge
+      ? { name: officerInCharge, sectionKey: 'leader', heading: 'OFFICER IN CHARGE' }
+      : null;
   }
 
   function syncCompanyCaptainReferences() {
@@ -597,7 +654,12 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
 
   function getCompanyPersonnelCounts(companyId, company) {
     const counts = { member: 0, nco: 0, officer: 0, commissioned: 0 };
-    const sections = getOfficialCompanySections(companyId);
+    const sections = company?.memberRosterManaged === true
+      ? companySectionDefinitions.map((section) => ({
+        key: section.key,
+        members: Array.isArray(company[section.key]) ? company[section.key] : []
+      }))
+      : getOfficialCompanySections(companyId);
     const useOfficialRoster = Boolean(companyId && sections.length);
     const sourceEntries = useOfficialRoster
       ? sections.flatMap((section) => section.members.map((name) => ({ name, sectionKey: section.key })))
@@ -612,11 +674,13 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
       const category = getPersonnelCategory(name, companyId, sectionKey, company);
       counts[category] += 1;
     });
-    const captainName = getOfficialCaptainForCompany(companyId);
-    const captainIsInRoster = captainName && uniqueSourceEntries.some(({ name }) => (
-      normalizeMemberComparisonKey(name) === normalizeMemberComparisonKey(captainName)
+    const leader = getOfficialCompanyLeader(companyId);
+    const leaderIsInRoster = leader && uniqueSourceEntries.some(({ name }) => (
+      normalizeMemberComparisonKey(name) === normalizeMemberComparisonKey(leader.name)
     ));
-    if (captainName && !captainIsInRoster) counts.commissioned += 1;
+    if (leader && !leaderIsInRoster) {
+      counts[leader.sectionKey === 'captain' ? 'commissioned' : 'officer'] += 1;
+    }
     if (useOfficialRoster) {
       const uniqueWebsiteOnlyEntries = dedupeMemberNamesByKey(getWebsiteOnlyCompanyMembers(companyId).map((entry) => entry.name));
       uniqueWebsiteOnlyEntries.forEach((name) => {
@@ -646,8 +710,8 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
   function getWebsiteOnlyCompanyMembers(companyId) {
     const company = state.companyData[companyId] || {};
     const officialNames = new Set(getOfficialCompanyMemberRoster(companyId).map(normalizeMemberComparisonKey));
-    const captainName = getOfficialCaptainForCompany(companyId);
-    if (captainName) officialNames.add(normalizeMemberComparisonKey(captainName));
+    const leader = getOfficialCompanyLeader(companyId);
+    if (leader) officialNames.add(normalizeMemberComparisonKey(leader.name));
     const websiteOnly = ['officer', 'senior', 'intermediate', 'junior', 'anchor', 'other'].flatMap((sectionKey) => {
       const members = Array.isArray(company[sectionKey]) ? company[sectionKey] : [];
       return members
@@ -673,45 +737,209 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     return websiteOnly;
   }
 
-  function getRenderedCompanyMemberEntries(companyId) {
+  function getRenderedCompanyMemberEntries(companyId, includeUnassigned = false) {
+    const key = String(companyId);
     const sections = getOfficialCompanySections(companyId);
     const entries = sections.flatMap((section) => (section.members || []).map((name) => ({
       name,
       sectionKey: section.key || getCompanySectionKey(section.heading)
     })));
-    const captainName = getOfficialCaptainForCompany(companyId);
-    const captainKey = normalizeMemberComparisonKey(captainName);
-    if (captainName) {
-      const captainIndex = entries.findIndex((entry) => normalizeMemberComparisonKey(entry.name) === captainKey);
-      const captainEntry = captainIndex >= 0
-        ? entries.splice(captainIndex, 1)[0]
-        : { name: captainName, sectionKey: 'captain' };
-      entries.unshift({ ...captainEntry, name: captainName, sectionKey: 'captain' });
+    const leader = getOfficialCompanyLeader(companyId);
+    const leaderKey = normalizeMemberComparisonKey(leader?.name);
+    if (leader) {
+      const leaderIndex = entries.findIndex((entry) => normalizeMemberComparisonKey(entry.name) === leaderKey);
+      const leaderEntry = leaderIndex >= 0
+        ? entries.splice(leaderIndex, 1)[0]
+        : { name: leader.name, sectionKey: leader.sectionKey };
+      entries.unshift({ ...leaderEntry, name: leader.name, sectionKey: leader.sectionKey });
     }
     getWebsiteOnlyCompanyMembers(companyId).forEach((entry) => entries.push(entry));
 
-    const uniqueNames = new Set();
-    const uniqueGeneralSerials = new Set();
-    return entries
+    const orderedEntries = entries
       .map((entry, index) => {
-        const key = normalizeMemberComparisonKey(entry.name);
+        const entryKey = normalizeMemberComparisonKey(entry.name);
         const generalSerial = entry.sectionKey === 'captain'
           ? (getOfficialCaptainDivisionSerial(companyId, entry.name) || getGeneralDivisionMemberSerial(entry.name))
           : getGeneralDivisionMemberSerial(entry.name);
-        return { ...entry, index, key, generalSerial };
+        return { ...entry, index, key: entryKey, generalSerial };
       })
-      .filter((entry) => entry.key && entry.generalSerial && getPersonnelNameTokenCount(entry.name) >= 2)
-      .sort((first, second) => first.generalSerial - second.generalSerial || first.index - second.index)
-      .filter((entry) => {
-        if (uniqueNames.has(entry.key) || uniqueGeneralSerials.has(entry.generalSerial)) return false;
+      .filter((entry) => entry.key && (includeUnassigned || entry.generalSerial))
+      .sort((first, second) => {
+        const firstIsLeader = ['captain', 'leader'].includes(first.sectionKey);
+        const secondIsLeader = ['captain', 'leader'].includes(second.sectionKey);
+        if (firstIsLeader !== secondIsLeader) return firstIsLeader ? -1 : 1;
+        const firstSerial = first.generalSerial || Number.MAX_SAFE_INTEGER;
+        const secondSerial = second.generalSerial || Number.MAX_SAFE_INTEGER;
+        return firstSerial - secondSerial || first.index - second.index;
+      });
+
+    const uniqueNames = new Set();
+    const uniqueGeneralSerials = new Set();
+    return orderedEntries.filter((entry) => {
+        if (uniqueNames.has(entry.key)
+          || (!includeUnassigned && entry.generalSerial && uniqueGeneralSerials.has(entry.generalSerial))) return false;
         uniqueNames.add(entry.key);
-        uniqueGeneralSerials.add(entry.generalSerial);
+        if (entry.generalSerial) uniqueGeneralSerials.add(entry.generalSerial);
         return true;
       });
   }
 
+  let supplementalDivisionSerialLookup = null;
+
+  function getMasterDivisionMemberSerial(memberName) {
+    const lookupNames = getDivisionRosterNames();
+    const targetKey = normalizeMemberComparisonKey(memberName);
+    if (!targetKey || getPersonnelNameTokenCount(memberName) < 2) return null;
+    const lookupKey = normalizeMemberComparisonKey(officialMemberDivisionNameAliases[targetKey] || memberName);
+
+    const matchingIndexes = lookupNames
+      .map((candidate, index) => normalizeMemberComparisonKey(candidate) === lookupKey ? index + 1 : -1)
+      .filter((index) => index !== -1);
+    return matchingIndexes.length === 1 ? matchingIndexes[0] : null;
+  }
+
+  function getDivisionRosterNames() {
+    const names = Array.isArray(window.RS_TOTAL_MEMBERS) ? window.RS_TOTAL_MEMBERS : [];
+    const rosterNames = names.map((name, index) => {
+      const override = state.memberNameOverrides?.[String(index + 1)];
+      const overriddenName = typeof override === 'string' ? override : override?.name;
+      return typeof overriddenName === 'string' && overriddenName.trim() ? overriddenName.trim() : name;
+    });
+    const knownNames = new Set(rosterNames.map(normalizeMemberComparisonKey));
+    (Array.isArray(state.divisionRosterAdditions) ? state.divisionRosterAdditions : []).forEach((entry) => {
+      const name = String(entry?.name || '').trim();
+      const key = normalizeMemberComparisonKey(name);
+      if (key && !knownNames.has(key)) {
+        knownNames.add(key);
+        rosterNames.push(name);
+      }
+    });
+    return rosterNames;
+  }
+
+  function getDivisionRosterNameForMember(memberName) {
+    const names = Array.isArray(window.RS_TOTAL_MEMBERS) ? window.RS_TOTAL_MEMBERS : [];
+    const targetKey = normalizeMemberComparisonKey(officialMemberDivisionNameAliases[normalizeMemberComparisonKey(memberName)] || memberName);
+    const matchingIndexes = names
+      .map((name, index) => normalizeMemberComparisonKey(name) === targetKey ? index : -1)
+      .filter((index) => index !== -1);
+    if (matchingIndexes.length !== 1) return memberName;
+    const override = state.memberNameOverrides?.[String(matchingIndexes[0] + 1)];
+    const overriddenName = typeof override === 'string' ? override : override?.name;
+    return typeof overriddenName === 'string' && overriddenName.trim() ? overriddenName.trim() : memberName;
+  }
+
+  function applyCompanyMemberNameEdits(previousSections, nextSections) {
+    const overrides = { ...(state.memberNameOverrides || {}) };
+    let updatedCount = 0;
+    companySectionDefinitions.forEach(({ key }) => {
+      getCompanyRosterNameEdits(previousSections[key] || [], nextSections[key] || []).forEach(({ previousName, nextName }) => {
+        const serial = getMasterDivisionMemberSerial(previousName);
+        if (!serial || serial > (window.RS_TOTAL_MEMBERS || []).length) return;
+        const existingId = getTotalMembershipDivisionIds(getDivisionRosterNames())[serial - 1];
+        const existingIdParts = existingId?.match(/^AI\.D\d{3}\/(\d{2})\/(\d{3})$/);
+        const previousOverride = overrides[String(serial)];
+        overrides[String(serial)] = {
+          name: nextName,
+          previousName,
+          company: existingIdParts?.[1] || previousOverride?.company || '02',
+          member: existingIdParts?.[2] || previousOverride?.member || String(serial).padStart(3, '0')
+        };
+        updatedCount += 1;
+      });
+    });
+    state.memberNameOverrides = overrides;
+    return updatedCount;
+  }
+
+  function getCompanyRosterNameEdits(previousNames, nextNames) {
+    const rows = Array.from({ length: previousNames.length + 1 }, () => Array(nextNames.length + 1).fill(0));
+    for (let previousIndex = previousNames.length - 1; previousIndex >= 0; previousIndex -= 1) {
+      for (let nextIndex = nextNames.length - 1; nextIndex >= 0; nextIndex -= 1) {
+        rows[previousIndex][nextIndex] = normalizeMemberComparisonKey(previousNames[previousIndex]) === normalizeMemberComparisonKey(nextNames[nextIndex])
+          ? rows[previousIndex + 1][nextIndex + 1] + 1
+          : Math.max(rows[previousIndex + 1][nextIndex], rows[previousIndex][nextIndex + 1]);
+      }
+    }
+
+    const edits = [];
+    let previousIndex = 0;
+    let nextIndex = 0;
+    let removed = [];
+    let added = [];
+    const flush = () => {
+      if (removed.length === added.length) {
+        removed.forEach((previousName, index) => {
+          if (normalizeMemberComparisonKey(previousName) !== normalizeMemberComparisonKey(added[index])) {
+            edits.push({ previousName, nextName: added[index] });
+          }
+        });
+      }
+      removed = [];
+      added = [];
+    };
+
+    while (previousIndex < previousNames.length && nextIndex < nextNames.length) {
+      if (normalizeMemberComparisonKey(previousNames[previousIndex]) === normalizeMemberComparisonKey(nextNames[nextIndex])) {
+        flush();
+        previousIndex += 1;
+        nextIndex += 1;
+      } else if (rows[previousIndex + 1][nextIndex] >= rows[previousIndex][nextIndex + 1]) {
+        removed.push(previousNames[previousIndex]);
+        previousIndex += 1;
+      } else {
+        added.push(nextNames[nextIndex]);
+        nextIndex += 1;
+      }
+    }
+    removed.push(...previousNames.slice(previousIndex));
+    added.push(...nextNames.slice(nextIndex));
+    flush();
+    return edits;
+  }
+
+  function getSupplementalDivisionSerialLookup() {
+    if (supplementalDivisionSerialLookup) return supplementalDivisionSerialLookup;
+
+    const lookup = new Map();
+    const supplementalNames = [];
+    const knownMemberNames = new Set();
+    const addName = (name) => {
+      const key = normalizeMemberComparisonKey(name);
+      if (!key || knownMemberNames.has(key) || getMasterDivisionMemberSerial(name)) return;
+      knownMemberNames.add(key);
+      supplementalNames.push({ key, name });
+    };
+
+    Object.keys(officialCompanySerialByRecordId)
+      .sort((first, second) => Number(first) - Number(second))
+      .forEach((companyId) => {
+        const membership = window.RS_COY_MEMBERSHIP?.[companyId];
+        const configuredSections = membership
+          ? (membership.layout === 'columns' ? membership.columns.flat() : membership.sections || [])
+          : (officialCompanySectionRosterConfig[companyId]
+            || [{ members: officialCompanyMemberRosterConfig[companyId] || [] }]);
+        configuredSections.forEach((section) => (section.members || []).forEach(addName));
+        addName(getOfficialCompanyLeader(companyId)?.name);
+
+        const company = state.companyData[companyId] || {};
+        ['officer', 'senior', 'intermediate', 'junior', 'anchor', 'other'].forEach((sectionKey) => {
+          (Array.isArray(company[sectionKey]) ? company[sectionKey] : []).forEach(addName);
+        });
+        (Array.isArray(company.members) ? company.members : []).forEach((member) => addName(member?.name));
+      });
+
+    const firstSupplementalSerial = (window.RS_TOTAL_MEMBERS || []).length + 1;
+    supplementalNames.forEach(({ key }, index) => {
+      lookup.set(key, firstSupplementalSerial + index);
+    });
+    supplementalDivisionSerialLookup = lookup;
+    return lookup;
+  }
+
   function ensureDivisionWideMemberNumbers() {
     companyMemberSerialLookupByCompany = new Map();
+    supplementalDivisionSerialLookup = null;
     let changed = false;
     Object.keys(officialCompanySerialByRecordId)
       .sort((first, second) => Number(first) - Number(second))
@@ -729,7 +957,7 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
             section: entry.sectionKey,
             companySerial: String(companySerial).padStart(3, '0'),
             divisionNumber: entry.generalSerial,
-            divisionNumberSource: 'division'
+            divisionNumberSource: entry.generalSerial <= (window.RS_TOTAL_MEMBERS || []).length ? 'division' : 'supplemental'
           };
         });
         if (JSON.stringify(company.companyMemberSerials || []) !== JSON.stringify(rows)) {
@@ -757,7 +985,9 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
           ...(sameMemberRow ? previous : {}),
           name: entry.name,
           section: entry.sectionKey,
-          companySerial: String(companySerial).padStart(3, '0')
+          companySerial: String(companySerial).padStart(3, '0'),
+          divisionNumber: entry.generalSerial,
+          divisionNumberSource: entry.generalSerial <= (window.RS_TOTAL_MEMBERS || []).length ? 'division' : 'supplemental'
         };
       });
       if (JSON.stringify(company.companyMemberSerials || []) !== JSON.stringify(companyMemberSerials)) {
@@ -783,6 +1013,13 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
       company.officers = company.officer;
 
       const existingMembers = Array.isArray(company.members) ? company.members.slice() : [];
+      const replacedMemberKeys = new Set(
+        Object.values(state.memberNameOverrides || {})
+          .filter((override) => override && typeof override === 'object'
+            && String(override.company || '') === String(recordId).padStart(2, '0'))
+          .map((override) => normalizeMemberComparisonKey(override.previousName))
+          .filter(Boolean)
+      );
       for (let index = existingMembers.length - 1; index >= 0; index -= 1) {
         if (isUnwantedCompanyMemberPlaceholder(existingMembers[index]?.name, recordId)) {
           existingMembers.splice(index, 1);
@@ -792,6 +1029,14 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
       const assignedCaptainKey = normalizeMemberComparisonKey(getOfficialCaptainForCompany(recordId));
       for (let index = existingMembers.length - 1; index >= 0; index -= 1) {
         const member = existingMembers[index];
+        const memberKey = normalizeMemberComparisonKey(member?.name);
+        const isReplacedMember = replacedMemberKeys.has(memberKey)
+          && !sections.some((section) => section.members.some((name) => normalizeMemberComparisonKey(name) === memberKey));
+        if (isReplacedMember && member?.section !== 'captain') {
+          existingMembers.splice(index, 1);
+          changed = true;
+          continue;
+        }
         if (member?.section === 'captain' && member?.rank === 'Captain' && member?.category === 'COMMISSIONED_OFFICER' && normalizeMemberComparisonKey(member.name) !== assignedCaptainKey) {
           existingMembers.splice(index, 1);
           changed = true;
@@ -824,15 +1069,9 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
   }
 
   function getGeneralDivisionMemberSerial(memberName) {
-    const lookupNames = Array.isArray(window.RS_TOTAL_MEMBERS) ? window.RS_TOTAL_MEMBERS : [];
-    const targetKey = normalizeMemberComparisonKey(memberName);
-    if (!targetKey || getPersonnelNameTokenCount(memberName) < 2) return null;
-    const lookupKey = normalizeMemberComparisonKey(officialMemberDivisionNameAliases[targetKey] || memberName);
-
-    const matchingIndexes = lookupNames
-      .map((candidate, index) => normalizeMemberComparisonKey(candidate) === lookupKey ? index + 1 : -1)
-      .filter((index) => index !== -1);
-    return matchingIndexes.length === 1 ? matchingIndexes[0] : null;
+    return getMasterDivisionMemberSerial(memberName)
+      || getSupplementalDivisionSerialLookup().get(normalizeMemberComparisonKey(memberName))
+      || null;
   }
 
   function getOfficialMemberDivisionId(companyId, memberName) {
@@ -841,7 +1080,7 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     if (!companyIdText || !cleanedName) return '';
 
     const assignment = getCompanyMemberSerialMap(companyId).get(normalizeMemberComparisonKey(cleanedName));
-    if (!assignment) return '';
+    if (!assignment?.generalSerial) return '';
     return `AI.D${String(companyIdText).padStart(2, '0')}/${String(assignment.generalSerial).padStart(3, '0')}/${String(assignment.companySerial).padStart(3, '0')}`;
   }
 
@@ -849,21 +1088,31 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     const targetKey = normalizeMemberComparisonKey(memberName);
     if (!targetKey) return '';
 
+    const candidates = [];
     for (const companyId of Object.keys(officialCompanySerialByRecordId)) {
-      const captainName = getOfficialCaptainForCompany(companyId);
-      if (captainName && normalizeMemberComparisonKey(captainName) === targetKey) {
-        return getOfficialMemberDivisionId(companyId, captainName);
-      }
-    }
-
-    const matches = [];
-    for (const companyId of Object.keys(officialCompanySerialByRecordId)) {
-      getOfficialCompanyMemberRoster(companyId).forEach((candidate) => {
-        if (normalizeMemberComparisonKey(candidate) === targetKey) matches.push(companyId);
+      const leader = getOfficialCompanyLeader(companyId);
+      const companyNames = [...getOfficialCompanyMemberRoster(companyId), ...(leader ? [leader.name] : [])];
+      companyNames.forEach((candidate) => {
+        const key = normalizeMemberComparisonKey(candidate);
+        if (key) candidates.push({ companyId, name: candidate, key });
       });
     }
-    if (matches.length !== 1) return '';
-    return getOfficialMemberDivisionId(matches[0], memberName);
+
+    const exactMatches = candidates.filter((candidate) => candidate.key === targetKey);
+    const targetTokens = targetKey.split(' ');
+    const matches = exactMatches.length
+      ? exactMatches
+      : candidates.filter((candidate) => {
+        const candidateTokens = new Set(candidate.key.split(' '));
+        return targetTokens.length >= 2 && targetTokens.every((token) => candidateTokens.has(token));
+      });
+    const uniqueMatches = new Map(matches.map((candidate) => [
+      `${candidate.companyId}:${candidate.key}`,
+      candidate
+    ]));
+    if (uniqueMatches.size !== 1) return '';
+    const [{ companyId, name }] = uniqueMatches.values();
+    return getOfficialMemberDivisionId(companyId, name);
   }
 
   function buildOfficialMemberDivisionIdSnapshot() {
@@ -945,11 +1194,13 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     return {
       companies: state.companyData,
       memberDivisionIds: state.memberDivisionIds || [],
+      memberNameOverrides: state.memberNameOverrides || {},
       captainAccounts: state.captainAccounts,
       commanderVerificationCodes: state.commanderVerificationCodes,
       captainRequests: state.captainRequests,
       enlistmentApplications: state.enlistmentApplications,
       divisionMembers: state.divisionMembers,
+      divisionRosterAdditions: state.divisionRosterAdditions || [],
       commandStructure: state.commandStructure,
       founderStory: state.founderStory,
       excoProfiles: state.excoProfiles,
@@ -1173,9 +1424,12 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
       if (window.location.pathname.includes('captain-dashboard.html')) {
         const queryParams = new URLSearchParams(window.location.search);
         const companyId = queryParams.get('company') || state.activeCaptainCompany;
-        if (companyId && state.companyData[companyId]) {
+        if (companyId && !isSuspendedCompany(companyId) && state.companyData[companyId]) {
           state.activeCaptainCompany = companyId;
           buildCaptainDashboard(companyId);
+        } else if (isSuspendedCompany(companyId)) {
+          state.activeCaptainCompany = '';
+          setActiveRole('visitor');
         }
         renderCaptainWorkspaceAccess();
       }
@@ -1278,7 +1532,12 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
   function applySharedState(payload) {
     if (!payload || typeof payload !== 'object') return;
     const companies = payload.companies || payload.companyData || {};
+    companyMemberSerialLookupByCompany = new Map();
+    supplementalDivisionSerialLookup = null;
     state.memberDivisionIds = Array.isArray(payload.memberDivisionIds) ? payload.memberDivisionIds : [];
+    state.memberNameOverrides = payload.memberNameOverrides && typeof payload.memberNameOverrides === 'object'
+      ? payload.memberNameOverrides
+      : {};
     state.companyData = normalizeCompanyData(companies);
     state.captainAccounts = normalizeAccountMap(payload.captainAccounts || payload.captains || {});
     state.commanderAccounts = normalizeAccountMap(payload.commanderAccounts || payload.commanders || {});
@@ -1288,6 +1547,7 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     state.commanderSettings = payload.commanderSettings || {};
     state.excoProfiles = { ...defaultExcoProfiles, ...(payload.excoProfiles || {}) };
     state.divisionMembers = payload.divisionMembers || { active: [] };
+    state.divisionRosterAdditions = Array.isArray(payload.divisionRosterAdditions) ? payload.divisionRosterAdditions : [];
     state.commandStructure = normalizeCommandStructure(payload.commandStructure || {});
     state.founderStory = payload.founderStory || defaultFounderStory;
     state.newsItems = Array.isArray(payload.newsItems) ? payload.newsItems : [];
@@ -1352,7 +1612,8 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
 
   function isCaptainLoggedIn() {
     const companyId = getActiveCaptainCompany();
-    return getActiveRole() === 'captain' && Boolean(companyId && (state.companyData[companyId] || defaultCompanyData[companyId]));
+    return getActiveRole() === 'captain'
+      && Boolean(companyId && !isSuspendedCompany(companyId) && (state.companyData[companyId] || defaultCompanyData[companyId]));
   }
 
   function renderCaptainWorkspaceAccess() {
@@ -1364,7 +1625,12 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
 
     const notice = document.getElementById('dashboardNotice');
     if (notice) {
-      notice.textContent = loggedIn ? '' : 'Captain login required to view your company dashboard. Please sign in or register.';
+      const requestedCompanyId = new URLSearchParams(window.location.search).get('company') || getActiveCaptainCompany();
+      notice.textContent = loggedIn
+        ? ''
+        : isSuspendedCompany(requestedCompanyId)
+          ? 'Ijaba - 44th Akiling Regional Coy is suspended. Company access is unavailable.'
+          : 'Captain login required to view your company dashboard. Please sign in or register.';
     }
 
     return loggedIn;
@@ -1478,6 +1744,8 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     commanderSettings: {},
     excoProfiles: { ...defaultExcoProfiles },
     divisionMembers: { active: [] },
+    divisionRosterAdditions: [],
+    memberNameOverrides: {},
     commandStructure: normalizeCommandStructure({}),
     founderStory: defaultFounderStory,
     newsItems: [],
@@ -1523,6 +1791,7 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
   }
 
   function getCompanyDisplayName(companyId, company = {}) {
+    if (String(companyId) === '3') return 'Iyana Iyesi - 17th Akiling Regional Coy';
     const name = String(company?.name || '').trim();
     const canonicalName = defaultCompanyData[companyId]?.name || '';
     if (officialCompanySerialByRecordId[companyId] && /^company\s+\d+$/i.test(name) && canonicalName) {
@@ -1533,7 +1802,7 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
 
   function getOfficialCompanyEntries() {
     return Object.entries(state.companyData || {})
-      .filter(([companyId]) => Object.prototype.hasOwnProperty.call(defaultCompanyData, companyId))
+      .filter(([companyId]) => Object.prototype.hasOwnProperty.call(defaultCompanyData, companyId) && !isSuspendedCompany(companyId))
       .sort(([leftId], [rightId]) => Number(leftId) - Number(rightId));
   }
 
@@ -1595,6 +1864,7 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
           officer,
           other: Array.isArray(company.other) ? company.other : [],
           members: Array.isArray(company.members) ? company.members : [],
+          memberRosterManaged: company.memberRosterManaged === true,
           companyMemberSerials: Array.isArray(company.companyMemberSerials) ? company.companyMemberSerials : [],
           totalMembers: Number(company.totalMembers || 0),
           totalNcos: Number(company.totalNcos || 0),
@@ -1637,6 +1907,7 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     state.commanderSettings = {};
     state.excoProfiles = { ...defaultExcoProfiles };
     state.divisionMembers = { active: [] };
+    state.divisionRosterAdditions = [];
     state.commandStructure = normalizeCommandStructure({});
     state.founderStory = defaultFounderStory;
     state.newsItems = [];
@@ -1654,6 +1925,10 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
   }
 
   async function saveCompanies() {
+    companyMemberSerialLookupByCompany = new Map();
+    supplementalDivisionSerialLookup = null;
+    syncOfficialCompanyMembersToState();
+    state.memberDivisionIds = buildOfficialMemberDivisionIdSnapshot();
     await saveAppState(true);
   }
 
@@ -2120,7 +2395,7 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
   }
 
   function getGalleryItems() {
-    const allowedCategories = new Set(['parades', 'band', 'rehearsals', 'moments-enjoyment', 'exams', 'trophies', 'member-catalogue']);
+    const allowedCategories = new Set(['parades', 'band', 'rehearsals', 'throwbacks', 'moments-enjoyment', 'exams', 'trophies', 'member-catalogue']);
     const mergedItems = new Map();
     [...galleryData, ...(Array.isArray(state.galleryItems) ? state.galleryItems : [])].forEach((item) => {
       if (!item?.src) return;
@@ -2243,7 +2518,9 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
       emptyState.hidden = visibleCount > 0;
       emptyState.textContent = filter === 'trophies'
         ? 'No saved trophy or award pictures are currently available.'
-        : (filter === 'moments-enjoyment' ? 'No saved enjoyment pictures are currently available.' : 'No gallery pictures match this search.');
+        : (filter === 'moments-enjoyment'
+          ? 'No saved enjoyment pictures are currently available.'
+          : (filter === 'throwbacks' ? 'No throwback pictures are currently available.' : 'No gallery pictures match this search.'));
     }
   }
 
@@ -2391,6 +2668,61 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     return getCompanyPersonnelCounts(companyId, company).commissioned;
   }
 
+  const officialRankedPersonnelRoster = {
+    commissioned: [
+      {
+        rank: 'Lieutenant',
+        names: ['Akinsinde Timileyin', 'Alabi Oluwakemi', 'Edward Oluwafemi', 'Ogundipe Bamidele', 'Oguntola Bernice Titilayo']
+      },
+      {
+        rank: 'Second Lieutenant',
+        names: ['Adejobi Ibukun Matthew', 'Adewole Samuel Ayodele', 'Adeniji Solomon Opeyemi', 'Owolabi Abigail Ololade']
+      }
+    ],
+    nco: [
+      { rank: 'Warrant Officer II (WO II)', names: ['Adebisi Alice', 'Adesanya Abisola', 'Michael Esther', 'Shodunke Michael'] },
+      { rank: 'Warrant Officer I (WO I)', names: ['Olawuyi Yetunde'] },
+      {
+        rank: 'Staff Sergeant',
+        names: ['Adedokun Adedamola', 'Adepoju Precious', 'Ajiboye Ololade', 'Alabi Lekan', 'Albert Ndidi', 'Olaniyi Samuel Oluwapelumi']
+      },
+      {
+        rank: 'Sergeant',
+        names: [
+          'Adeniyi Samuel', 'Adejobi Olawunmi Elizabeth', 'Adesanya Favour', 'Babafemi Favour Diekolaoluwa',
+          'Banmeke Victoria Ayomide', 'Ibikunle Olamide Emmanuel', 'Michael Samuel', 'Ogunwede Ezekiel',
+          'Omoleye Ayomide Joseph', 'Orelusi Gift', 'Oyedotun Boluwatife', 'Samson David',
+          'Shoyemi Damilola Abidemi', 'Sulaimon Praise'
+        ]
+      },
+      {
+        rank: 'Lance Corporal',
+        names: [
+          'Ademola Esther Omolade', 'Adeoye Oluwajomiloju David', 'Adeyemi Akorede David', 'Adesina Oreoluwa',
+          'Ajisegiri Eniola', 'Atofarati Ayomide Mary', 'Babayanju Opeyemi Precious', 'Bamgbose David',
+          'Durosimi Taiwo Damilola', 'Fagbuaro Esther Jesumolawa', 'Ilori Temitope', 'James Desmond',
+          'Makinde Joseph', 'Obadimeji Semilore Michael', 'Ojo Mercy Omolola', 'Olakitan Kehinde Faith',
+          'Olaleye Omobolawa', 'Ogumuyiwa Adesewa Rebecca', 'Ogunsina Elizabeth', 'Ogunsina Tofunmi',
+          'Olayinka Isreal Ayomide', 'Osunyinka David', 'Phillip Emmanuel', 'Sobayo Anjola', 'Solomon Emmanuel'
+        ]
+      },
+      {
+        rank: 'Corporal',
+        names: [
+          'Abiola Solomon', 'Adedokun Adebusayo', 'Adedokun Temiloluwa', 'Adebowale Oluwatoyin',
+          'Awoluyi Ayomide Joseph', 'Ayodele Victoria Anuoluwapo', 'Igbekele Michael Ayomide', 'Olorode Paul',
+          'Olosunde Oluwajuwon Francis', 'Olayera Mary Omobolanle', 'Olaleye Samuel Oluwabori', 'Peter Isaac Efue',
+          'Shobola Iyanuoluwa', 'Sobayo Olamilekan', 'Tanimowo Covenant'
+        ]
+      }
+    ]
+  };
+
+  function getOfficialRankedPersonnelCount(category) {
+    const names = (officialRankedPersonnelRoster[category] || []).flatMap(({ names: rankNames }) => rankNames);
+    return new Set(names.map(normalizeMemberComparisonKey).filter(Boolean)).size;
+  }
+
   let pdfLibraryPromise;
 
   function loadPdfLibrary() {
@@ -2420,27 +2752,18 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
   }
 
   function renderDivisionSummary() {
-    let totalMembers = 0;
-    let totalCommissionedOfficers = 0;
-    const allCommandOfficers = Array.isArray(state.commandStructure?.officers) ? state.commandStructure.officers : [];
-    const commissionedWithNames = allCommandOfficers.filter((officer) => {
-      if (!officer || !String(officer.name || '').trim()) return false;
-      return normalizePersonnelCategory(officer.rank) === 'commissioned' || normalizePersonnelCategory(officer.name) === 'commissioned';
-    });
-    const divisionActiveMembers = Array.isArray(state.divisionMembers?.active) ? state.divisionMembers.active.filter(Boolean) : [];
-    const uniqueDivisionTotals = dedupeMemberNamesByKey(Array.isArray(window.RS_TOTAL_MEMBERS) ? window.RS_TOTAL_MEMBERS : []);
-
-    Object.entries(state.companyData).forEach(([companyId, company]) => {
-      totalMembers += getCompanyMemberCount(company, companyId);
-      totalCommissionedOfficers += getCompanyCommissionedOfficerCount(company, companyId);
-    });
-
-    totalMembers += commissionedWithNames.length;
-    totalMembers += divisionActiveMembers.length;
-    totalCommissionedOfficers += commissionedWithNames.length;
+    const uniqueDivisionTotals = dedupeMemberNamesByKey(getDivisionRosterNames());
+    const totalNcos = getOfficialRankedPersonnelCount('nco');
+    const totalCommissionedOfficers = getOfficialRankedPersonnelCount('commissioned');
 
     if (divisionTotalMembers) {
       divisionTotalMembers.textContent = uniqueDivisionTotals.length || 473;
+    }
+    if (divisionTotalRankedOfficers) {
+      divisionTotalRankedOfficers.textContent = totalNcos + totalCommissionedOfficers;
+    }
+    if (divisionTotalNcos) {
+      divisionTotalNcos.textContent = totalNcos;
     }
     if (divisionTotalOfficers) {
       divisionTotalOfficers.textContent = totalCommissionedOfficers;
@@ -2448,9 +2771,94 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     if (homeTotalMembers) {
       homeTotalMembers.textContent = uniqueDivisionTotals.length || 473;
     }
-    if (homeTotalOfficers) {
-      homeTotalOfficers.textContent = String(totalCommissionedOfficers);
+    if (homeTotalNcos) {
+      homeTotalNcos.textContent = String(totalNcos);
     }
+    if (homeTotalRankedOfficers) {
+      homeTotalRankedOfficers.textContent = String(totalNcos + totalCommissionedOfficers);
+    }
+  }
+
+  function renderRankedPersonnelRosters() {
+    const rosterSection = document.getElementById('ranked-personnel');
+    if (!rosterSection) return;
+
+    [
+      { category: 'nco', title: 'Non-Commissioned Officers', heading: 'NCO Roster' },
+      { category: 'commissioned', title: 'Commissioned Officers', heading: 'Commissioned Officer Roster' }
+    ].forEach(({ category, title, heading }) => {
+      const container = rosterSection.querySelector(`[data-ranked-roster="${category}"]`);
+      if (!container) return;
+      const rankGroups = officialRankedPersonnelRoster[category] || [];
+      const names = dedupeMemberNamesByKey(rankGroups.flatMap(({ names: rankNames }) => rankNames));
+      const card = document.createElement('article');
+      card.className = 'company-card glass-card ranked-personnel-card';
+      const count = document.createElement('span');
+      count.className = 'company-number';
+      count.textContent = String(names.length).padStart(2, '0');
+      const cardTitle = document.createElement('h3');
+      cardTitle.textContent = title;
+      const caption = document.createElement('p');
+      caption.className = 'company-caption';
+      caption.textContent = `${names.length} listed personnel`;
+      const details = document.createElement('div');
+      details.className = 'company-details company-pdf-details ranked-personnel-details';
+      details.hidden = false;
+      const rosterHeading = document.createElement('h4');
+      rosterHeading.textContent = heading;
+      const rankLists = rankGroups.map(({ rank, names: rankNames }) => {
+        const group = document.createElement('section');
+        group.className = 'ranked-personnel-rank-group';
+        const rankHeading = document.createElement('h5');
+        rankHeading.textContent = rank;
+        const list = document.createElement('ol');
+        list.className = 'company-pdf-members ranked-personnel-members';
+        dedupeMemberNamesByKey(rankNames).forEach((name) => {
+          const item = document.createElement('li');
+          const divisionId = getOfficialDivisionIdForMember(name);
+          const memberRow = document.createElement('div');
+          memberRow.className = 'member-division-name';
+          const companySerial = divisionId.match(/^AI\.D\d{2}\/\d{3}\/(\d{3})$/)?.[1];
+          if (companySerial) memberRow.dataset.companySerial = companySerial;
+          if (companySerial) {
+            const serial = document.createElement('span');
+            serial.className = 'personnel-list-serial';
+            serial.textContent = `${companySerial}. `;
+            memberRow.appendChild(serial);
+          }
+          const memberRank = document.createElement('span');
+          memberRank.className = 'ranked-personnel-rank';
+          memberRank.textContent = rank;
+          const memberName = document.createElement('span');
+          memberName.className = 'ranked-personnel-name';
+          memberName.textContent = name;
+          memberRow.append(memberRank, memberName);
+          if (divisionId) {
+            const membershipId = document.createElement('span');
+            membershipId.className = 'member-division-id';
+            membershipId.textContent = ` — ${divisionId}`;
+            memberRow.appendChild(membershipId);
+          }
+          item.appendChild(memberRow);
+          list.appendChild(item);
+        });
+        group.append(rankHeading, list);
+        return group;
+      });
+      details.append(rosterHeading, ...rankLists);
+      card.append(count, cardTitle, caption, details);
+      container.replaceChildren(card);
+    });
+  }
+
+  function bindRankedPersonnelToggle() {
+    if (!rankedPersonnelToggle || !rankedPersonnelRosters) return;
+    rankedPersonnelToggle.addEventListener('click', () => {
+      const expanded = rankedPersonnelToggle.getAttribute('aria-expanded') === 'true';
+      rankedPersonnelToggle.setAttribute('aria-expanded', String(!expanded));
+      rankedPersonnelRosters.hidden = expanded;
+      rankedPersonnelToggle.textContent = expanded ? 'Show all ranked officers' : 'Hide ranked officers';
+    });
   }
 
   function exportExamResultsPdf(companyId, year) {
@@ -2720,14 +3128,68 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
 
   let totalMembershipListRendered = false;
 
+  function getTotalMembershipDivisionIds(names) {
+    const divisionIdsByName = new Map();
+    const divisionIdsByCaptainName = new Map();
+    const divisionRosterAdditions = Array.isArray(state.divisionRosterAdditions) ? state.divisionRosterAdditions : [];
+    divisionRosterAdditions.forEach((entry) => {
+      if (!entry?.name || !entry.membershipNumber) return;
+      divisionIdsByName.set(normalizeMemberComparisonKey(entry.name), new Set([entry.membershipNumber]));
+    });
+    buildOfficialMemberDivisionIdSnapshot().forEach((record) => {
+      const key = normalizeMemberComparisonKey(record.name);
+      if (divisionIdsByName.has(key)) return;
+      if (!divisionIdsByName.has(key)) divisionIdsByName.set(key, new Set());
+      divisionIdsByName.get(key).add(record.id);
+    });
+    Object.keys(officialCompanySerialByRecordId).forEach((companyId) => {
+      const leader = getOfficialCompanyLeader(companyId);
+      if (!leader) return;
+      const id = getOfficialMemberDivisionId(companyId, leader.name);
+      if (id) divisionIdsByCaptainName.set(normalizeMemberComparisonKey(leader.name), id);
+    });
+    const uniqueDivisionIdsByName = new Map();
+    divisionIdsByName.forEach((ids, key) => {
+      if (ids.size === 1) uniqueDivisionIdsByName.set(key, ids.values().next().value);
+    });
+
+    const explicitMembershipIds = new Map([
+      [normalizeMemberComparisonKey('Olowe Olamide'), { company: '01', member: '001' }],
+      [normalizeMemberComparisonKey('Ilori Samuel A.'), { company: '01', member: '001' }]
+    ]);
+    let nextUnassignedMemberSerial = Array.from(divisionIdsByName.values())
+      .flatMap((ids) => Array.from(ids))
+      .reduce((maximum, id) => {
+        const match = id.match(/^AI\.D02\/\d{3}\/(\d{3})$/);
+        return match ? Math.max(maximum, Number(match[1])) : maximum;
+      }, 0);
+    return names.map((name, index) => {
+      const key = normalizeMemberComparisonKey(name);
+      const assignedDivisionId = divisionIdsByCaptainName.get(key) || uniqueDivisionIdsByName.get(key);
+      const divisionSerial = String(index + 1).padStart(3, '0');
+      const explicitAssignment = explicitMembershipIds.get(key);
+      const savedAssignment = state.memberNameOverrides?.[String(index + 1)];
+      const assignedIdParts = assignedDivisionId?.match(/^AI\.D(\d{2})\/\d{3}\/(\d{3})$/);
+      const company = savedAssignment?.company || explicitAssignment?.company || (assignedIdParts
+        ? String(Number(assignedIdParts[1])).padStart(2, '0')
+        : '02');
+      const companyMemberSerial = savedAssignment?.member || explicitAssignment?.member || (assignedIdParts
+        ? assignedIdParts[2]
+        : String(++nextUnassignedMemberSerial).padStart(3, '0'));
+      const rosterAddition = divisionRosterAdditions.find((entry) => normalizeMemberComparisonKey(entry.name) === key);
+      return rosterAddition?.membershipNumber || `AI.D${divisionSerial}/${company}/${companyMemberSerial}`;
+    });
+  }
+
   function renderTotalMembershipList() {
     const list = document.getElementById('totalMembershipList');
     const count = document.getElementById('totalMembershipCount');
     if (!list || totalMembershipListRendered) return;
 
-    const names = Array.isArray(window.RS_TOTAL_MEMBERS) ? window.RS_TOTAL_MEMBERS : [];
+    const names = getDivisionRosterNames();
     if (count) count.textContent = `${names.length} members`;
     totalMembershipListRendered = true;
+    const membershipIds = getTotalMembershipDivisionIds(names);
 
     let nextIndex = 0;
     const appendChunk = () => {
@@ -2735,7 +3197,15 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
       const end = Math.min(nextIndex + 50, names.length);
       for (; nextIndex < end; nextIndex += 1) {
         const item = document.createElement('li');
-        item.appendChild(renderMemberNameWithDivisionId(names[nextIndex]));
+        const memberName = document.createElement('div');
+        memberName.className = 'member-division-name';
+        const name = document.createElement('span');
+        name.textContent = names[nextIndex];
+        const id = document.createElement('span');
+        id.className = 'member-division-id';
+        id.textContent = `${membershipIds[nextIndex]} — `;
+        memberName.append(id, name);
+        item.appendChild(memberName);
         fragment.appendChild(item);
       }
       list.appendChild(fragment);
@@ -2756,8 +3226,14 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
         return;
       }
 
-      const names = Array.isArray(window.RS_TOTAL_MEMBERS) ? window.RS_TOTAL_MEMBERS : [];
-      const matches = names.filter((name) => name.toLocaleLowerCase().includes(query));
+      const names = getDivisionRosterNames();
+      const membershipIds = getTotalMembershipDivisionIds(names);
+      const matches = names
+        .map((name, index) => ({
+          name,
+          membershipNumber: membershipIds[index]
+        }))
+        .filter((record) => record.name.toLocaleLowerCase().includes(query));
       if (!matches.length) {
         membershipLookupResults.textContent = 'No matching membership record found.';
         return;
@@ -2771,11 +3247,11 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
 
       const matchList = document.createElement('div');
       matchList.className = 'membership-match-list';
-      matches.forEach((name) => {
+      matches.forEach(({ name, membershipNumber }) => {
         const record = {
           name,
           division: 'Agbala-Itura Division',
-          membershipNumber: getOfficialDivisionIdForMember(name)
+          membershipNumber
         };
         const result = document.createElement('button');
         result.type = 'button';
@@ -2805,6 +3281,17 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     syncCompanyCaptainReferences();
     companyCards.forEach((card) => {
       const companyId = card.dataset.company;
+      if (isSuspendedCompany(companyId)) {
+        card.classList.add('company-suspended');
+        card.setAttribute('aria-disabled', 'true');
+        card.querySelector('.company-details')?.replaceChildren();
+        const details = card.querySelector('.company-details');
+        if (details) details.hidden = true;
+        card.querySelector('.company-stats')?.remove();
+        card.querySelector('.company-public-documents')?.remove();
+        card.querySelectorAll('.company-toggle').forEach((toggle) => toggle.remove());
+        return;
+      }
       const company = state.companyData[companyId] || defaultCompanyData[companyId];
       const title = card.querySelector('h3');
       const caption = card.querySelector('.company-caption');
@@ -2838,7 +3325,7 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
       const pdfMemberCount = pdfSections.reduce((total, section) => total + section.members.length, 0);
       const personnelCounts = getCompanyPersonnelCounts(companyId, company);
       const totalPersonnel = Object.values(personnelCounts).reduce((total, count) => total + count, 0);
-      const captainName = getOfficialCaptainForCompany(companyId);
+      const leader = getOfficialCompanyLeader(companyId);
       stats.innerHTML = `
         <div><h4>MEMBERS</h4><strong>${personnelCounts.member}</strong></div>
         <div><h4>NCOs</h4><strong>${personnelCounts.nco}</strong></div>
@@ -2853,15 +3340,6 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
         if (hasOfficialRoster) {
           details.classList.add('company-pdf-details');
           details.replaceChildren();
-          if (companyId === '3') {
-            const rosterPdfLink = document.createElement('a');
-            rosterPdfLink.className = 'btn btn-outline';
-            rosterPdfLink.href = 'new 17th iyana  list.pdf';
-            rosterPdfLink.target = '_blank';
-            rosterPdfLink.rel = 'noopener';
-            rosterPdfLink.textContent = 'Complete Alphabetical List by Section (PDF)';
-            details.appendChild(rosterPdfLink);
-          }
           const columns = configuredSections
             ? [configuredSections]
             : (pdfMembership?.layout === 'columns' ? pdfMembership.columns : [pdfSections]);
@@ -2870,27 +3348,26 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
             key: section.key || getCompanySectionKey(section.heading),
             members: orderCompanyMembersByDivisionSerial(section.members)
           })));
-          const captainKey = normalizeMemberComparisonKey(captainName);
-          if (captainName) {
-            let sourceCaptainMoved = false;
+          const leaderKey = normalizeMemberComparisonKey(leader?.name);
+          if (leader) {
+            let sourceLeaderMoved = false;
             renderColumns.forEach((sections) => {
               sections.forEach((section) => {
-                if (sourceCaptainMoved) return;
-                const captainIndex = section.members.findIndex((name) => normalizeMemberComparisonKey(name) === captainKey);
-                if (captainIndex >= 0) {
-                  section.members.splice(captainIndex, 1);
-                  sourceCaptainMoved = true;
+                if (sourceLeaderMoved) return;
+                const leaderIndex = section.members.findIndex((name) => normalizeMemberComparisonKey(name) === leaderKey);
+                if (leaderIndex >= 0) {
+                  section.members.splice(leaderIndex, 1);
+                  sourceLeaderMoved = true;
                 }
               });
             });
             if (!renderColumns.length) renderColumns.push([]);
-            renderColumns[0].unshift({ key: 'captain', heading: 'COMPANY CAPTAIN', members: [captainName] });
+            renderColumns[0].unshift({ key: leader.sectionKey, heading: leader.heading, members: [leader.name] });
           }
           const columnContainer = document.createElement('div');
           columnContainer.className = pdfMembership?.layout === 'columns'
             ? 'company-pdf-columns'
             : 'company-pdf-columns company-pdf-columns-single';
-          const displayedCompanySerials = new Set();
           renderColumns.forEach((sections) => {
             const column = document.createElement('div');
             column.className = 'company-pdf-column';
@@ -2904,9 +3381,8 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
               section.members.forEach((name) => {
                 const item = document.createElement('li');
                 const companySerial = getCompanySerialForMember(companyId, name);
-                const showCompanyNumber = companySerial && !displayedCompanySerials.has(companySerial);
+                const showCompanyNumber = Boolean(companySerial);
                 if (showCompanyNumber) {
-                  displayedCompanySerials.add(companySerial);
                   item.dataset.companySerial = String(companySerial).padStart(3, '0');
                 }
                 const display = renderMemberNameWithDivisionId(name, companyId, section.key || getCompanySectionKey(section.heading), Boolean(showCompanyNumber));
@@ -2916,8 +3392,9 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
                   serial.textContent = `${String(companySerial).padStart(3, '0')}. `;
                   display.insertBefore(serial, display.firstChild);
                 }
-                if (section.key === 'captain') {
-                  display.insertBefore(document.createTextNode('Company Captain — '), display.firstChild);
+                if (leader && normalizeMemberComparisonKey(name) === leaderKey) {
+                  const leaderLabel = leader.sectionKey === 'captain' ? 'Company Captain' : 'Officer in Charge';
+                  display.insertBefore(document.createTextNode(`${leaderLabel} — `), display.firstChild);
                 }
                 item.replaceChildren(display);
                 members.appendChild(item);
@@ -2939,9 +3416,8 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
             websiteOnlyMembers.forEach(({ name, sectionKey }) => {
               const item = document.createElement('li');
               const companySerial = getCompanySerialForMember(companyId, name);
-              const showCompanyNumber = companySerial && !displayedCompanySerials.has(companySerial);
+              const showCompanyNumber = Boolean(companySerial);
               if (showCompanyNumber) {
-                displayedCompanySerials.add(companySerial);
                 item.dataset.companySerial = String(companySerial).padStart(3, '0');
               }
               const display = renderMemberNameWithDivisionId(name, companyId, sectionKey, Boolean(showCompanyNumber));
@@ -3007,7 +3483,6 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
         });
       }
 
-      const displayedCompanySerials = new Set();
       card.querySelectorAll('.company-list').forEach((sourceList) => {
         let list = sourceList;
         if (list.tagName !== 'OL') {
@@ -3023,9 +3498,8 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
         items.forEach((item) => {
           const li = document.createElement('li');
           const companySerial = getCompanySerialForMember(companyId, item);
-          const showCompanyNumber = companySerial && !displayedCompanySerials.has(companySerial);
+          const showCompanyNumber = Boolean(companySerial);
           if (showCompanyNumber) {
-            displayedCompanySerials.add(companySerial);
             li.dataset.companySerial = String(companySerial).padStart(3, '0');
           }
           const content = renderMemberNameWithDivisionId(item, companyId, type, Boolean(showCompanyNumber));
@@ -3042,11 +3516,14 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     });
 
     renderDivisionSummary();
+    renderRankedPersonnelRosters();
   }
 
   function buildCaptainDashboard(companyId) {
+    if (isSuspendedCompany(companyId)) return;
     if (!dashboardGrid) return;
     const company = state.companyData[companyId] || defaultCompanyData[companyId];
+    const displayName = getCompanyDisplayName(companyId, company);
     const examYear = getLatestExamYear();
     const examData = getExamDataForCompany(companyId, examYear);
     const companyDocuments = listCompanyDocumentsForCompany(companyId);
@@ -3056,10 +3533,11 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     companyCard.className = 'dashboard-card';
     const officialCompanySerial = officialCompanySerialByRecordId[companyId];
     companyCard.innerHTML = `
-      <h4>${officialCompanySerial ? `Company ${officialCompanySerial} - ` : ''}${company.name}</h4>
+      <h4>${officialCompanySerial ? `Company ${officialCompanySerial} - ` : ''}${displayName}</h4>
+      <p class="dashboard-intro">Use one name per line. Rename an existing member on their current line; saved changes update this company roster, the division-wide member list, and membership search.</p>
       <label>
         <span>Company Name</span>
-        <input type="text" name="company-name-${companyId}" value="${(company.name || '').replace(/"/g, '&quot;')}" readonly />
+        <input type="text" name="company-name-${companyId}" value="${displayName.replace(/"/g, '&quot;')}" readonly />
       </label>
       ${companySectionDefinitions.map((section) => `
         <label>
@@ -3073,40 +3551,52 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     memberIdSummary.className = 'dashboard-card';
     const summaryList = document.createElement('ul');
     summaryList.className = 'member-division-summary';
-    const displayedCompanySerials = new Set();
-    const captainName = getOfficialCaptainForCompany(companyId);
-    if (captainName) {
-      const captainHeading = document.createElement('li');
-      captainHeading.className = 'member-division-section-heading';
-      captainHeading.textContent = 'COMPANY CAPTAIN';
-      summaryList.appendChild(captainHeading);
+    const leader = getOfficialCompanyLeader(companyId);
+    const appendLeaderSummaryItem = () => {
+      if (!leader) return;
       const captainItem = document.createElement('li');
-      const captainSerial = getCompanySerialForMember(companyId, captainName);
-      if (captainSerial) displayedCompanySerials.add(captainSerial);
-      const captainDisplay = renderMemberNameWithDivisionId(captainName, companyId, 'captain', Boolean(captainSerial));
+      const captainSerial = getCompanySerialForMember(companyId, leader.name);
+      const captainDisplay = renderMemberNameWithDivisionId(leader.name, companyId, leader.sectionKey, Boolean(captainSerial));
+      if (captainSerial) {
+        const serial = document.createElement('span');
+        serial.className = 'personnel-list-serial';
+        serial.textContent = `${String(captainSerial).padStart(3, '0')}. `;
+        captainDisplay.insertBefore(serial, captainDisplay.firstChild);
+      }
       captainItem.appendChild(captainDisplay);
       summaryList.appendChild(captainItem);
+    };
+    if (leader) {
+      const captainHeading = document.createElement('li');
+      captainHeading.className = 'member-division-section-heading';
+      captainHeading.textContent = leader.heading;
+      summaryList.appendChild(captainHeading);
+      appendLeaderSummaryItem();
     }
-    let captainSourceMoved = false;
+    let leaderSourceMoved = false;
     getOfficialCompanySections(companyId).forEach((section) => {
       const headingItem = document.createElement('li');
       headingItem.className = 'member-division-section-heading';
       headingItem.textContent = section.heading;
       summaryList.appendChild(headingItem);
       section.members.forEach((memberName) => {
-        if (captainName && !captainSourceMoved && normalizeMemberComparisonKey(memberName) === normalizeMemberComparisonKey(captainName)) {
-          captainSourceMoved = true;
+        if (leader && !leaderSourceMoved && normalizeMemberComparisonKey(memberName) === normalizeMemberComparisonKey(leader.name)) {
+          leaderSourceMoved = true;
           return;
         }
         const companySerial = getCompanySerialForMember(companyId, memberName);
-        const showCompanyNumber = companySerial && !displayedCompanySerials.has(companySerial);
-        if (showCompanyNumber) displayedCompanySerials.add(companySerial);
-        const divisionId = showCompanyNumber ? getOfficialMemberDivisionId(companyId, memberName) : '';
+        const divisionId = companySerial ? getOfficialMemberDivisionId(companyId, memberName) : '';
         const item = document.createElement('li');
         const name = document.createElement('span');
         name.textContent = memberName;
         const id = document.createElement('strong');
         id.textContent = divisionId || 'ID unresolved';
+        if (companySerial) {
+          const serial = document.createElement('span');
+          serial.className = 'personnel-list-serial';
+          serial.textContent = `${String(companySerial).padStart(3, '0')}. `;
+          item.appendChild(serial);
+        }
         item.append(name, id);
         summaryList.appendChild(item);
       });
@@ -3119,6 +3609,13 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
       summaryList.appendChild(headingItem);
       websiteOnlyMembers.forEach(({ name, sectionKey }) => {
         const item = document.createElement('li');
+        const companySerial = getCompanySerialForMember(companyId, name);
+        if (companySerial) {
+          const serial = document.createElement('span');
+          serial.className = 'personnel-list-serial';
+          serial.textContent = `${String(companySerial).padStart(3, '0')}. `;
+          item.appendChild(serial);
+        }
         const nameText = document.createElement('span');
         nameText.textContent = name;
         const id = document.createElement('strong');
@@ -3136,7 +3633,8 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     pdfCard.className = 'dashboard-card';
     pdfCard.innerHTML = `
       <h4>Company PDFs</h4>
-      <p class="dashboard-intro">Official documents assigned to ${company.name}.</p>
+      <p class="dashboard-intro">Official documents assigned to ${displayName}.</p>
+      ${companyId === '3' ? '<div class="company-document-item"><p><strong>Iyana Iyesi (17th) Company Membership List</strong></p><div class="dashboard-actions"><a class="btn btn-outline" href="new 17th iyana  list.pdf" target="_blank" rel="noopener">Open PDF</a><a class="btn btn-secondary" href="new 17th iyana  list.pdf" download="iyana-iyesi-17th-company-membership-list.pdf">Download</a></div></div>' : ''}
       ${companyDocuments.length ? companyDocuments.map((documentEntry) => `
         <div class="company-document-item">
           <p><strong>${escapeHtml(documentEntry.documentName || documentEntry.filename || 'Company PDF')}</strong></p>
@@ -3172,6 +3670,10 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
   }
 
   function openCaptainDashboard(companyId) {
+    if (isSuspendedCompany(companyId)) {
+      showToast('Ijaba - 44th Akiling Regional Coy is suspended. Company access is unavailable.');
+      return;
+    }
     state.activeCaptainCompany = companyId;
     setActiveRole('captain', companyId);
     buildCaptainDashboard(companyId);
@@ -3278,7 +3780,7 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
       <h4>Gallery Management</h4>
       <p class="dashboard-intro">Upload one or more public gallery pictures, choose a category, preview them, and publish them to every visitor.</p>
       <label><span>Add Pictures</span><input type="file" class="gallery-upload-input" accept="image/*" multiple /></label>
-      <label><span>Category for selected pictures</span><select class="gallery-upload-category"><option value="parades">Parades Pics</option><option value="band">Band Pics</option><option value="rehearsals">Rehearsal Pics</option><option value="moments-enjoyment">Moments of Enjoyment</option><option value="exams">Exams Pics</option><option value="trophies">Trophies Cabinet</option><option value="member-catalogue">Member Catalogue</option></select></label>
+      <label><span>Category for selected pictures</span><select class="gallery-upload-category"><option value="parades">Parades Pics</option><option value="band">Band Pics</option><option value="rehearsals">Rehearsal Pics</option><option value="throwbacks">Throwbacks</option><option value="moments-enjoyment">Moments of Enjoyment</option><option value="exams">Exams Pics</option><option value="trophies">Trophies Cabinet</option><option value="member-catalogue">Member Catalogue</option></select></label>
       <div class="gallery-upload-preview"></div>
       <div class="dashboard-actions"><button type="button" class="btn btn-gold" data-gallery-action="publish">Publish Pictures</button></div>
       <div class="gallery-admin-list"></div>
@@ -3367,7 +3869,11 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
           <h5>Enlistment: ${escapeHtml(app.fullName)}</h5>
           <p><strong>Email:</strong> ${escapeHtml(app.email)}</p>
           <p><strong>Phone:</strong> ${escapeHtml(app.phone)}</p>
-          <p><strong>Date of Birth:</strong> ${app.dob}</p>
+          <p><strong>Date of Birth:</strong> ${escapeHtml(app.dob)}</p>
+          <p><strong>Assigned section:</strong> ${(() => {
+            const assignment = getEnlistmentAgeAndSection(app.dob);
+            return assignment ? `${escapeHtml(assignment.sectionLabel)} (age ${assignment.age})` : 'Invalid date of birth';
+          })()}</p>
           <p><strong>Gender:</strong> ${escapeHtml(app.gender)}</p>
           <p><strong>Preferred Company:</strong> ${escapeHtml(companyName)}</p>
           <p><strong>Reason:</strong> ${escapeHtml(app.reason)}</p>
@@ -3609,7 +4115,110 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     window.open(targetUrl, '_blank', 'noopener,noreferrer');
   }
 
+  function getEnlistmentAgeAndSection(dobValue) {
+    const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dobValue || '');
+    if (!match) return null;
+    const birthDate = new Date(Date.UTC(Number(match[1]), Number(match[2]) - 1, Number(match[3])));
+    if (birthDate.getUTCFullYear() !== Number(match[1])
+      || birthDate.getUTCMonth() !== Number(match[2]) - 1
+      || birthDate.getUTCDate() !== Number(match[3])) return null;
+
+    const today = new Date();
+    const todayUtc = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate()));
+    if (birthDate > todayUtc) return null;
+    let age = todayUtc.getUTCFullYear() - birthDate.getUTCFullYear();
+    if (
+      todayUtc.getUTCMonth() < birthDate.getUTCMonth()
+      || (todayUtc.getUTCMonth() === birthDate.getUTCMonth() && todayUtc.getUTCDate() < birthDate.getUTCDate())
+    ) age -= 1;
+    if (age < 1) return null;
+
+    const sectionLabel = age <= 7
+      ? 'Anchor'
+      : age <= 12
+        ? 'Junior'
+        : age <= 16
+          ? 'Intermediate'
+          : age <= 23
+            ? 'Senior'
+            : 'Officer';
+    return { age, sectionLabel };
+  }
+
+  function applyApprovedApplicationLocally(approval, appId) {
+    const companyId = String(approval.company || state.enlistmentApplications[appId]?.company || '');
+    const company = state.companyData[companyId];
+    const section = approval.section;
+    const memberName = String(approval.fullName || state.enlistmentApplications[appId]?.fullName || '').trim();
+    const idParts = String(approval.membershipNumber || '').match(/^AI\.D(\d{3})\/(\d{2})\/(\d{3})$/);
+    if (!company || !companySectionDefinitions.some((entry) => entry.key === section) || !memberName || !idParts) return;
+
+    company[section] = Array.isArray(company[section]) ? company[section] : [];
+    if (!company[section].includes(memberName)) company[section].push(memberName);
+    company.members = Array.isArray(company.members) ? company.members : [];
+    if (!company.members.some((member) => normalizeMemberComparisonKey(member?.name) === normalizeMemberComparisonKey(memberName))) {
+      company.members.push({
+        name: memberName,
+        section,
+        rank: approval.rank || null,
+        category: 'MEMBER',
+        email: approval.email,
+        phone: approval.phone,
+        dob: approval.dob,
+        membershipNumber: approval.membershipNumber
+      });
+    }
+
+    company.active = Array.isArray(company.active) ? company.active : [];
+    company.inactive = Array.isArray(company.inactive) ? company.inactive : [];
+    company.officers = Array.isArray(company.officers) ? company.officers : [];
+    const targetRoster = section === 'officer'
+      ? company.officers
+      : ['anchor', 'junior'].includes(section)
+        ? company.active
+        : company.inactive;
+    if (!targetRoster.includes(memberName)) targetRoster.push(memberName);
+    company.memberRosterManaged = true;
+    company.companyMemberSerials = Array.isArray(company.companyMemberSerials) ? company.companyMemberSerials : [];
+    if (!company.companyMemberSerials.some((entry) => Number(entry?.divisionNumber) === Number(idParts[1]))) {
+      company.companyMemberSerials.push({
+        name: memberName,
+        section,
+        companySerial: idParts[3],
+        divisionNumber: Number(idParts[1]),
+        divisionNumberSource: 'division'
+      });
+    }
+    company.totalMembers = company.members.length;
+
+    state.memberDivisionIds = Array.isArray(state.memberDivisionIds) ? state.memberDivisionIds : [];
+    if (!state.memberDivisionIds.some((entry) => entry?.id === approval.membershipNumber)) {
+      state.memberDivisionIds.push({
+        id: approval.membershipNumber,
+        name: memberName,
+        companyRecordId: companyId,
+        companySerial: idParts[2],
+        generalSerial: Number(idParts[1]),
+        memberSerial: Number(idParts[3])
+      });
+    }
+    state.divisionRosterAdditions = Array.isArray(state.divisionRosterAdditions) ? state.divisionRosterAdditions : [];
+    if (!state.divisionRosterAdditions.some((entry) => entry.applicationId === appId)) {
+      state.divisionRosterAdditions.push({
+        applicationId: appId,
+        name: memberName,
+        company: companyId,
+        section,
+        divisionNumber: Number(idParts[1]),
+        companyMemberSerial: Number(idParts[3]),
+        membershipNumber: approval.membershipNumber
+      });
+    }
+  }
+
   function bindForms() {
+    const approvingApplications = new Set();
+
     captainForm?.addEventListener('submit', async (event) => {
       event.preventDefault();
       const mode = captainForm.dataset.mode || 'login';
@@ -3626,6 +4235,11 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
       if (mode === 'register') {
         if (!companyId) {
           captainNotice.textContent = 'Please select your company before registering.';
+          captainNotice.style.color = 'hsl(0, 70%, 60%)';
+          return;
+        }
+        if (isSuspendedCompany(companyId)) {
+          captainNotice.textContent = 'Ijaba - 44th Akiling Regional Coy is suspended and is not accepting captain registrations.';
           captainNotice.style.color = 'hsl(0, 70%, 60%)';
           return;
         }
@@ -3670,6 +4284,13 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
       const accountCompanyId = String(authenticatedCaptain?.companyId || companyId || '');
       if (!accountCompanyId) {
         captainNotice.textContent = 'This captain account is missing a company assignment.';
+        captainNotice.style.color = 'hsl(0, 70%, 60%)';
+        return;
+      }
+      if (isSuspendedCompany(accountCompanyId)) {
+        state.activeCaptainCompany = '';
+        setActiveRole('visitor');
+        captainNotice.textContent = 'Ijaba - 44th Akiling Regional Coy is suspended. Company access is unavailable.';
         captainNotice.style.color = 'hsl(0, 70%, 60%)';
         return;
       }
@@ -3732,6 +4353,10 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     dashboardForm?.addEventListener('submit', (event) => {
       event.preventDefault();
       if (!state.activeCaptainCompany) return;
+      if (isSuspendedCompany(state.activeCaptainCompany)) {
+        renderCaptainWorkspaceAccess();
+        return;
+      }
 
       const dashboardNotice = document.getElementById('dashboardNotice');
       if (dashboardNotice) {
@@ -3741,14 +4366,18 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
       const formData = new FormData(dashboardForm);
       const companyId = String(state.activeCaptainCompany);
       const savedCompany = state.companyData[companyId] || defaultCompanyData[companyId];
+      const previousSections = getOfficialCompanySections(companyId).reduce((sections, section) => {
+        sections[section.key] = section.members;
+        return sections;
+      }, {});
       const sectionValues = companySectionDefinitions.reduce((accumulator, section) => {
         const rawValue = formData.get(`${section.key}-${companyId}`);
-        const parsedValue = parseTextareaLines(rawValue);
-        accumulator[section.key] = parsedValue.length ? parsedValue : (savedCompany[section.key] || []);
+        accumulator[section.key] = parseTextareaLines(rawValue);
         return accumulator;
       }, {});
       const companyCounts = {
         ...savedCompany,
+        memberRosterManaged: true,
         anchor: sectionValues.anchor,
         junior: sectionValues.junior,
         intermediate: sectionValues.intermediate,
@@ -3782,10 +4411,12 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
         return;
       }
 
+      const updatedNames = applyCompanyMemberNameEdits(previousSections, sectionValues);
       state.companyData[companyId] = {
         ...savedCompany,
         name,
         ...sectionValues,
+        memberRosterManaged: true,
         active: sectionValues.anchor,
         inactive: sectionValues.junior,
         officers: sectionValues.officer,
@@ -3796,6 +4427,16 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
       };
       saveCompanies();
       renderCompanyLists();
+      renderDivisionSummary();
+      totalMembershipListRendered = false;
+      const totalMembershipList = document.getElementById('totalMembershipList');
+      totalMembershipList?.replaceChildren();
+      if (document.getElementById('totalMembershipModal')?.getAttribute('aria-hidden') === 'false') {
+        renderTotalMembershipList();
+      }
+      if (dashboardNotice && updatedNames) {
+        dashboardNotice.textContent = `${updatedNames} member name${updatedNames === 1 ? '' : 's'} updated across the company roster, division member list, and membership search.`;
+      }
       closeModal('dashboardModal');
     });
 
@@ -3829,18 +4470,24 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
       }));
       const founderStory = (formData.get('founder-story') || '').toString().trim() || defaultFounderStory;
       const examYear = (formData.get('exam-year') || '').toString().trim() || state.activeExamYear || String(new Date().getFullYear());
+      const previousCompanySections = Object.keys(state.companyData).reduce((accumulator, companyId) => {
+        accumulator[companyId] = getOfficialCompanySections(companyId).reduce((sections, section) => {
+          sections[section.key] = section.members;
+          return sections;
+        }, {});
+        return accumulator;
+      }, {});
 
       const companyDataValues = Object.keys(state.companyData).reduce((accumulator, companyId) => {
         const sectionValues = companySectionDefinitions.reduce((sectionAcc, section) => {
           const rawValue = formData.get(`${section.key}-${companyId}`);
-          const parsedValue = parseTextareaLines(rawValue);
-          sectionAcc[section.key] = parsedValue.length ? parsedValue : (state.companyData[companyId]?.[section.key] || []);
+          sectionAcc[section.key] = parseTextareaLines(rawValue);
           return sectionAcc;
         }, {});
         const name = (formData.get(`company-name-${companyId}`) || '')
           .toString()
           .trim() || state.companyData[companyId]?.name || `Company ${companyId}`;
-        const companyCounts = { ...(state.companyData[companyId] || {}), ...sectionValues };
+        const companyCounts = { ...(state.companyData[companyId] || {}), ...sectionValues, memberRosterManaged: true };
         const totalMembers = getCompanyMemberCount(companyCounts);
         const totalNcos = getCompanyNcoCount(companyCounts);
         const totalOfficers = getCompanyOfficerCount(companyCounts);
@@ -3906,15 +4553,18 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
       state.activeExamYear = examYear;
       state.examScores[examYear] = state.examScores[examYear] || {};
 
+      let updatedCompanyMemberNames = 0;
       renderFounderStory();
       renderOfficerLeadership();
 
       Object.keys(state.companyData).forEach((companyId) => {
         const current = companyDataValues[companyId];
+        updatedCompanyMemberNames += applyCompanyMemberNameEdits(previousCompanySections[companyId] || {}, current.sectionValues);
         state.companyData[companyId] = {
           ...(state.companyData[companyId] || {}),
           name: current.name,
           ...current.sectionValues,
+          memberRosterManaged: true,
           active: current.sectionValues.anchor,
           inactive: current.sectionValues.junior,
           officers: current.sectionValues.officer,
@@ -3932,6 +4582,12 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
       renderCompanyLists();
       populateCaptainCompanySelect();
       populateEnlistmentCompanySelect();
+      renderDivisionSummary();
+      totalMembershipListRendered = false;
+      document.getElementById('totalMembershipList')?.replaceChildren();
+      if (updatedCompanyMemberNames && commanderDashboardNotice) {
+        commanderDashboardNotice.textContent = `${updatedCompanyMemberNames} member name${updatedCompanyMemberNames === 1 ? '' : 's'} updated across company rosters, the division member list, and membership search.`;
+      }
       closeModal('commanderDashboardModal');
       showToast('Commander dashboard saved', 3000);
     });
@@ -4038,7 +4694,7 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
         .map((file) => ({ file, category: defaultCategory }));
       const preview = input.closest('.gallery-management-card')?.querySelector('.gallery-upload-preview');
       if (preview) {
-        preview.innerHTML = pendingGalleryFiles.map((entry, index) => `<div class="gallery-upload-preview-item"><img src="${URL.createObjectURL(entry.file)}" alt="${escapeHtml(entry.file.name)}" /><span>${escapeHtml(entry.file.name)}</span><input class="gallery-upload-item-title" data-gallery-index="${index}" value="${escapeHtml(entry.file.name)}" aria-label="Picture name" /><select class="gallery-upload-item-category" data-gallery-index="${index}"><option value="parades" ${entry.category === 'parades' ? 'selected' : ''}>Parades Pics</option><option value="band" ${entry.category === 'band' ? 'selected' : ''}>Band Pics</option><option value="rehearsals" ${entry.category === 'rehearsals' ? 'selected' : ''}>Rehearsal Pics</option><option value="moments-enjoyment" ${entry.category === 'moments-enjoyment' ? 'selected' : ''}>Moments of Enjoyment</option><option value="exams" ${entry.category === 'exams' ? 'selected' : ''}>Exams Pics</option><option value="trophies" ${entry.category === 'trophies' ? 'selected' : ''}>Trophies Cabinet</option><option value="member-catalogue" ${entry.category === 'member-catalogue' ? 'selected' : ''}>Member Catalogue</option></select></div>`).join('');
+        preview.innerHTML = pendingGalleryFiles.map((entry, index) => `<div class="gallery-upload-preview-item"><img src="${URL.createObjectURL(entry.file)}" alt="${escapeHtml(entry.file.name)}" /><span>${escapeHtml(entry.file.name)}</span><input class="gallery-upload-item-title" data-gallery-index="${index}" value="${escapeHtml(entry.file.name)}" aria-label="Picture name" /><select class="gallery-upload-item-category" data-gallery-index="${index}"><option value="parades" ${entry.category === 'parades' ? 'selected' : ''}>Parades Pics</option><option value="band" ${entry.category === 'band' ? 'selected' : ''}>Band Pics</option><option value="rehearsals" ${entry.category === 'rehearsals' ? 'selected' : ''}>Rehearsal Pics</option><option value="throwbacks" ${entry.category === 'throwbacks' ? 'selected' : ''}>Throwbacks</option><option value="moments-enjoyment" ${entry.category === 'moments-enjoyment' ? 'selected' : ''}>Moments of Enjoyment</option><option value="exams" ${entry.category === 'exams' ? 'selected' : ''}>Exams Pics</option><option value="trophies" ${entry.category === 'trophies' ? 'selected' : ''}>Trophies Cabinet</option><option value="member-catalogue" ${entry.category === 'member-catalogue' ? 'selected' : ''}>Member Catalogue</option></select></div>`).join('');
       }
     });
 
@@ -4325,23 +4981,47 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
       } else if (requestType === 'application') {
         if (!appId) return;
         if (requestAction === 'approve') {
-          if (state.enlistmentApplications[appId]) {
-            state.enlistmentApplications[appId].status = 'Approved';
-            saveEnlistmentApplications();
-            (async () => {
-              try {
-                await requestJson(`/applications/${appId}/approve`, { method: 'POST' });
-                const backendState = await loadSharedStateFromBackend();
-                if (backendState) {
-                  applySharedState(backendState);
-                }
-                renderCompanyLists();
-                buildCommanderDashboard();
-              } catch (error) {
-                console.warn('Could not approve application in backend.', error);
+          if (!state.enlistmentApplications[appId] || approvingApplications.has(appId)) return;
+          approvingApplications.add(appId);
+          (async () => {
+            try {
+              const approval = await requestJson(`/applications/${encodeURIComponent(appId)}/approve`, {
+                method: 'POST',
+                body: JSON.stringify({ divisionNumber: getDivisionRosterNames().length + 1 })
+              });
+              if (!approval?.membershipNumber || approval.status !== 'Approved') {
+                throw new Error('The server did not confirm approval and assign a membership number.');
               }
-            })();
-          }
+
+              state.enlistmentApplications[appId] = {
+                ...state.enlistmentApplications[appId],
+                ...approval
+              };
+              const backendState = await loadSharedStateFromBackend();
+              if (backendState) {
+                applySharedState(backendState);
+              } else {
+                applyApprovedApplicationLocally(approval, appId);
+                console.warn('Approval succeeded, but the latest shared state could not be reloaded.');
+              }
+              renderCompanyLists();
+              renderDivisionSummary();
+              totalMembershipListRendered = false;
+              const totalMembershipList = document.getElementById('totalMembershipList');
+              totalMembershipList?.replaceChildren();
+              if (document.getElementById('totalMembershipModal')?.getAttribute('aria-hidden') === 'false') {
+                renderTotalMembershipList();
+              }
+              showToast(`Application approved. Membership ID: ${approval.membershipNumber}`);
+              buildCommanderDashboard();
+            } catch (error) {
+              console.error('Could not approve application in backend.', error);
+              alert(`Approval failed: ${error.message || 'The server could not confirm the approval.'}`);
+            } finally {
+              approvingApplications.delete(appId);
+              buildCommanderDashboard();
+            }
+          })();
         } else if (requestAction === 'deny') {
           if (state.enlistmentApplications[appId]) {
             state.enlistmentApplications[appId].status = 'Denied';
@@ -4353,6 +5033,22 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
 
       buildCommanderDashboard();
     });
+
+    const dateOfBirthField = form?.querySelector('input[name="dob"]');
+    const sectionPreview = document.getElementById('enlistmentSectionPreview');
+    const updateSectionPreview = () => {
+      if (!dateOfBirthField || !sectionPreview) return;
+      const assignment = getEnlistmentAgeAndSection(dateOfBirthField.value);
+      sectionPreview.textContent = assignment
+        ? `Age ${assignment.age}: ${assignment.sectionLabel} section.`
+        : dateOfBirthField.value
+          ? 'Enter a valid date of birth; applicants must be at least one year old.'
+          : 'Your age-based section will appear here.';
+      sectionPreview.setAttribute('data-valid', assignment ? 'true' : dateOfBirthField.value ? 'false' : 'pending');
+    };
+    dateOfBirthField?.addEventListener('input', updateSectionPreview);
+    dateOfBirthField?.addEventListener('change', updateSectionPreview);
+    updateSectionPreview();
 
     form?.addEventListener('submit', (event) => {
       event.preventDefault();
@@ -4374,6 +5070,15 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
       if (emailField && !emailValid) {
         valid = false;
         emailField.style.borderColor = 'hsl(0, 70%, 60%)';
+      }
+
+      const ageAssignment = getEnlistmentAgeAndSection(dateOfBirthField?.value || '');
+      if (!ageAssignment) {
+        valid = false;
+        if (dateOfBirthField) dateOfBirthField.style.borderColor = 'hsl(0, 70%, 60%)';
+        updateSectionPreview();
+      } else if (dateOfBirthField) {
+        dateOfBirthField.style.borderColor = '';
       }
 
       if (!valid) return;
@@ -4411,6 +5116,7 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
 
     fillAnother?.addEventListener('click', () => {
       form.reset();
+      updateSectionPreview();
       form.style.display = '';
       formSuccess?.classList.remove('active');
     });
@@ -4427,6 +5133,7 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
     bindAuthTabs();
     updateCaptainCompanyMode(captainForm?.dataset.mode || 'login');
     bindModalCloseButtons();
+    bindRankedPersonnelToggle();
     bindEscapeKey();
     bindSymbolCards();
     bindMembershipLookup();
@@ -4436,6 +5143,7 @@ Prophet Samuel Kayode Abiara was born on August 8, 1942, in Erinmo Ijesha, Oboku
       const toggle = event.target.closest('.company-toggle');
       if (!toggle) return;
       const card = toggle.closest('.company-card');
+      if (card?.classList.contains('company-suspended')) return;
       const details = card?.querySelector('.company-details');
       if (!details) return;
       const hidden = details.hidden;

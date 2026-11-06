@@ -23,8 +23,3 @@ def request(method, path, payload=None):
 if __name__ == '__main__':
     request('GET', '/api/health')
     request('GET', '/state')
-    request('POST', '/auth/commander/login', {'email': 'commander@royalshepherd.com', 'password': 'royalshepherd2026'})
-    request('POST', '/applications/app_test/approve')
-    request('POST', '/companies', {'companyId': '10', 'name': 'Test Co', 'active': [], 'inactive': [], 'officers': [], 'anchor': [], 'junior': [], 'intermediate': [], 'senior': [], 'officer': [], 'totalMembers': 0, 'totalNcos': 0, 'totalOfficers': 0, 'members': []})
-    request('POST', '/api/state', {'founderStory': 'Updated via test'})
-    print('done')

@@ -1,15 +1,5 @@
 (() => {
   const officialMembers = window.RS_TOTAL_MEMBERS.slice();
-  const replaceUniqueMember = (oldName, newName) => {
-    const matchingIndexes = officialMembers
-      .map((name, index) => name === oldName ? index : -1)
-      .filter((index) => index !== -1);
-    if (matchingIndexes.length !== 1) {
-      throw new Error(`Cannot sync official Division roster entry ${oldName}.`);
-    }
-    officialMembers[matchingIndexes[0]] = newName;
-  };
-
   const insertAfterUniqueMember = (anchorName, memberName) => {
     const matchingIndexes = officialMembers
       .map((name, index) => name === anchorName ? index : -1)
@@ -20,7 +10,6 @@
     officialMembers.splice(matchingIndexes[0] + 1, 0, memberName);
   };
 
-  replaceUniqueMember('Abdullahi John O.', 'Abdullahi John Olayiwala');
   insertAfterUniqueMember('Busari Elijah Qudus', 'Daini Tiwalade');
   insertAfterUniqueMember('Oluwadimu Samuel Oluwashindara', 'Oluwole Emmanuel');
 
@@ -43,7 +32,5 @@
     'Anifowoshe Ifeoluwa', 'Eldad M. Rapheal', 'Akinogun Glory', 'Agboola David', 'Anifowoshe Ire', 'Akinsiku Daniel',
     'Allen Destiny', 'Medad J. Rapheal', 'Fatunbi Prevail'
   );
-
-  officialMembers.push('Abdulliah Prosper', 'Ogunmakin Temitope');
   window.RS_TOTAL_MEMBERS = officialMembers;
 })();

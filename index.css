@@ -425,7 +425,7 @@ h4 {
 
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 1rem;
   padding: 1.2rem;
   border-radius: 1.5rem;
@@ -508,15 +508,15 @@ h4 {
 }
 
 .division-summary {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 1rem;
   margin-bottom: 1rem;
   padding: 1rem 1.2rem;
 }
 
 .summary-stat {
-  min-width: 180px;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
@@ -540,11 +540,110 @@ h4 {
   gap: 1rem;
 }
 
+.ranked-personnel-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.ranked-personnel-grid > div,
+.ranked-personnel-card {
+  min-width: 0;
+}
+
+.ranked-personnel-card {
+  padding: 1.25rem;
+}
+
+.ranked-personnel-actions {
+  display: flex;
+  justify-content: center;
+  margin: 0 0 1.5rem;
+}
+
+.ranked-personnel-actions .btn {
+  min-width: min(100%, 260px);
+  cursor: pointer;
+  font: inherit;
+}
+
+.ranked-personnel-grid[hidden] {
+  display: none;
+}
+
+.ranked-personnel-details h4 {
+  margin-bottom: 0.8rem;
+}
+
+.ranked-personnel-rank-group {
+  margin-top: 1rem;
+  padding-top: 0.8rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.ranked-personnel-rank-group h5 {
+  margin-bottom: 0.45rem;
+  color: var(--gold-400);
+}
+
+.ranked-personnel-members {
+  display: grid;
+  gap: 0.4rem;
+  padding-left: 0;
+}
+
+.ranked-personnel-members li {
+  padding: 0.5rem 0.6rem;
+  border-radius: 0.6rem;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.ranked-personnel-rank {
+  display: inline-block;
+  margin-right: 0.45rem;
+  padding: 0.12rem 0.45rem;
+  border: 1px solid rgba(255, 203, 79, 0.3);
+  border-radius: 999px;
+  color: var(--gold-400);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.ranked-personnel-name {
+  font-weight: 600;
+}
+
 .company-card {
   min-height: 220px;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
+}
+
+.company-card[data-company-status="suspended"] {
+  min-height: 180px;
+  pointer-events: none;
+}
+
+.company-card[data-company-status="suspended"] .company-caption,
+.company-card[data-company-status="suspended"] .company-details,
+.company-card[data-company-status="suspended"] .company-stats,
+.company-card[data-company-status="suspended"] .company-public-documents,
+.company-card[data-company-status="suspended"] .company-toggle {
+  display: none !important;
+}
+
+.company-suspended-stamp {
+  display: inline-flex;
+  align-self: flex-start;
+  margin: 0.35rem 0 0.7rem;
+  padding: 0.35rem 0.7rem;
+  border: 2px solid #e45b5b;
+  border-radius: 0.3rem;
+  color: #ff7777;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  line-height: 1;
+  transform: rotate(-3deg);
 }
 
 .company-stats {
@@ -964,6 +1063,12 @@ h4 {
   background: rgba(255, 255, 255, 0.04);
 }
 
+.total-membership-grid .member-division-id {
+  color: var(--gold-400);
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
 @media (max-width: 900px) {
   .total-membership-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -973,6 +1078,14 @@ h4 {
 @media (max-width: 620px) {
   .total-membership-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .division-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .ranked-personnel-actions .btn {
+    width: 100%;
   }
 }
 
@@ -991,6 +1104,19 @@ h4 {
   background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04));
   border: 1px solid rgba(255,255,255,0.12);
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.22);
+}
+
+.captain-card[data-company-status="suspended"] .captain-role,
+.captain-card[data-company-status="suspended"] .captain-bio:not(.captain-officer-in-charge) {
+  display: none;
+}
+
+.captain-card[data-company-status="suspended"] .captain-officer-in-charge {
+  display: block;
+}
+
+.captain-card[data-company-status="suspended"] {
+  pointer-events: none;
 }
 
 .captain-card::before {
@@ -1745,6 +1871,10 @@ textarea:focus {
     grid-template-columns: 1fr;
   }
 
+  .division-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .stats-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -1759,6 +1889,10 @@ textarea:focus {
 }
 
 @media (max-width: 760px) {
+  .division-summary {
+    grid-template-columns: 1fr;
+  }
+
   .site-header {
     border-radius: 1.1rem;
     width: calc(100% - 1rem);
@@ -1837,14 +1971,6 @@ textarea:focus {
 
   .company-grid {
     grid-template-columns: 1fr;
-  }
-
-  .division-summary {
-    flex-direction: column;
-  }
-
-  .summary-stat {
-    min-width: 0;
   }
 
   .dashboard-grid {
@@ -1932,4 +2058,3 @@ textarea:focus {
   color: var(--gold-400);
   font-size: 1.1rem;
 }
-

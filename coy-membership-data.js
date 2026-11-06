@@ -196,6 +196,19 @@ window.RS_COY_MEMBERSHIP = {
             "Otun Basit",
             "Oluwagbemiga Deborah"
           ]
+        },
+        {
+          "heading": "ANCHOR SECTION",
+          "members": [
+            "Busari Deborah",
+            "Sulaimon Christiana",
+            "Oluwadimu Samuel Oluwashindara",
+            "Alabi Barnabas",
+            "Anfela Semilore",
+            "Akinsinde Elizabeth",
+            "Kusimo James",
+            "Shobola Emmanuel"
+          ]
         }
       ],
       [
